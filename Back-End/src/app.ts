@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import MarcaController from "./controllers/marca.controllers";
+import CategoriaController from "./controllers/categoria.controllers";
 
 const app = express();
 app.use(express.json());
@@ -10,9 +11,13 @@ router.get("/", (req: Request, res: Response) => {
     res.send("Bem-vindo!");
 });
 
-router.get("/marcas", MarcaController.findAll);
-router.post("/marcas", MarcaController.create);
-router.get("/marcas/:id", MarcaController.getById);
+router.get("/marca", MarcaController.findAll);
+router.post("/marca", MarcaController.create);
+router.get("/marca/:id", MarcaController.getById);
+
+router.get("/categoria", CategoriaController.findAll);
+router.post("/categoria", CategoriaController.create);
+router.get("/categoria/:id", CategoriaController.getById);
 
 app.use(router);
 
