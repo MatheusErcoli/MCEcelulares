@@ -1,6 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import MarcaController from "./controllers/marca.controllers";
 import CategoriaController from "./controllers/categoria.controllers";
+import ProdutoController from "./controllers/produto.controllers";
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,10 @@ router.get("/marca/:id", MarcaController.getById);
 router.get("/categoria", CategoriaController.findAll);
 router.post("/categoria", CategoriaController.create);
 router.get("/categoria/:id", CategoriaController.getById);
+
+router.get("/produto", ProdutoController.findAll);
+router.post("/produto", ProdutoController.create);
+router.get("/produto/:id", ProdutoController.getById);
 
 app.use(router);
 
