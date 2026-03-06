@@ -10,7 +10,7 @@ class UsuarioController {
         res.json(usuarios);
     }
 
-    static async getById(req: Request, res:Response) {
+    static async findById(req: Request, res:Response) {
         const { id } = req.params;
 
         const usuario = await Usuario.findByPk(Number(id), {

@@ -8,7 +8,7 @@ class MarcaController {
         res.json(marcas);
     }
 
-    static async getById(req: Request, res: Response) {
+    static async findById(req: Request, res: Response) {
         const { id } = req.params;
         const marca = await Marca.findByPk(Number(id));
         res.json(marca);

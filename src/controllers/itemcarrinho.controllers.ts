@@ -11,7 +11,7 @@ class ItemCarrinhoController {
         res.json(itensCarrinho);
     }
 
-    static async getById(req: Request, res: Response) {
+    static async findById(req: Request, res: Response) {
         const { id } = req.params;
 
         const itemCarrinho = await ItemCarrinho.findByPk(Number(id), {

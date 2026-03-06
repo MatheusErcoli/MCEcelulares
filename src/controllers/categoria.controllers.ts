@@ -8,7 +8,7 @@ class CategoriaController {
         res.json(categorias);
     }
 
-    static async getById(req: Request, res: Response) {
+    static async findById(req: Request, res: Response) {
         const { id } = req.params;
         const categoria = await Categoria.findByPk(Number(id));
         res.json(categoria);

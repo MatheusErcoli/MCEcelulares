@@ -20,7 +20,7 @@ class ProdutoController {
     res.json(produtos);
   }
 
-  static async getById(req: Request, res: Response) {
+  static async findById(req: Request, res: Response) {
     const { id } = req.params;
     const produto = await Produto.findByPk(Number(id), {
       include: ["marca", "categoria"],

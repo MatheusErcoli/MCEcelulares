@@ -11,7 +11,7 @@ class EnderecoController {
         res.json(enderecos);
     }
 
-    static async getById(req: Request, res: Response) {
+    static async findById(req: Request, res: Response) {
         const { id } = req.params;
 
         const endereco = await Endereco.findByPk(Number(id), {
