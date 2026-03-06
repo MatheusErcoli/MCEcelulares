@@ -1,7 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Usuario from "./Usuario";
-import ItemCarrinho from "./ItemCarrinho";
 
 class Carrinho extends Model {
     public id_carrinho!: number;
@@ -32,16 +30,6 @@ Carrinho.init({
     sequelize,
     tableName: "carrinho",
     timestamps: false
-});
-
-Carrinho.belongsTo(Usuario, {
-     foreignKey: "id_usuario", 
-     as: "usuario"
-});
-
-Carrinho.hasMany(ItemCarrinho, {
-    foreignKey: "id_carrinho",
-    as: "itens"
 });
 
 export default Carrinho;

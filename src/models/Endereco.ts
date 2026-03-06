@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Usuario from "./Usuario";
 
 class Endereco extends Model{
     public id_endereco!: number;
@@ -51,11 +50,6 @@ Endereco.init({
     sequelize,
     tableName: 'endereco',
     timestamps: false
-});
-
-Endereco.belongsTo(Usuario, {
-    foreignKey: "id_usuario",
-    as: "usuario"
 });
 
 export default Endereco;

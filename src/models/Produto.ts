@@ -1,9 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
-import Categoria from './Categoria';
-import Marca from './Marca';
-import ItemCarrinho from './ItemCarrinho';
-import ItemPedido from './ItemPedido';
 
 class Produto extends Model {
     public id_produto!: number;
@@ -40,7 +36,8 @@ Produto.init({
         defaultValue: 0
     },
     imagem: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: true
     },
     destaque: {
         type: DataTypes.BOOLEAN,
@@ -60,27 +57,6 @@ Produto.init({
     sequelize,
     tableName: 'produto',
     timestamps: false
-});
-
-
-Produto.belongsTo(Marca,{
-    foreignKey: 'id_marca',
-    as: 'marca'
-});
-
-Produto.belongsTo(Categoria,{
-    foreignKey: 'id_categoria',
-    as: 'categoria'
-});
-
-Produto.hasMany(ItemCarrinho, {
-    foreignKey: 'id_produto',
-    as: 'itensCarrinho'
-});
-
-Produto.hasMany(ItemPedido, {
-    foreignKey: 'id_produto',
-    as: 'itensPedido'
 });
 
 export default Produto;

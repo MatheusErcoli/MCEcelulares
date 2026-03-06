@@ -1,10 +1,8 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Pedido from "./Pedido";
-import Produto from "./Produto";
 
 class ItemPedido extends Model {
-    public id_item_pedido!: number;
+    public id_item!: number;
     public id_pedido!: number;
     public id_produto!: number;
     public quantidade!: number;
@@ -12,7 +10,7 @@ class ItemPedido extends Model {
 }
 
 ItemPedido.init({
-    id_item_pedido: {
+    id_item: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -37,16 +35,6 @@ ItemPedido.init({
     sequelize,
     tableName: "item_pedido",
     timestamps: false
-});
-
-ItemPedido.belongsTo(Pedido, {
-    foreignKey: "id_pedido",
-    as: "pedido"
-});
-
-ItemPedido.belongsTo(Produto, {
-    foreignKey: "id_produto",
-    as: "produto"
 });
 
 export default ItemPedido;

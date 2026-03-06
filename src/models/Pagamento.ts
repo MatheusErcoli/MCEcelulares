@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Pedido from "./Pedido";
 
 class Pagamento extends Model{
     public id_pagamento!: number;
@@ -41,11 +40,6 @@ Pagamento.init({
     sequelize,
     tableName: 'pagamento',
     timestamps: false
-});
-
-Pagamento.belongsTo(Pedido, {
-    foreignKey: "id_pedido",
-    as: "pedido"
 });
 
 export default Pagamento;

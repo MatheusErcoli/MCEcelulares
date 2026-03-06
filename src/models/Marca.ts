@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Produto from "./Produto";
 
 class Marca extends Model{
     public id_marca!: number;
@@ -22,11 +21,5 @@ Marca.init({
     tableName: "marca",
     timestamps: false
 });
-
-Marca.hasMany(Produto, {
-    foreignKey: "id_marca",
-    as: "produtos"
-});
-
 
 export default Marca;

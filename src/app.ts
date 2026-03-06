@@ -22,31 +22,31 @@ router.get("/", (req: Request, res: Response) => {
 
 router.get("/marca", MarcaController.findAll);
 router.post("/marca", MarcaController.create);
-router.get("/marca/:id", MarcaController.getById);
+router.get("/marca/:id", MarcaController.findById);
 
 router.get("/categoria", CategoriaController.findAll);
 router.post("/categoria", CategoriaController.create);
-router.get("/categoria/:id", CategoriaController.getById);
+router.get("/categoria/:id", CategoriaController.findById);
 
 router.get("/produto", ProdutoController.findAll);
 router.post("/produto", ProdutoController.create);
-router.get("/produto/:id", ProdutoController.getById);
+router.get("/produto/:id", ProdutoController.findById);
 
 router.get("/usuario", UsuarioController.findAll);
 router.post("/usuario", UsuarioController.create);
-router.get("/usuario/:id", UsuarioController.getById);
+router.get("/usuario/:id", UsuarioController.findById);
 
 router.get('/endereco', EnderecoController.findAll);
 router.post('/endereco', EnderecoController.create);
-router.get('/endereco/:id', EnderecoController.getById);
+router.get('/endereco/:id', EnderecoController.findById);
 
 router.get('/carrinho', CarrinhoController.findAll);
 router.post('/carrinho', CarrinhoController.create);
-router.get('/carrinho/:id', CarrinhoController.getById);
+router.get('/carrinho/:id', CarrinhoController.findById);
 
 router.get('/itemcarrinho', ItemCarrinhoController.findAll);
 router.post('/itemcarrinho', ItemCarrinhoController.create);
-router.get('/itemcarrinho/:id', ItemCarrinhoController.getById);
+router.get('/itemcarrinho/:id', ItemCarrinhoController.findById);
 
 router.get('/pedido', PedidoController.findAll);
 router.post('/pedido', PedidoController.create);

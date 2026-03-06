@@ -1,8 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Endereco from "./Endereco";
-import Carrinho from "./Carrinho";
-import Pedido from "./Pedido";
 
 class Usuario extends Model{
     public id_usuario!: number;
@@ -53,21 +50,6 @@ Usuario.init({
     sequelize,
     tableName: "usuario",
     timestamps: false
-});
-
-Usuario.hasMany(Endereco, {
-    foreignKey: "id_usuario",
-    as: "enderecos"
-});
-
-Usuario.hasMany(Carrinho, {
-    foreignKey: "id_usuario",
-    as: "carrinhos"
-});
-
-Usuario.hasMany(Pedido, {
-    foreignKey: "id_usuario",
-    as: "pedidos"
 });
 
 export default Usuario;

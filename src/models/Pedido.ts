@@ -1,9 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Usuario from "./Usuario";
-import Endereco from "./Endereco";
-import ItemPedido from "./ItemPedido";
-import Funcionario from "./Funcionario";
 
 class Pedido extends Model {
   public id_pedido!: number;
@@ -28,6 +24,10 @@ Pedido.init({
     id_funcionario: {
       type: DataTypes.INTEGER,
     },
+    data: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
     valor_total: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
@@ -46,21 +46,6 @@ Pedido.init({
     sequelize,
     tableName: "pedido",
     timestamps: false,
-});
-
-Pedido.belongsTo(Usuario, {
-    foreignKey: "id_usuario",
-    as: "usuario"
-});
-
-Pedido.belongsTo(Funcionario, {
-    foreignKey: "id_funcionario",
-    as: "funcionario"
-});
-
-Pedido.hasMany(ItemPedido, {
-    foreignKey: "id_pedido",
-    as: "itens"
 });
 
 export default Pedido;

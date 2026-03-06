@@ -38,12 +38,13 @@ class PedidoController {
     }
 
     static async create(req: Request, res: Response){
-        const { id_usuario, id_funcionario, valor_total } = req.body;
+        const { id_usuario, id_funcionario, data, valor_total } = req.body;
 
         const pedido = await Pedido.create({
             id_usuario,
             id_funcionario,
             valor_total,
+            data,
             ativo: true,
             status: "CRIADO"
         });
