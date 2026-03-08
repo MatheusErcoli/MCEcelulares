@@ -40,6 +40,34 @@ class ItemPedidoController {
 
         res.status(201).json(itemPedido);
     }
+
+    static async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const { id_pedido, id_produto, quantidade, preco_unitario } = req.body;
+        const itemPedidoAtualizado = await ItemPedido.findByPk(Number(id));
+        if(itemPedidoAtualizado){
+            await itemPedidoAtualizado.update({
+                id_pedido: id_pedido,
+                id_produto: id_produto,
+                quantidade: quantidade,
+                preco_unitario: preco_unitario
+            });
+        } else {
+            return res.status(404).json({ message: "Item do pedido não encontrado" });
+        }
+        res.status(200).json(itemPedidoAtualizado);
+    }
+
+    static async delete(req: Request, res: Response) {
+        const { id } = req.params;
+        const itemPedido = await ItemPedido.findByPk(Number(id));
+        if(itemPedido){
+            await itemPedido.destroy();
+        } else {
+            return res.status(404).json({ message: "Item do pedido não encontrado" });
+        }
+        res.status(204).send();
+    }
 }
 
 export default ItemPedidoController;

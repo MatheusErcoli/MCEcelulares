@@ -38,6 +38,35 @@ class PagamentoController {
 
         res.status(201).json(pagamento);
     }
+
+    static async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const { id_pedido, metodo_pagamento, valor, data_pagamento, status } = req.body;
+        const pagamentoAtualizado = await Pagamento.findByPk(Number(id));
+        if(pagamentoAtualizado){
+            await pagamentoAtualizado.update({
+                id_pedido: id_pedido,
+                metodo_pagamento: metodo_pagamento,
+                valor: valor,
+                data_pagamento: data_pagamento,
+                status: status
+            });
+        } else {
+            return res.status(404).json({ message: "Pagamento não encontrado" });
+        }
+        res.status(200).json(pagamentoAtualizado);
+    }
+
+    static async delete(req: Request, res: Response) {
+        const { id } = req.params;
+        const pagamento = await Pagamento.findByPk(Number(id));
+        if(pagamento){
+            await pagamento.destroy();
+        } else {
+            return res.status(404).json({ message: "Pagamento não encontrado" });
+        }
+        res.status(204).send();
+    }
 }
 
 export default PagamentoController;

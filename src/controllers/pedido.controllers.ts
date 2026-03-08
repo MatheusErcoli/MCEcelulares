@@ -52,6 +52,35 @@ class PedidoController {
         res.status(201).json(pedido);
     }
 
+    static async update(req: Request, res: Response){
+        const { id } = req.params;
+        const { id_usuario, id_funcionario, data, valor_total, status } = req.body;
+        const pedidoAtualizado = await Pedido.findByPk(Number(id));
+        if(pedidoAtualizado){
+            await pedidoAtualizado.update({
+                id_usuario: id_usuario,
+                id_funcionario: id_funcionario,
+                data: data,
+                valor_total: valor_total,
+                status: status
+            });
+        } else {
+            res.status(404).json({ message: "Pedido não encontrado" });
+        }
+        res.status(200).json(pedidoAtualizado);
+    }
+
+    static async delete(req: Request, res: Response){
+        const { id } = req.params;
+        const pedido = await Pedido.findByPk(Number(id));
+        if(pedido){
+            await pedido.destroy();
+        } else {
+            res.status(404).json({ message: "Pedido não encontrado" });
+        }
+        res.status(204).send();
+    }
+
 }
 
 export default PedidoController;

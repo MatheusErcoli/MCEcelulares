@@ -38,6 +38,40 @@ class ItemCarrinhoController {
 
         res.json(novoItemCarrinho);
     }
+
+    static async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const {
+            id_carrinho,
+            id_produto,
+            preco_unitario,
+            quantidade
+        } = req.body;
+
+        const itemCarrinhoAtualizado = await ItemCarrinho.findByPk(Number(id));
+        if(itemCarrinhoAtualizado){
+            await itemCarrinhoAtualizado.update({
+                id_carrinho: id_carrinho,
+                id_produto: id_produto,
+                preco_unitario: preco_unitario,
+                quantidade: quantidade
+            });
+        } else {
+            return res.status(404).json({ message: "Item do carrinho não encontrado" });
+        }
+        res.status(200).json(itemCarrinhoAtualizado);
+    }  
+
+    static async delete(req: Request, res: Response) {
+        const { id } = req.params;
+        const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
+        if(itemCarrinho){
+            await itemCarrinho.destroy();
+        } else {
+            return res.status(404).json({ message: "Item do carrinho não encontrado" });
+        }
+        res.status(204).send();
+    }
 }
 
 export default ItemCarrinhoController;
