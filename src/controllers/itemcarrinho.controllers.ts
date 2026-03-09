@@ -2,76 +2,95 @@ import { Request, Response } from "express";
 import ItemCarrinho from "../models/ItemCarrinho";
 
 class ItemCarrinhoController {
+  static async findAll(req: Request, res: Response) {
+    try {
+      const itensCarrinho = await ItemCarrinho.findAll({
+        include: ["carrinho", "produto"],
+      });
 
-    static async findAll(req: Request, res: Response) {
-        const itensCarrinho = await ItemCarrinho.findAll({
-            include: ["carrinho", "produto"]
-        });
-    
-        res.json(itensCarrinho);
+      return res.status(200).json(itensCarrinho);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar itens do carrinho" });
     }
+  }
 
-    static async findById(req: Request, res: Response) {
-        const { id } = req.params;
+  static async findById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-        const itemCarrinho = await ItemCarrinho.findByPk(Number(id), {
-            include: ["carrinho", "produto"]
-        });
+      const itemCarrinho = await ItemCarrinho.findByPk(Number(id), {
+        include: ["carrinho", "produto"],
+      });
 
-        res.json(itemCarrinho);
+      if (!itemCarrinho) {
+        return res.status(404).json({ message: "Item do carrinho não encontrado" });
+      }
+
+      return res.status(200).json(itemCarrinho);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar item do carrinho" });
     }
+  }
 
-    static async create(req: Request, res: Response) {  
-        const {
-            id_carrinho,
-            id_produto,
-            preco_unitario,
-            quantidade
-        } = req.body;
+  static async create(req: Request, res: Response) {
+    try {
+      const { id_carrinho, id_produto, preco_unitario, quantidade } = req.body;
 
-        const novoItemCarrinho = await ItemCarrinho.create({
-            id_carrinho,
-            id_produto,
-            preco_unitario,
-            quantidade
-        });
+      const novoItemCarrinho = await ItemCarrinho.create({
+        id_carrinho,
+        id_produto,
+        preco_unitario,
+        quantidade,
+      });
 
-        res.json(novoItemCarrinho);
+      return res.status(201).json(novoItemCarrinho);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao criar item do carrinho" });
     }
+  }
 
-    static async update(req: Request, res: Response) {
-        const { id } = req.params;
-        const {
-            id_carrinho,
-            id_produto,
-            preco_unitario,
-            quantidade
-        } = req.body;
+  static async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-        const itemCarrinhoAtualizado = await ItemCarrinho.findByPk(Number(id));
-        if(itemCarrinhoAtualizado){
-            await itemCarrinhoAtualizado.update({
-                id_carrinho: id_carrinho,
-                id_produto: id_produto,
-                preco_unitario: preco_unitario,
-                quantidade: quantidade
-            });
-        } else {
-            return res.status(404).json({ message: "Item do carrinho não encontrado" });
-        }
-        res.status(200).json(itemCarrinhoAtualizado);
-    }  
+      const { id_carrinho, id_produto, preco_unitario, quantidade } = req.body;
 
-    static async delete(req: Request, res: Response) {
-        const { id } = req.params;
-        const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
-        if(itemCarrinho){
-            await itemCarrinho.destroy();
-        } else {
-            return res.status(404).json({ message: "Item do carrinho não encontrado" });
-        }
-        res.status(204).send();
+      const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
+
+      if (!itemCarrinho) {
+        return res.status(404).json({ message: "Item do carrinho não encontrado" });
+      }
+
+      await itemCarrinho.update({
+        id_carrinho,
+        id_produto,
+        preco_unitario,
+        quantidade,
+      });
+
+      return res.status(200).json(itemCarrinho);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao atualizar item do carrinho" });
     }
+  }
+
+  static async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
+
+      if (!itemCarrinho) {
+        return res.status(404).json({ message: "Item do carrinho não encontrado" });
+      }
+
+      await itemCarrinho.destroy();
+
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao deletar item do carrinho" });
+    }
+  }
 }
 
 export default ItemCarrinhoController;

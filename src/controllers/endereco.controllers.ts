@@ -2,93 +2,121 @@ import { Request, Response } from "express";
 import Endereco from "../models/Endereco";
 
 class EnderecoController {
+  static async findAll(req: Request, res: Response) {
+    try {
+      const enderecos = await Endereco.findAll({
+        include: ["usuario"],
+      });
 
-    static async findAll(req: Request, res: Response) {
-        const enderecos = await Endereco.findAll({
-            include: ["usuario"]
-        });
-
-        res.json(enderecos);
+      return res.status(200).json(enderecos);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar endereços" });
     }
+  }
 
-    static async findById(req: Request, res: Response) {
-        const { id } = req.params;
+  static async findById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-        const endereco = await Endereco.findByPk(Number(id), {
-            include: ["usuario"]
-        });
+      const endereco = await Endereco.findByPk(Number(id), {
+        include: ["usuario"],
+      });
 
-        res.json(endereco);
+      if (!endereco) {
+        return res.status(404).json({ message: "Endereço não encontrado" });
+      }
+
+      return res.status(200).json(endereco);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar endereço" });
     }
+  }
 
-    static async create(req: Request, res: Response) {
+  static async create(req: Request, res: Response) {
+    try {
+      const {
+        id_usuario,
+        endereco,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
+      } = req.body;
 
-        const {
-            id_usuario,
-            endereco,
-            numero,
-            complemento,
-            bairro,
-            cidade,
-            estado,
-            cep
-        } = req.body;
+      const novoEndereco = await Endereco.create({
+        id_usuario,
+        endereco,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
+      });
 
-        const novoEndereco = await Endereco.create({
-            id_usuario,
-            endereco,
-            numero,
-            complemento,
-            bairro,
-            cidade,
-            estado,
-            cep
-        });
-
-        res.json(novoEndereco);
+      return res.status(201).json(novoEndereco);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao criar endereço" });
     }
+  }
 
-    static async update(req: Request, res: Response) {
-        const { id } = req.params;
-        const {
-            id_usuario,
-            endereco,
-            numero,
-            complemento,
-            bairro,
-            cidade,
-            estado,
-            cep
-        } = req.body;
-        const enderecoAtualizado = await Endereco.findByPk(Number(id));
-        
-        if (enderecoAtualizado) {
-            await enderecoAtualizado.update({
-                id_usuario: id_usuario,
-                endereco: endereco,
-                numero: numero,
-                complemento: complemento,
-                bairro: bairro,
-                cidade: cidade,
-                estado: estado,
-                cep: cep
-            });
-        } else {
-            res.status(404).json({ message: "Endereço não encontrado" });
-        }
-        res.status(200).json(enderecoAtualizado);
-    }
+  static async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-    static async delete(req: Request, res: Response) {
-        const { id } = req.params;
-        const endereco = await Endereco.findByPk(Number(id));
-        if (endereco) {
-            await endereco.destroy();
-        } else {
-            res.status(404).json({ message: "Endereço não encontrado" });
-        }
-        res.status(204).send();
+      const {
+        id_usuario,
+        endereco,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
+      } = req.body;
+
+      const enderecoEncontrado = await Endereco.findByPk(Number(id));
+
+      if (!enderecoEncontrado) {
+        return res.status(404).json({ message: "Endereço não encontrado" });
+      }
+
+      await enderecoEncontrado.update({
+        id_usuario,
+        endereco,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
+      });
+
+      return res.status(200).json(enderecoEncontrado);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao atualizar endereço" });
     }
+  }
+
+  static async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const endereco = await Endereco.findByPk(Number(id));
+
+      if (!endereco) {
+        return res.status(404).json({ message: "Endereço não encontrado" });
+      }
+
+      await endereco.destroy();
+
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao deletar endereço" });
+    }
+  }
 }
 
 export default EnderecoController;

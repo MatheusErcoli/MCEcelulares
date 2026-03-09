@@ -2,71 +2,86 @@ import { Request, Response } from "express";
 import Carrinho from "../models/Carrinho";
 
 class CarrinhoController {
-
-    static async findAll(req: Request, res: Response) {
-        const carrinhos = await Carrinho.findAll({
-            include: ["usuario"]
-        });
-
-        res.json(carrinhos);
+  static async findAll(req: Request, res: Response) {
+    try {
+      const carrinhos = await Carrinho.findAll({
+        include: ["usuario"],
+      });
+      return res.status(200).json(carrinhos);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar carrinhos" });
     }
+  }
 
-    static async findById(req: Request, res: Response) {
-        const { id } = req.params;
+  static async findById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-        const carrinho = await Carrinho.findByPk(Number(id), {
-            include: ["usuario"]
-        });
+      const carrinho = await Carrinho.findByPk(Number(id), {
+        include: ["usuario"],
+      });
 
-        res.json(carrinho);
+      if (!carrinho) {
+        return res.status(404).json({ message: "Carrinho não encontrado" });
+      }
+      return res.status(200).json(carrinho);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar carrinho" });
     }
+  }
 
-    static async create(req: Request, res: Response) {
-        const {
-            id_usuario,
-            data_criacao,
-            ativo
-        } = req.body;
+  static async create(req: Request, res: Response) {
+    try {
+      const { id_usuario, data_criacao, ativo } = req.body;
 
-        const novoCarrinho = await Carrinho.create({
-            id_usuario,
-            data_criacao,
-            ativo
-        });
+      const novoCarrinho = await Carrinho.create({
+        id_usuario,
+        data_criacao,
+        ativo,
+      });
 
-        res.json(novoCarrinho);
+      return res.status(201).json(novoCarrinho);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao criar carrinho" });
     }
+  }
 
-    static async delete(req: Request, res: Response) {
-        const { id } = req.params;
-        const carrinho = await Carrinho.findByPk(Number(id));
+  static async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const carrinho = await Carrinho.findByPk(Number(id));
 
-        if (carrinho){
-            await carrinho.destroy();
-        } else {
-            res.status(404).json({ message: "Carrinho não encontrado" });
-        }
+      if (!carrinho) {
+        return res.status(404).json({ message: "Carrinho não encontrado" });
+      }
 
-        res.status(204).send();
+      await carrinho.destroy();
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao deletar carrinho" });
     }
+  }
 
-    static async update(req: Request, res: Response) {
-        const { id } = req.params;
-        const { id_usuario, data_criacao, ativo } = req.body;
+  static async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { id_usuario, data_criacao, ativo } = req.body;
+      const carrinho = await Carrinho.findByPk(Number(id));
 
-        const carrinhoAtualizado = await Carrinho.findByPk(Number(id));
-        if (carrinhoAtualizado) {
-            await carrinhoAtualizado.update({
-                id_usuario: id_usuario,
-                data_criacao: data_criacao,
-                ativo: ativo
-            });
-        } else {
-            res.status(404).json({ message: "Carrinho não encontrado" });
-        }
+      if (!carrinho) {
+        return res.status(404).json({ message: "Carrinho não encontrado" });
+      }
+      await carrinho.update({
+        id_usuario: id_usuario,
+        data_criacao: data_criacao,
+        ativo: ativo,
+      });
 
-         res.status(200).json(carrinhoAtualizado);
+      res.status(200).json(carrinho);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao atualizar carrinho" });
     }
+  }
 }
 
 export default CarrinhoController;

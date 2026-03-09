@@ -2,46 +2,80 @@ import { Request, Response } from "express";
 import Marca from "../models/Marca";
 
 class MarcaController {
+  static async findAll(req: Request, res: Response) {
+    try {
+      const marcas = await Marca.findAll();
 
-    static async findAll(req: Request, res: Response) {
-        const marcas = await Marca.findAll();
-        res.json(marcas);
+      return res.status(200).json(marcas);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar marcas" });
     }
+  }
 
-    static async findById(req: Request, res: Response) {
-        const { id } = req.params;
-        const marca = await Marca.findByPk(Number(id));
-        res.json(marca);
-    }
+  static async findById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-    static async create(req: Request, res: Response) {
-        const { nome } = req.body;
-        const marca = await Marca.create({ nome });
-        res.json(marca);
-    }
+      const marca = await Marca.findByPk(Number(id));
 
-    static async update(req: Request, res: Response) {
-        const { id } = req.params;
-        const { nome } = req.body;
-        const marcaAtualizada = await Marca.findByPk(Number(id));
-        if(marcaAtualizada){
-            await marcaAtualizada.update({ nome: nome });
-        } else {
-            res.status(404).json({ message: "Marca não encontrada" });
-        }
-        res.status(200).json(marcaAtualizada);
-    }
+      if (!marca) {
+        return res.status(404).json({ message: "Marca não encontrada" });
+      }
 
-    static async delete(req: Request, res: Response) {
-        const { id } = req.params;
-        const marca = await Marca.findByPk(Number(id));
-        if (marca) {
-            await marca.destroy();
-        } else {
-            res.status(404).json({ message: "Marca não encontrada" });
-        }
-        res.status(204).send();
+      return res.status(200).json(marca);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar marca" });
     }
+  }
+
+  static async create(req: Request, res: Response) {
+    try {
+      const { nome } = req.body;
+
+      const marca = await Marca.create({ nome });
+
+      return res.status(201).json(marca);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao criar marca" });
+    }
+  }
+
+  static async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { nome } = req.body;
+
+      const marca = await Marca.findByPk(Number(id));
+
+      if (!marca) {
+        return res.status(404).json({ message: "Marca não encontrada" });
+      }
+
+      await marca.update({ nome });
+
+      return res.status(200).json(marca);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao atualizar marca" });
+    }
+  }
+
+  static async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const marca = await Marca.findByPk(Number(id));
+
+      if (!marca) {
+        return res.status(404).json({ message: "Marca não encontrada" });
+      }
+
+      await marca.destroy();
+
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao deletar marca" });
+    }
+  }
 }
 
 export default MarcaController;
