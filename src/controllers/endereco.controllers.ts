@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import Endereco from "../models/Endereco";
+import {
+  createEnderecoSchema,
+  updateEnderecoSchema,
+} from "../validators/enderecoValidator";
 
 class EnderecoController {
   static async findAll(req: Request, res: Response) {
@@ -34,6 +38,8 @@ class EnderecoController {
 
   static async create(req: Request, res: Response) {
     try {
+      const data = createEnderecoSchema.parse(req.body);
+
       const {
         id_usuario,
         endereco,
@@ -43,7 +49,7 @@ class EnderecoController {
         cidade,
         estado,
         cep,
-      } = req.body;
+      } = data;
 
       const novoEndereco = await Endereco.create({
         id_usuario,
@@ -57,25 +63,24 @@ class EnderecoController {
       });
 
       return res.status(201).json(novoEndereco);
-    } catch (error) {
-      return res.status(500).json({ message: "Erro ao criar endereço" });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          message: "Erro de validação",
+          errors: error.errors,
+        });
+      }
+
+      return res.status(500).json({
+        message: "Erro ao criar endereço",
+      });
     }
   }
-
   static async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
 
-      const {
-        id_usuario,
-        endereco,
-        numero,
-        complemento,
-        bairro,
-        cidade,
-        estado,
-        cep,
-      } = req.body;
+      const dados = updateEnderecoSchema.parse(req.body);
 
       const enderecoEncontrado = await Endereco.findByPk(Number(id));
 
@@ -83,23 +88,22 @@ class EnderecoController {
         return res.status(404).json({ message: "Endereço não encontrado" });
       }
 
-      await enderecoEncontrado.update({
-        id_usuario,
-        endereco,
-        numero,
-        complemento,
-        bairro,
-        cidade,
-        estado,
-        cep,
-      });
+      await enderecoEncontrado.update(dados);
 
       return res.status(200).json(enderecoEncontrado);
-    } catch (error) {
-      return res.status(500).json({ message: "Erro ao atualizar endereço" });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          message: "Erro de validação",
+          errors: error.errors,
+        });
+      }
+
+      return res.status(500).json({
+        message: "Erro ao atualizar endereço",
+      });
     }
   }
-
   static async delete(req: Request, res: Response) {
     try {
       const { id } = req.params;

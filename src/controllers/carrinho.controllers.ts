@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import Carrinho from "../models/Carrinho";
+import {
+  createCarrinhoSchema,
+  updateCarrinhoSchema,
+} from "../validators/carrinhoValidator";
 
 class CarrinhoController {
   static async findAll(req: Request, res: Response) {
@@ -32,7 +36,9 @@ class CarrinhoController {
 
   static async create(req: Request, res: Response) {
     try {
-      const { id_usuario, data_criacao, ativo } = req.body;
+      const data = createCarrinhoSchema.parse(req.body);
+
+      const { id_usuario, data_criacao, ativo = true } = data;
 
       const novoCarrinho = await Carrinho.create({
         id_usuario,
@@ -41,8 +47,46 @@ class CarrinhoController {
       });
 
       return res.status(201).json(novoCarrinho);
-    } catch (error) {
-      return res.status(500).json({ message: "Erro ao criar carrinho" });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          message: "Erro de validação",
+          errors: error.errors,
+        });
+      }
+
+      return res.status(500).json({
+        message: "Erro ao criar carrinho",
+      });
+    }
+  }
+
+  static async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const dados = updateCarrinhoSchema.parse(req.body);
+
+      const carrinho = await Carrinho.findByPk(Number(id));
+
+      if (!carrinho) {
+        return res.status(404).json({ message: "Carrinho não encontrado" });
+      }
+
+      await carrinho.update(dados);
+
+      return res.status(200).json(carrinho);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          message: "Erro de validação",
+          errors: error.errors,
+        });
+      }
+
+      return res.status(500).json({
+        message: "Erro ao atualizar carrinho",
+      });
     }
   }
 
@@ -61,27 +105,5 @@ class CarrinhoController {
       return res.status(500).json({ message: "Erro ao deletar carrinho" });
     }
   }
-
-  static async update(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const { id_usuario, data_criacao, ativo } = req.body;
-      const carrinho = await Carrinho.findByPk(Number(id));
-
-      if (!carrinho) {
-        return res.status(404).json({ message: "Carrinho não encontrado" });
-      }
-      await carrinho.update({
-        id_usuario: id_usuario,
-        data_criacao: data_criacao,
-        ativo: ativo,
-      });
-
-      res.status(200).json(carrinho);
-    } catch (error) {
-      return res.status(500).json({ message: "Erro ao atualizar carrinho" });
-    }
-  }
 }
-
 export default CarrinhoController;
