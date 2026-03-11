@@ -1,6 +1,10 @@
 import { Response, Request } from "express";
 import Pagamento from "../models/Pagamento";
 import Pedido from "../models/Pedido";
+import {
+  createPagamentoSchema,
+  updatePagamentoSchema,
+} from "../validators/pagamentoValidator";
 
 class PagamentoController {
   static async findAll(req: Request, res: Response) {
@@ -35,8 +39,10 @@ class PagamentoController {
 
   static async create(req: Request, res: Response) {
     try {
+      const data = createPagamentoSchema.parse(req.body);
+
       const { id_pedido, metodo_pagamento, valor, data_pagamento, status } =
-        req.body;
+        data;
 
       const pagamento = await Pagamento.create({
         id_pedido,
@@ -47,16 +53,22 @@ class PagamentoController {
       });
 
       return res.status(201).json(pagamento);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          message: "Erro de validação",
+          errors: error.errors,
+        });
+      }
+
       return res.status(500).json({ message: "Erro ao criar pagamento" });
     }
   }
-
   static async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { id_pedido, metodo_pagamento, valor, data_pagamento, status } =
-        req.body;
+
+      const dados = updatePagamentoSchema.parse(req.body);
 
       const pagamento = await Pagamento.findByPk(Number(id));
 
@@ -64,20 +76,20 @@ class PagamentoController {
         return res.status(404).json({ message: "Pagamento não encontrado" });
       }
 
-      await pagamento.update({
-        id_pedido,
-        metodo_pagamento,
-        valor,
-        data_pagamento,
-        status,
-      });
+      await pagamento.update(dados);
 
       return res.status(200).json(pagamento);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          message: "Erro de validação",
+          errors: error.errors,
+        });
+      }
+
       return res.status(500).json({ message: "Erro ao atualizar pagamento" });
     }
   }
-
   static async delete(req: Request, res: Response) {
     try {
       const { id } = req.params;
