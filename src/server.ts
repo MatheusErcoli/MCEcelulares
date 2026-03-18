@@ -9,7 +9,7 @@ async function start() {
     setupAssociations();
     // synchronize models with the database; wrap in await so any errors
     // (including deadlock) bubble up and can be handled/retried if needed.
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
     app.listen(port, () => {
       console.log('====================================');

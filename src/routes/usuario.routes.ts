@@ -1,10 +1,12 @@
 import { Router } from "express";
 import UsuarioController from "../controllers/usuario.controllers";
 import authMiddleware from "../middlewares/auth.middleware";
+import { createUsuarioSchema } from "../validators/usuarioValidator";
+import { validate } from "../middlewares/validate.middleware";
 
 const router = Router();
 
-router.post("/", UsuarioController.create); 
+router.post("/", validate(createUsuarioSchema), UsuarioController.create);
 
 router.get("/", authMiddleware, UsuarioController.findAll);
 router.get("/:id", authMiddleware, UsuarioController.findById);
