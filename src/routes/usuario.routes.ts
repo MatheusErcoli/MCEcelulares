@@ -1,26 +1,14 @@
 import { Router } from "express";
 import UsuarioController from "../controllers/usuario.controllers";
-import { validate } from "../middlewares/validate.middleware";
-import { createUsuarioSchema, updateUsuarioSchema } from "../validators/usuarioValidator";
+import authMiddleware from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/", UsuarioController.findAll);
+router.post("/", UsuarioController.create); 
 
-router.post(
-  "/",
-  validate(createUsuarioSchema),
-  UsuarioController.create
-);
-
-router.get("/:id", UsuarioController.findById);
-
-router.put(
-  "/:id",
-  validate(updateUsuarioSchema),
-  UsuarioController.update
-);
-
-router.delete("/:id", UsuarioController.delete);
+router.get("/", authMiddleware, UsuarioController.findAll);
+router.get("/:id", authMiddleware, UsuarioController.findById);
+router.put("/:id", authMiddleware, UsuarioController.update);
+router.delete("/:id", authMiddleware, UsuarioController.delete);
 
 export default router;
