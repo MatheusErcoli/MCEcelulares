@@ -7,8 +7,7 @@ const port = 3000;
 async function start() {
   try {
     setupAssociations();
-    // synchronize models with the database; wrap in await so any errors
-    // (including deadlock) bubble up and can be handled/retried if needed.
+    
     await sequelize.sync();
 
     app.listen(port, () => {
