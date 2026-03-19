@@ -17,7 +17,6 @@ export const createUsuarioSchema = z.object({
 
 export const updateUsuarioSchema = z.object({
   nome: z.string().min(3).max(100).optional(),
-  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email inválido").optional(),
   senha: z.string()
   .min(8, "A senha deve ter no mínimo 8 caracteres")
   .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")

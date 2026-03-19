@@ -73,6 +73,12 @@ class UsuarioController {
       dados.senha = await bcrypt.hash(dados.senha, 10);
     }
 
+    if (req.body.email) {
+      return res.status(400).json({
+        message: "Email não pode ser alterado",
+      });
+    }
+    
     await usuario.update(dados);
 
     const usuarioSemSenha = usuario.toJSON();
