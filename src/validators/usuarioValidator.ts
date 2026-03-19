@@ -18,7 +18,12 @@ export const createUsuarioSchema = z.object({
 export const updateUsuarioSchema = z.object({
   nome: z.string().min(3).max(100).optional(),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email inválido").optional(),
-  senha: z.string().min(6).optional(),
+  senha: z.string()
+  .min(8, "A senha deve ter no mínimo 8 caracteres")
+  .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
+  .regex(/[a-z]/, "Deve conter pelo menos uma letra minúscula")
+  .regex(/[0-9]/, "Deve conter pelo menos um número")
+  .regex(/[^A-Za-z0-9]/, "Deve conter um caractere especial"),
   cpf: z.string().regex(/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$/, "CPF inválido"),
   telefone: z.string().min(10).max(15).optional(),
   ativo: z.boolean().optional(),
