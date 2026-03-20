@@ -3,9 +3,30 @@ import Funcionario from "../models/Funcionario";
 
 class FuncionarioController {
   static async findAll(req: Request, res: Response) {
-    const funcionarios = await Funcionario.findAll();
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
 
-    return res.status(200).json(funcionarios);
+    if (page < 1) {
+      return res.status(400).json({
+        message: "Página inválida",
+      });
+    }
+
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Funcionario.findAndCountAll({
+      limit,
+      offset,
+      order: [["id", "ASC"]],
+    });
+
+    return res.status(200).json({
+      page,
+      limit,
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      data: rows,
+    });
   }
 
   static async findById(req: Request, res: Response) {

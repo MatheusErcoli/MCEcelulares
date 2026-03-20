@@ -5,16 +5,35 @@ import Categoria from "../models/Categoria";
 
 class ProdutoController {
   static async findAll(req: Request, res: Response) {
-    const produtos = await Produto.findAll({
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+
+    if (page < 1) {
+      return res.status(400).json({
+        message: "Página inválida",
+      });
+    }
+
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Produto.findAndCountAll({
       include: [
         { model: Marca, as: "marca" },
         { model: Categoria, as: "categoria" },
       ],
+      limit,
+      offset,
+      order: [["id", "ASC"]],
     });
 
-    return res.status(200).json(produtos);
+    return res.status(200).json({
+      page,
+      limit,
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      data: rows,
+    });
   }
-
   static async findById(req: Request, res: Response) {
     const { id } = req.params;
 

@@ -6,7 +6,18 @@ import ItemPedido from "../models/ItemPedido";
 
 class PedidoController {
   static async findAll(req: Request, res: Response) {
-    const pedidos = await Pedido.findAll({
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+
+    if (page < 1) {
+      return res.status(400).json({
+        message: "Página inválida",
+      });
+    }
+
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Pedido.findAndCountAll({
       where: {
         ativo: true,
       },
@@ -15,9 +26,20 @@ class PedidoController {
         { model: Funcionario, as: "funcionario" },
         { model: ItemPedido, as: "itens" },
       ],
+      distinct: true,
+      col: "id",
+      limit,
+      offset,
+      order: [["id", "DESC"]],
     });
 
-    return res.status(200).json(pedidos);
+    return res.status(200).json({
+      page,
+      limit,
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      data: rows,
+    });
   }
 
   static async findById(req: Request, res: Response) {
