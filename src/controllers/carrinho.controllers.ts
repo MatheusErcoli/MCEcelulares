@@ -26,6 +26,20 @@ class CarrinhoController {
     return res.status(200).json(carrinho);
   }
 
+static async findActiveByUser(req: Request, res: Response) {
+    const { id_usuario } = req.params;
+
+    const [carrinho, created] = await Carrinho.findOrCreate({
+      where: { id_usuario: Number(id_usuario), ativo: true },
+      defaults: { 
+        id_usuario: Number(id_usuario),
+        ativo: true
+      }
+    });
+
+    return res.status(200).json(carrinho);
+  }
+
   static async create(req: Request, res: Response) {
     const { id_usuario, data_criacao, ativo = true } = req.body;
 

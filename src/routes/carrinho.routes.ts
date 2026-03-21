@@ -14,6 +14,8 @@ router.post("/", validate(createCarrinhoSchema), CarrinhoController.create);
 
 router.get("/:id", CarrinhoController.findById);
 
+router.get("/usuario/:id_usuario", CarrinhoController.findActiveByUser);
+
 router.put("/:id", validate(updateCarrinhoSchema), CarrinhoController.update);
 
 router.delete("/:id", CarrinhoController.delete);
