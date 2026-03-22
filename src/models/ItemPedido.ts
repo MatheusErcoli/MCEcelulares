@@ -2,11 +2,11 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class ItemPedido extends Model {
-    public id_item!: number;
-    public id_pedido!: number;
-    public id_produto!: number;
-    public quantidade!: number;
-    public preco_unitario!: number;
+    declare id_item: number;
+    declare id_pedido: number;
+    declare id_produto: number;
+    declare quantidade: number;
+    declare preco_unitario: number;
 }
 
 ItemPedido.init({

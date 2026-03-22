@@ -12,6 +12,8 @@ router.get("/", ItemCarrinhoController.findAll);
 
 router.post("/", validate(createItemCarrinhoSchema), ItemCarrinhoController.create,);
 
+router.get("/carrinho/:id_carrinho", ItemCarrinhoController.findByCartId);
+
 router.get("/:id", ItemCarrinhoController.findById);
 
 router.put("/:id", validate(updateItemCarrinhoSchema), ItemCarrinhoController.update,);

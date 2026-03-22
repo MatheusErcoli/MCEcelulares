@@ -2,15 +2,15 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class Funcionario extends Model {
-    public id_funcionario!: number;
-    public id_pedido!: number | null;
-    public nome!: string;
-    public email!: string
-    public telefone!: string;
-    public cargo!: string;
-    public data_admissao!: Date;
-    public salario!: number;
-    public ativo!: boolean;
+    declare id_funcionario: number;
+    declare id_pedido: number | null;
+    declare nome: string;
+    declare email: string
+    declare telefone: string;
+    declare cargo: string;
+    declare data_admissao: Date;
+    declare salario: number;
+    declare ativo: boolean;
 }
 
 Funcionario.init({

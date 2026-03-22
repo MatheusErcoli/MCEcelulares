@@ -2,13 +2,13 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class Pedido extends Model {
-  public id_pedido!: number;
-  public id_usuario!: number;
-  public id_funcionario!: number;
-  public data!: Date;
-  public valor_total!: number;
-  public ativo!: boolean;
-  public status!: string;
+  declare id_pedido: number;
+  declare id_usuario: number;
+  declare id_funcionario: number;
+  declare data: Date;
+  declare valor_total: number;
+  declare ativo: boolean;
+  declare status: string;
 }
 
 Pedido.init(

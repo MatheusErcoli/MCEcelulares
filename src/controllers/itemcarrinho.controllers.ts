@@ -26,6 +26,17 @@ class ItemCarrinhoController {
     return res.status(200).json(itemCarrinho);
   }
 
+  static async findByCartId(req: Request, res: Response) {
+    const { id_carrinho } = req.params;
+
+    const itens = await ItemCarrinho.findAll({
+      where: { id_carrinho: Number(id_carrinho) },
+      include: ["carrinho", "produto"],
+    });
+
+    return res.status(200).json(itens);
+  }
+
   static async create(req: Request, res: Response) {
     const { id_carrinho, id_produto, preco_unitario, quantidade } = req.body;
 

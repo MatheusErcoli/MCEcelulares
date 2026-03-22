@@ -2,10 +2,10 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class Carrinho extends Model {
-    public id_carrinho!: number;
-    public id_usuario!: number;
-    public data_criacao!: Date;
-    public ativo!: boolean;
+    declare id_carrinho: number;
+    declare id_usuario: number;
+    declare data_criacao: Date;
+    declare ativo: boolean;
 }
 
 Carrinho.init({

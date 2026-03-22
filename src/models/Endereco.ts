@@ -2,15 +2,15 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class Endereco extends Model{
-    public id_endereco!: number;
-    public id_usuario!: number;
-    public endereco!: string;
-    public numero!: string;
-    public complemento!: string;
-    public bairro!: string;
-    public cidade!: string;
-    public estado!: string;
-    public cep!: string;
+    declare id_endereco: number;
+    declare id_usuario: number;
+    declare endereco: string;
+    declare numero: string;
+    declare complemento: string;
+    declare bairro: string;
+    declare cidade: string;
+    declare estado: string;
+    declare cep: string;
 }
 
 Endereco.init({

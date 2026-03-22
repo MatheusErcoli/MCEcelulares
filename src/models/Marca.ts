@@ -2,8 +2,8 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class Marca extends Model{
-    public id_marca!: number;
-    public nome!: string;
+    declare id_marca: number;
+    declare nome: string;
 }
 
 Marca.init({

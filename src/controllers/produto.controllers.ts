@@ -23,7 +23,7 @@ class ProdutoController {
       ],
       limit,
       offset,
-      order: [["id", "ASC"]],
+      order: [["id_produto", "ASC"]],
     });
 
     return res.status(200).json({

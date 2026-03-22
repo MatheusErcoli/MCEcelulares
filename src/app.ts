@@ -4,14 +4,12 @@ import "dotenv/config";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import cors from "cors";
 
-// ... antes das rotas
-
 
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:4000", // URL do seu Next.js
-  credentials: true // Permite envio de cookies/headers se necessário
+  origin: "http://localhost:4000",
+  credentials: true
 }));
 
 app.use(express.json());

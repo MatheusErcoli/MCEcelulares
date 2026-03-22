@@ -2,11 +2,11 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class ItemCarrinho extends Model{
-    public id_item_carrinho!: number;
-    public id_carrinho!: number;
-    public id_produto!: number;
-    public preco_unitario!: number;
-    public quantidade!: number;
+    declare id_item_carrinho: number;
+    declare id_carrinho: number;
+    declare id_produto: number;
+    declare preco_unitario: number;
+    declare quantidade: number;
 }
 
 ItemCarrinho.init({

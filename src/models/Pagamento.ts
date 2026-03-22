@@ -2,12 +2,12 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 class Pagamento extends Model{
-    public id_pagamento!: number;
-    public id_pedido!: number;
-    public metodo_pagamento!: string;
-    public valor!: number;
-    public data_pagamento!: Date;
-    public status!: string;
+    declare id_pagamento: number;
+    declare id_pedido: number;
+    declare metodo_pagamento: string;
+    declare valor: number;
+    declare data_pagamento: Date;
+    declare status: string;
 }
 
 Pagamento.init({
