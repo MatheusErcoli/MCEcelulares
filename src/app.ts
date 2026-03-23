@@ -18,6 +18,10 @@ app.get("/", (req, res) => {
   res.send("Bem-vindo!");
 });
 
+app.get("/teste", (req, res) => {
+  res.json({ mensagem: "ok" });
+});
+
 app.use(routes);
 
 app.use(errorMiddleware);

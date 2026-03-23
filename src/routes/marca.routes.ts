@@ -4,7 +4,7 @@ import { validate } from "../middlewares/validate.middleware";
 import {
   createMarcaSchema,
   updateMarcaSchema,
-} from "../validators/marcaValidator";
+} from "../validators/marca.validator";
 
 const router = Router();
 

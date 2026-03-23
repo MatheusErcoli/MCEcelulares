@@ -4,7 +4,7 @@ import { validate } from "../middlewares/validate.middleware";
 import {
   createCategoriaSchema,
   updateCategoriaSchema,
-} from "../validators/categoriaValidator";
+} from "../validators/categoria.validator";
 
 const router = Router();
 

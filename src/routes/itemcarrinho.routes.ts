@@ -4,7 +4,7 @@ import { validate } from "../middlewares/validate.middleware";
 import {
   createItemCarrinhoSchema,
   updateItemCarrinhoSchema,
-} from "../validators/itemCarrinhoValidator";
+} from "../validators/itemCarrinho.validator";
 
 const router = Router();
 

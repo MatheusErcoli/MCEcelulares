@@ -4,7 +4,7 @@ export const createProdutoSchema = z.object({
   nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").max(200, "Nome muito longo"),
   descricao: z.string().max(2000, "Descrição muito longa").optional(),
   preco: z.number({}).positive("Preço deve ser maior que zero"),
-  estoque: z.number().int("Estoque deve ser inteiro").min(0, "Estoque não pode ser negativo").optional(),
+  estoque: z.number().int("Estoque deve ser inteiro").min(0, "Estoque não pode ser negativo"),
   imagem: z.string().url("Imagem deve ser uma URL válida").optional(),
   destaque: z.boolean().optional(),
   ativo: z.boolean().optional(),

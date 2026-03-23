@@ -4,7 +4,7 @@ import { validate } from "../middlewares/validate.middleware";
 import {
   createEnderecoSchema,
   updateEnderecoSchema,
-} from "../validators/enderecoValidator";
+} from "../validators/endereco.validator";
 
 const router = Router();
 
