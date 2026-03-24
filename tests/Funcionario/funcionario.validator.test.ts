@@ -1,7 +1,6 @@
 import { validate } from "../../src/middlewares/validate.middleware";
 import { createFuncionarioSchema, updateFuncionarioSchema } from "../../src/validators/funcionario.validator";
 
-//simula o res para testar os métodos
 const mockResponse = () => {
   const res: any = {};
   res.status = jest.fn().mockReturnValue(res);
