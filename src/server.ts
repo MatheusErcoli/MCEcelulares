@@ -1,12 +1,12 @@
 import app from "./app";
 import sequelize from "./config/database";
-import { setupAssociations } from "./models/associations";
+import { definirRelacionamentos } from "./models/relacionamentos";
 
 const port = 3000;
 
 async function start() {
   try {
-    setupAssociations();
+    definirRelacionamentos();
     
     await sequelize.sync();
 

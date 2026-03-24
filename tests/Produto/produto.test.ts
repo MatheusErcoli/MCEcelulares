@@ -73,7 +73,7 @@ describe("ProdutoController - findById", () => {
     jest.clearAllMocks();
   });
 
-  it("deve retornar um produto pelo ID", async () => {
+  it("esse teste deve retornar um produto procurado pelo ID", async () => {
     const req: any = {
       params: { id: "1" },
     };
@@ -96,7 +96,7 @@ describe("ProdutoController - findById", () => {
     expect(res.json).toHaveBeenCalledWith(mockProduto);
   });
 
-  it("deve retornar 404 se produto não existir", async () => {
+  it("esse teste deve retornar erro 404 caso não ache o produto", async () => {
     const req: any = {
       params: { id: "1" },
     };

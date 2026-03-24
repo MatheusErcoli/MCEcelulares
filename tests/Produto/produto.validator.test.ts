@@ -2,6 +2,7 @@ import { validate } from "../../src/middlewares/validate.middleware";
 import { createProdutoSchema, updateProdutoSchema } from "../../src/validators/produto.validator";
 
 jest.mock("../../src/models/Produto");
+
 //simula o res para testar os métodos
 const mockResponse = () => {
   const res: any = {};
@@ -147,6 +148,18 @@ describe("Validação de Produto - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
+  it("esse teste deve aceitar body vazio", () => {
+    const req: any = {
+      body: {},
+    };
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+  });
+
   it("esse teste deve falhar caso preço for negativo", () => {
     const req: any = {
       body: {
@@ -175,10 +188,52 @@ describe("Validação de Produto - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
+  it("esse teste deve falhar caso estoque não for inteiro", () => {
+    const req: any = {
+      body: {
+        estoque: 10.5,
+      },
+    };
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
   it("esse teste deve falhar caso a url da imagem for inválida", () => {
     const req: any = {
       body: {
         imagem: "url-invalida",
+      },
+    };
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("esse teste deve falhar caso id_marca não seja inteiro", () => {
+    const req: any = {
+      body: {
+        id_marca: 1.5,
+      },
+    };
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("esse teste deve falhar caso id_categoria não seja inteiro", () => {
+    const req: any = {
+      body: {
+        id_categoria: 2.5,
       },
     };
 
