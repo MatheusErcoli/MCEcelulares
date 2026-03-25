@@ -1,5 +1,8 @@
 import { validate } from "../../src/middlewares/validate.middleware";
-import { createCategoriaSchema, updateCategoriaSchema } from "../../src/validators/categoria.validator";
+import {
+  createEnderecoSchema,
+  updateEnderecoSchema,
+} from "../../src/validators/endereco.validator";
 
 const mockResponse = () => {
   const res: any = {};
@@ -8,20 +11,23 @@ const mockResponse = () => {
   return res;
 };
 
-describe("Validação de Categoria - create", () => {
-  const middleware = validate(createCategoriaSchema);
+describe("Validação de Endereco - create", () => {
+  const middleware = validate(createEnderecoSchema);
   const next = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação", () => {
+  it("esse teste deve passar a validação com dados válidos", () => {
     const req: any = {
       body: {
-        nome: "Eletrônicos",
-        descricao: "Produtos eletrônicos",
-        ativo: true,
+        id_usuario: 1,
+        endereco: "Rua Teste",
+        numero: "123",
+        cidade: "Maringá",
+        estado: "PR",
+        cep: "12345678",
       },
     };
 
@@ -32,10 +38,12 @@ describe("Validação de Categoria - create", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse deve falhar pois o nome é muito curto", () => {
+  it("esse teste deve falhar pois endereco é muito curto", () => {
     const req: any = {
       body: {
-        nome: "ab",
+        id_usuario: 1,
+        endereco: "ab",
+        numero: "123",
       },
     };
 
@@ -46,10 +54,12 @@ describe("Validação de Categoria - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar pois o nome é muito longo", () => {
+  it("esse teste deve falhar pois numero está vazio", () => {
     const req: any = {
       body: {
-        nome: "a".repeat(101),
+        id_usuario: 1,
+        endereco: "Rua Teste",
+        numero: "",
       },
     };
 
@@ -60,11 +70,13 @@ describe("Validação de Categoria - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar caso a descrição seja muito longa", () => {
+  it("esse teste deve falhar pois estado é inválido", () => {
     const req: any = {
       body: {
-        nome: "Eletrônicos",
-        descricao: "a".repeat(256),
+        id_usuario: 1,
+        endereco: "Rua Teste",
+        numero: "123",
+        estado: "PRR",
       },
     };
 
@@ -75,11 +87,13 @@ describe("Validação de Categoria - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar caso ativo não seja booleano", () => {
+  it("esse teste deve falhar pois cep é inválido", () => {
     const req: any = {
       body: {
-        nome: "Eletrônicos",
-        ativo: "true",
+        id_usuario: 1,
+        endereco: "Rua Teste",
+        numero: "123",
+        cep: "123",
       },
     };
 
@@ -91,8 +105,8 @@ describe("Validação de Categoria - create", () => {
   });
 });
 
-describe("Validação de Categoria - update", () => {
-  const middleware = validate(updateCategoriaSchema);
+describe("Validação de Endereco - update", () => {
+  const middleware = validate(updateEnderecoSchema);
   const next = jest.fn();
 
   beforeEach(() => {
@@ -102,7 +116,7 @@ describe("Validação de Categoria - update", () => {
   it("esse teste deve aceitar update parcial", () => {
     const req: any = {
       body: {
-        nome: "Nova Categoria",
+        cidade: "Curitiba",
       },
     };
 
@@ -113,12 +127,11 @@ describe("Validação de Categoria - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse teste deve aceitar múltiplos campos", () => {
+  it("esse teste deve aceitar múltiplos campos válidos", () => {
     const req: any = {
       body: {
-        nome: "Atualizado",
-        descricao: "Nova descrição",
-        ativo: false,
+        cidade: "Curitiba",
+        estado: "PR",
       },
     };
 
@@ -129,22 +142,10 @@ describe("Validação de Categoria - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse teste deve aceitar body vazio", () => {
-    const req: any = {
-      body: {},
-    };
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse deve falhar caso descrição seja muito longa", () => {
+  it("esse teste deve falhar pois estado é inválido", () => {
     const req: any = {
       body: {
-        descricao: "a".repeat(256),
+        estado: "PAR",
       },
     };
 
@@ -155,10 +156,10 @@ describe("Validação de Categoria - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar caso ativo não seja booleano", () => {
+  it("esse teste deve falhar pois cep é inválido", () => {
     const req: any = {
       body: {
-        ativo: "false",
+        cep: "123",
       },
     };
 

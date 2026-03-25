@@ -3,7 +3,6 @@ import Categoria from "../../src/models/Categoria";
 
 jest.mock("../../src/models/Categoria");
 
-//simula o res para testar os métodos
 const mockResponse = () => {
   const res: any = {};
   res.status = jest.fn().mockReturnValue(res);

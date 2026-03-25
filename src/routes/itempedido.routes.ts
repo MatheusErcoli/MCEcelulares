@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ItemPedidoController from "../controllers/itempedido.controllers";
+import ItemPedidoController from "../controllers/itemPedido.controllers";
 import { validate } from "../middlewares/validate.middleware";
 import {
   createItemPedidoSchema,

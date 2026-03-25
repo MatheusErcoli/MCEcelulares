@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ItemCarrinhoController from "../controllers/itemcarrinho.controllers";
+import ItemCarrinhoController from "../controllers/itemCarrinho.controllers";
 import { validate } from "../middlewares/validate.middleware";
 import {
   createItemCarrinhoSchema,

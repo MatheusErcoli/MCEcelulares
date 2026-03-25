@@ -1,5 +1,8 @@
 import { validate } from "../../src/middlewares/validate.middleware";
-import { createCategoriaSchema, updateCategoriaSchema } from "../../src/validators/categoria.validator";
+import {
+  createItemCarrinhoSchema,
+  updateItemCarrinhoSchema,
+} from "../../src/validators/itemCarrinho.validator";
 
 const mockResponse = () => {
   const res: any = {};
@@ -8,20 +11,21 @@ const mockResponse = () => {
   return res;
 };
 
-describe("Validação de Categoria - create", () => {
-  const middleware = validate(createCategoriaSchema);
+describe("Validação de ItemCarrinho - create", () => {
+  const middleware = validate(createItemCarrinhoSchema);
   const next = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação", () => {
+  it("esse teste deve passar a validação com dados válidos", () => {
     const req: any = {
       body: {
-        nome: "Eletrônicos",
-        descricao: "Produtos eletrônicos",
-        ativo: true,
+        id_carrinho: 1,
+        id_produto: 2,
+        preco_unitario: 50,
+        quantidade: 3,
       },
     };
 
@@ -32,10 +36,13 @@ describe("Validação de Categoria - create", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse deve falhar pois o nome é muito curto", () => {
+  it("esse teste deve falhar pois id_carrinho é inválido", () => {
     const req: any = {
       body: {
-        nome: "ab",
+        id_carrinho: -1,
+        id_produto: 2,
+        preco_unitario: 50,
+        quantidade: 3,
       },
     };
 
@@ -46,10 +53,13 @@ describe("Validação de Categoria - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar pois o nome é muito longo", () => {
+  it("esse teste deve falhar pois quantidade é inválida", () => {
     const req: any = {
       body: {
-        nome: "a".repeat(101),
+        id_carrinho: 1,
+        id_produto: 2,
+        preco_unitario: 50,
+        quantidade: 0,
       },
     };
 
@@ -60,26 +70,13 @@ describe("Validação de Categoria - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar caso a descrição seja muito longa", () => {
+  it("esse teste deve falhar pois preco_unitario é inválido", () => {
     const req: any = {
       body: {
-        nome: "Eletrônicos",
-        descricao: "a".repeat(256),
-      },
-    };
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse deve falhar caso ativo não seja booleano", () => {
-    const req: any = {
-      body: {
-        nome: "Eletrônicos",
-        ativo: "true",
+        id_carrinho: 1,
+        id_produto: 2,
+        preco_unitario: -10,
+        quantidade: 3,
       },
     };
 
@@ -91,8 +88,8 @@ describe("Validação de Categoria - create", () => {
   });
 });
 
-describe("Validação de Categoria - update", () => {
-  const middleware = validate(updateCategoriaSchema);
+describe("Validação de ItemCarrinho - update", () => {
+  const middleware = validate(updateItemCarrinhoSchema);
   const next = jest.fn();
 
   beforeEach(() => {
@@ -102,7 +99,7 @@ describe("Validação de Categoria - update", () => {
   it("esse teste deve aceitar update parcial", () => {
     const req: any = {
       body: {
-        nome: "Nova Categoria",
+        quantidade: 5,
       },
     };
 
@@ -113,12 +110,11 @@ describe("Validação de Categoria - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse teste deve aceitar múltiplos campos", () => {
+  it("esse teste deve aceitar múltiplos campos válidos", () => {
     const req: any = {
       body: {
-        nome: "Atualizado",
-        descricao: "Nova descrição",
-        ativo: false,
+        quantidade: 5,
+        preco_unitario: 100,
       },
     };
 
@@ -129,22 +125,10 @@ describe("Validação de Categoria - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse teste deve aceitar body vazio", () => {
-    const req: any = {
-      body: {},
-    };
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse deve falhar caso descrição seja muito longa", () => {
+  it("esse teste deve falhar pois quantidade é inválida", () => {
     const req: any = {
       body: {
-        descricao: "a".repeat(256),
+        quantidade: 0,
       },
     };
 
@@ -155,10 +139,10 @@ describe("Validação de Categoria - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar caso ativo não seja booleano", () => {
+  it("esse teste deve falhar pois preco_unitario é inválido", () => {
     const req: any = {
       body: {
-        ativo: "false",
+        preco_unitario: -5,
       },
     };
 

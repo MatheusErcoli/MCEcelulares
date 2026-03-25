@@ -22,8 +22,9 @@ export const updateUsuarioSchema = z.object({
   .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
   .regex(/[a-z]/, "Deve conter pelo menos uma letra minúscula")
   .regex(/[0-9]/, "Deve conter pelo menos um número")
-  .regex(/[^A-Za-z0-9]/, "Deve conter um caractere especial"),
-  cpf: z.string().regex(/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$/, "CPF inválido"),
+  .regex(/[^A-Za-z0-9]/, "Deve conter um caractere especial")
+  .optional(),
+  cpf: z.string().regex(/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$/, "CPF inválido").optional(),
   telefone: z.string().min(10).max(15).optional(),
   ativo: z.boolean().optional(),
   admin: z.boolean().optional(),
