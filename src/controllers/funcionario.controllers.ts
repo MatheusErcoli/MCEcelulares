@@ -45,7 +45,6 @@ class FuncionarioController {
 
   static async create(req: Request, res: Response) {
     const {
-      id_pedido,
       nome,
       email,
       telefone,
@@ -56,7 +55,6 @@ class FuncionarioController {
     } = req.body;
 
     const funcionario = await Funcionario.create({
-      id_pedido,
       nome,
       email,
       telefone,

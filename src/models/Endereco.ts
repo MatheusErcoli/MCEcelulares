@@ -6,10 +6,10 @@ class Endereco extends Model{
     declare id_usuario: number;
     declare endereco: string;
     declare numero: string;
-    declare complemento: string;
-    declare bairro: string;
+    declare complemento: string | null;
+    declare bairro: string | null;
     declare cidade: string;
-    declare estado: string;
+    declare estado: string | null;
     declare cep: string;
 }
 
@@ -39,12 +39,15 @@ Endereco.init({
     },
     cidade: {
         type: DataTypes.STRING,
+        allowNull: false
     },
     estado: {
         type: DataTypes.STRING,
+        allowNull: false
     },
     cep: {
         type: DataTypes.STRING,
+        allowNull: false
     }
 }, {
     sequelize,

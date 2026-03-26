@@ -3,12 +3,11 @@ import sequelize from "../config/database";
 
 class Funcionario extends Model {
     declare id_funcionario: number;
-    declare id_pedido: number | null;
     declare nome: string;
     declare email: string
     declare telefone: string;
     declare cargo: string;
-    declare data_admissao: Date;
+    declare data_admissao: Date | null;
     declare salario: number;
     declare ativo: boolean;
 }
@@ -18,10 +17,6 @@ Funcionario.init({
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
-    },
-    id_pedido: {
-        type: DataTypes.INTEGER,
-        allowNull: true
     },
     nome: {
         type: DataTypes.STRING,
@@ -34,19 +29,23 @@ Funcionario.init({
     },
     telefone: {
         type: DataTypes.STRING,
+        allowNull: false
     },
     cargo: {
         type: DataTypes.STRING,
+        allowNull: false
     },
     data_admissao: {
         type: DataTypes.DATE,
     },
     salario: {
         type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
     },
     ativo: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true
+        defaultValue: true,
+        allowNull: false
     }
 }, {
     sequelize,

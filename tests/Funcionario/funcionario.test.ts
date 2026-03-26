@@ -4,13 +4,12 @@ import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Funcionario");
 
-
 describe("FuncionarioController - findAll", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve retornar validação corretamente", async () => {
+  it("esse teste deve retornar validacao corretamente", async () => {
     const req = mockRequest({
       query: { page: "1", limit: "10" },
     });
@@ -20,7 +19,7 @@ describe("FuncionarioController - findAll", () => {
     (Funcionario.findAndCountAll as jest.Mock).mockResolvedValue({
       count: 2,
       rows: [
-        { id_funcionario: 1, nome: "João" },
+        { id_funcionario: 1, nome: "Joao" },
         { id_funcionario: 2, nome: "Maria" },
       ],
     });
@@ -32,7 +31,7 @@ describe("FuncionarioController - findAll", () => {
         limit: 10,
         offset: 0,
         order: [["id_funcionario", "ASC"]],
-      })
+      }),
     );
 
     expect(res.status).toHaveBeenCalledWith(200);
@@ -43,11 +42,11 @@ describe("FuncionarioController - findAll", () => {
         total: 2,
         totalPages: 1,
         data: expect.any(Array),
-      })
+      }),
     );
   });
 
-  it("esse teste retorna erro caso a paginação esteja errada", async () => {
+  it("esse teste retorna erro caso a paginacao esteja errada", async () => {
     const req = mockRequest({
       query: { page: "-1" },
     });
@@ -68,7 +67,7 @@ describe("FuncionarioController - findById", () => {
     jest.clearAllMocks();
   });
 
-  it("deve retornar um funcionário pelo ID", async () => {
+  it("deve retornar um funcionario pelo ID", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
@@ -77,7 +76,7 @@ describe("FuncionarioController - findById", () => {
 
     const mockFuncionario = {
       id_funcionario: 1,
-      nome: "João",
+      nome: "Joao",
     };
 
     (Funcionario.findByPk as jest.Mock).mockResolvedValue(mockFuncionario);
@@ -89,7 +88,7 @@ describe("FuncionarioController - findById", () => {
     expect(res.json).toHaveBeenCalledWith(mockFuncionario);
   });
 
-  it("deve retornar 404 se funcionário não existir", async () => {
+  it("deve retornar 404 se funcionario nao existir", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
@@ -112,11 +111,10 @@ describe("FuncionarioController - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste é para criar um funcionário com sucesso", async () => {
+  it("esse teste e para criar um funcionario com sucesso", async () => {
     const req = mockRequest({
       body: {
-        id_pedido: 1,
-        nome: "João",
+        nome: "Joao",
         email: "joao@email.com",
         telefone: "123456789",
         cargo: "Vendedor",
@@ -138,7 +136,6 @@ describe("FuncionarioController - create", () => {
     await FuncionarioController.create(req, res);
 
     expect(Funcionario.create).toHaveBeenCalledWith(req.body);
-
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(mockFuncionario);
   });
@@ -149,11 +146,11 @@ describe("FuncionarioController - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve atualizar o funcionário com sucesso", async () => {
+  it("esse teste deve atualizar o funcionario com sucesso", async () => {
     const req = mockRequest({
       params: { id: "1" },
       body: {
-        nome: "João Atualizado",
+        nome: "Joao Atualizado",
       },
     });
 
@@ -161,7 +158,7 @@ describe("FuncionarioController - update", () => {
 
     const mockFuncionario = {
       id_funcionario: 1,
-      nome: "João",
+      nome: "Joao",
       update: jest.fn().mockResolvedValue(true),
     };
 
@@ -171,12 +168,11 @@ describe("FuncionarioController - update", () => {
 
     expect(Funcionario.findByPk).toHaveBeenCalledWith(1);
     expect(mockFuncionario.update).toHaveBeenCalledWith(req.body);
-
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockFuncionario);
   });
 
-  it("esse teste deve retornar erro caso o funcionário não existir", async () => {
+  it("esse teste deve retornar erro caso o funcionario nao existir", async () => {
     const req = mockRequest({
       params: { id: "1" },
       body: {
@@ -202,7 +198,7 @@ describe("FuncionarioController - delete", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste é para deletar com sucesso", async () => {
+  it("esse teste e para deletar com sucesso", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
@@ -220,12 +216,11 @@ describe("FuncionarioController - delete", () => {
 
     expect(Funcionario.findByPk).toHaveBeenCalledWith(1);
     expect(mockFuncionario.destroy).toHaveBeenCalled();
-
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalled();
   });
 
-  it("esse teste deve retornar erro 404 caso não consiga dar o delete", async () => {
+  it("esse teste deve retornar erro 404 caso nao consiga dar o delete", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
@@ -242,5 +237,3 @@ describe("FuncionarioController - delete", () => {
     });
   });
 });
-
-

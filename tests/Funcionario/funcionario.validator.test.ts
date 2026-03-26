@@ -1,9 +1,11 @@
 import { validate } from "../../src/middlewares/validate.middleware";
-import { createFuncionarioSchema, updateFuncionarioSchema } from "../../src/validators/funcionario.validator";
+import {
+  createFuncionarioSchema,
+  updateFuncionarioSchema,
+} from "../../src/validators/funcionario.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-
-describe("Validação de Funcionário - create", () => {
+describe("Validacao de Funcionario - create", () => {
   const middleware = validate(createFuncionarioSchema);
   const next = jest.fn();
 
@@ -11,14 +13,15 @@ describe("Validação de Funcionário - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação", () => {
+  it("esse teste deve passar a validacao", () => {
     const req = mockRequest({
       body: {
-        nome: "João Silva",
+        nome: "Joao Silva",
         email: "joao@email.com",
         telefone: "12345678",
         cargo: "Vendedor",
         salario: 2000,
+        ativo: true,
       },
     });
 
@@ -29,7 +32,7 @@ describe("Validação de Funcionário - create", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse deve falhar pois o nome é muito curto", () => {
+  it("esse deve falhar pois o nome e muito curto", () => {
     const req = mockRequest({
       body: {
         nome: "Jo",
@@ -44,10 +47,82 @@ describe("Validação de Funcionário - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar pois o email é inválido", () => {
+  it("esse deve falhar se telefone nao for enviado", () => {
     const req = mockRequest({
       body: {
-        nome: "João Silva",
+        nome: "Joao Silva",
+        email: "teste@email.com",
+        cargo: "Vendedor",
+        salario: 2000,
+        ativo: true,
+      },
+    });
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("esse deve falhar se cargo nao for enviado", () => {
+    const req = mockRequest({
+      body: {
+        nome: "Joao Silva",
+        email: "teste@email.com",
+        telefone: "12345678",
+        salario: 2000,
+        ativo: true,
+      },
+    });
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("esse deve falhar se salario nao for enviado", () => {
+    const req = mockRequest({
+      body: {
+        nome: "Joao Silva",
+        email: "teste@email.com",
+        telefone: "12345678",
+        cargo: "Vendedor",
+        ativo: true,
+      },
+    });
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("esse deve falhar se ativo nao for enviado", () => {
+    const req = mockRequest({
+      body: {
+        nome: "Joao Silva",
+        email: "teste@email.com",
+        telefone: "12345678",
+        cargo: "Vendedor",
+        salario: 2000,
+      },
+    });
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("esse deve falhar pois o email e invalido", () => {
+    const req = mockRequest({
+      body: {
+        nome: "Joao Silva",
         email: "email-invalido",
       },
     });
@@ -62,7 +137,7 @@ describe("Validação de Funcionário - create", () => {
   it("esse deve falhar caso telefone seja muito curto", () => {
     const req = mockRequest({
       body: {
-        nome: "João Silva",
+        nome: "Joao Silva",
         email: "teste@email.com",
         telefone: "123",
       },
@@ -78,7 +153,7 @@ describe("Validação de Funcionário - create", () => {
   it("esse deve falhar caso cargo seja muito curto", () => {
     const req = mockRequest({
       body: {
-        nome: "João Silva",
+        nome: "Joao Silva",
         email: "teste@email.com",
         cargo: "A",
       },
@@ -94,7 +169,7 @@ describe("Validação de Funcionário - create", () => {
   it("esse deve falhar caso salario seja negativo", () => {
     const req = mockRequest({
       body: {
-        nome: "João Silva",
+        nome: "Joao Silva",
         email: "teste@email.com",
         salario: -100,
       },
@@ -107,28 +182,16 @@ describe("Validação de Funcionário - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve aceitar id_pedido como string (coerce)", () => {
-    const req = mockRequest({
-      body: {
-        nome: "João Silva",
-        email: "teste@email.com",
-        id_pedido: "1",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
   it("esse deve aceitar data_admissao como string (coerce)", () => {
     const req = mockRequest({
       body: {
-        nome: "João Silva",
+        nome: "Joao Silva",
         email: "teste@email.com",
+        telefone: "12345678",
+        cargo: "Vendedor",
         data_admissao: "2024-01-01",
+        salario: 2000,
+        ativo: true,
       },
     });
 
@@ -140,7 +203,7 @@ describe("Validação de Funcionário - create", () => {
   });
 });
 
-describe("Validação de Funcionário - update", () => {
+describe("Validacao de Funcionario - update", () => {
   const middleware = validate(updateFuncionarioSchema);
   const next = jest.fn();
 
@@ -162,7 +225,7 @@ describe("Validação de Funcionário - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse teste deve aceitar múltiplos campos", () => {
+  it("esse teste deve aceitar multiplos campos", () => {
     const req = mockRequest({
       body: {
         nome: "Atualizado",
@@ -190,7 +253,7 @@ describe("Validação de Funcionário - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse deve falhar caso email seja inválido", () => {
+  it("esse deve falhar caso email seja invalido", () => {
     const req = mockRequest({
       body: {
         email: "email-invalido",
@@ -231,20 +294,4 @@ describe("Validação de Funcionário - update", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
   });
-
-  it("esse deve aceitar id_pedido como string (coerce)", () => {
-    const req = mockRequest({
-      body: {
-        id_pedido: "2",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
 });
-
-

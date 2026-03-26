@@ -37,6 +37,7 @@ Usuario.init({
     },
     telefone: {
         type: DataTypes.STRING,
+        allowNull: false
     },
     ativo: {
         type: DataTypes.BOOLEAN,

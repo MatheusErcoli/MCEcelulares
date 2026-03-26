@@ -107,6 +107,12 @@ export function definirRelacionamentos() {
     as: 'funcionario'
   });
 
+  // Funcionario -> Pedido (one-to-many)
+  Funcionario.hasMany(Pedido, {
+    foreignKey: 'id_funcionario',
+    as: 'pedidos'
+  });
+
   // Pedido -> ItemPedido (one-to-many)
   Pedido.hasMany(ItemPedido, {
     foreignKey: 'id_pedido',

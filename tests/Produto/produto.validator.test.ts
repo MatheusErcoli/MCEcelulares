@@ -1,12 +1,13 @@
 import { validate } from "../../src/middlewares/validate.middleware";
-import { createProdutoSchema, updateProdutoSchema } from "../../src/validators/produto.validator";
+import {
+  createProdutoSchema,
+  updateProdutoSchema,
+} from "../../src/validators/produto.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Produto");
 
-//simula o res para testar os métodos
-
-describe("Validação de Produto - create", () => {
+describe("Validacao de Produto - create", () => {
   const middleware = validate(createProdutoSchema);
   const next = jest.fn();
 
@@ -14,7 +15,7 @@ describe("Validação de Produto - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação", () => {
+  it("esse teste deve passar a validacao", () => {
     const req = mockRequest({
       body: {
         nome: "Produto Teste",
@@ -32,7 +33,7 @@ describe("Validação de Produto - create", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse tem que falhar pois o nome é inválido", () => {
+  it("esse tem que falhar pois o nome e invalido", () => {
     const req = mockRequest({
       body: {
         nome: "ab",
@@ -50,7 +51,7 @@ describe("Validação de Produto - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse tem que falhar pois o preço é negativo", () => {
+  it("esse tem que falhar pois o preco e negativo", () => {
     const req = mockRequest({
       body: {
         nome: "Produto Teste",
@@ -86,7 +87,7 @@ describe("Validação de Produto - create", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse deve falhar caso estoque não for um número inteiro", () => {
+  it("esse deve falhar caso estoque nao for um numero inteiro", () => {
     const req = mockRequest({
       body: {
         nome: "Produto Teste",
@@ -103,9 +104,43 @@ describe("Validação de Produto - create", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
   });
+
+  it("esse deve falhar se id_marca nao for enviado", () => {
+    const req = mockRequest({
+      body: {
+        nome: "Produto Teste",
+        preco: 100,
+        estoque: 10,
+        id_categoria: 1,
+      },
+    });
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("esse deve falhar se id_categoria nao for enviado", () => {
+    const req = mockRequest({
+      body: {
+        nome: "Produto Teste",
+        preco: 100,
+        estoque: 10,
+        id_marca: 1,
+      },
+    });
+
+    const res = mockResponse();
+
+    middleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
 });
 
-describe("Validação de Produto - update", () => {
+describe("Validacao de Produto - update", () => {
   const middleware = validate(updateProdutoSchema);
   const next = jest.fn();
 
@@ -113,7 +148,7 @@ describe("Validação de Produto - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste é de update parcial aceitando apenas um nome", () => {
+  it("esse teste e de update parcial aceitando apenas um nome", () => {
     const req = mockRequest({
       body: {
         nome: "Novo nome",
@@ -127,7 +162,7 @@ describe("Validação de Produto - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse teste deve aceitar multíplos campos", () => {
+  it("esse teste deve aceitar multiplos campos", () => {
     const req = mockRequest({
       body: {
         nome: "Produto Atualizado",
@@ -155,7 +190,7 @@ describe("Validação de Produto - update", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("esse teste deve falhar caso preço for negativo", () => {
+  it("esse teste deve falhar caso preco for negativo", () => {
     const req = mockRequest({
       body: {
         preco: -10,
@@ -183,7 +218,7 @@ describe("Validação de Produto - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse teste deve falhar caso estoque não for inteiro", () => {
+  it("esse teste deve falhar caso estoque nao for inteiro", () => {
     const req = mockRequest({
       body: {
         estoque: 10.5,
@@ -197,7 +232,7 @@ describe("Validação de Produto - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse teste deve falhar caso a url da imagem for inválida", () => {
+  it("esse teste deve falhar caso a url da imagem for invalida", () => {
     const req = mockRequest({
       body: {
         imagem: "url-invalida",
@@ -211,7 +246,7 @@ describe("Validação de Produto - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse teste deve falhar caso id_marca não seja inteiro", () => {
+  it("esse teste deve falhar caso id_marca nao seja inteiro", () => {
     const req = mockRequest({
       body: {
         id_marca: 1.5,
@@ -225,7 +260,7 @@ describe("Validação de Produto - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("esse teste deve falhar caso id_categoria não seja inteiro", () => {
+  it("esse teste deve falhar caso id_categoria nao seja inteiro", () => {
     const req = mockRequest({
       body: {
         id_categoria: 2.5,
@@ -239,5 +274,3 @@ describe("Validação de Produto - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
-
-

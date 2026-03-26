@@ -4,7 +4,7 @@ import sequelize from '../config/database';
 class Categoria extends Model {
     declare id_categoria: number;
     declare nome: string;
-    declare descricao: string;
+    declare descricao: string | null;
     declare ativo: boolean;
 }
 

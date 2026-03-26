@@ -30,6 +30,7 @@ Pagamento.init({
     },
     data_pagamento: {
         type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
      status: {
         type: DataTypes.ENUM(

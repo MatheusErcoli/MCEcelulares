@@ -4,9 +4,10 @@ import sequelize from '../config/database';
 class Produto extends Model {
     declare id_produto: number;
     declare nome: string;
-    declare descricao: string;
+    declare descricao: string | null;
     declare preco: number;
-    declare imagem: string;
+    declare estoque: number;
+    declare imagem: string | null;
     declare destaque: boolean;
     declare ativo: boolean;
     declare id_marca: number;
@@ -49,9 +50,11 @@ Produto.init({
     },
     id_marca: {
         type: DataTypes.INTEGER,
+        allowNull: false
     },
     id_categoria: {
         type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, {
     sequelize,

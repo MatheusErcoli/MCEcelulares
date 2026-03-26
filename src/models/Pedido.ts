@@ -4,7 +4,7 @@ import sequelize from "../config/database";
 class Pedido extends Model {
   declare id_pedido: number;
   declare id_usuario: number;
-  declare id_funcionario: number;
+  declare id_funcionario: number | null;
   declare data: Date;
   declare valor_total: number;
   declare ativo: boolean;
