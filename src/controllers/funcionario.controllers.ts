@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Funcionario from "../models/Funcionario";
+import { PaginatedResponse } from "../types/pagination";
 
 class FuncionarioController {
   static async findAll(req: Request, res: Response) {
@@ -20,13 +21,15 @@ class FuncionarioController {
       order: [["id_funcionario", "ASC"]],
     });
 
-    return res.status(200).json({
+    const response: PaginatedResponse<(typeof rows)[number]> = {
       page,
       limit,
       total: count,
       totalPages: Math.ceil(count / limit),
       data: rows,
-    });
+    };
+
+    return res.status(200).json(response);
   }
 
   static async findById(req: Request, res: Response) {

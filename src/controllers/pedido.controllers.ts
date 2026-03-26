@@ -3,6 +3,7 @@ import Pedido from "../models/Pedido";
 import Usuario from "../models/Usuario";
 import Funcionario from "../models/Funcionario";
 import ItemPedido from "../models/ItemPedido";
+import { PaginatedResponse } from "../types/pagination";
 
 class PedidoController {
   static async findAll(req: Request, res: Response) {
@@ -33,13 +34,15 @@ class PedidoController {
       order: [["id_pedido", "DESC"]],
     });
 
-    return res.status(200).json({
+    const response: PaginatedResponse<(typeof rows)[number]> = {
       page,
       limit,
       total: count,
       totalPages: Math.ceil(count / limit),
       data: rows,
-    });
+    };
+
+    return res.status(200).json(response);
   }
 
   static async findById(req: Request, res: Response) {

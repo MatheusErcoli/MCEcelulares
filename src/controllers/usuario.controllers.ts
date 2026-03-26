@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario";
+import { PaginatedResponse } from "../types/pagination";
 
 class UsuarioController {
   static async findAll(req: Request, res: Response) {
@@ -22,14 +23,17 @@ class UsuarioController {
       order: [["id_usuario", "ASC"]],
     });
 
-    return res.status(200).json({
+    const response: PaginatedResponse<(typeof rows)[number]> = {
       page,
       limit,
       total: count,
       totalPages: Math.ceil(count / limit),
       data: rows,
-    });
+    };
+
+    return res.status(200).json(response);
   }
+
   static async findById(req: Request, res: Response) {
     const { id } = req.params;
 
