@@ -1,15 +1,9 @@
 import PagamentoController from "../../src/controllers/pagamento.controllers";
 import Pagamento from "../../src/models/Pagamento";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Pagamento");
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("PagamentoController - findAll", () => {
   afterEach(() => {
@@ -17,7 +11,7 @@ describe("PagamentoController - findAll", () => {
   });
 
   it("esse teste deve retornar todos os pagamentos", async () => {
-    const req: any = {};
+    const req = mockRequest();
     const res = mockResponse();
 
     (Pagamento.findAll as jest.Mock).mockResolvedValue([
@@ -39,9 +33,9 @@ describe("PagamentoController - findById", () => {
   });
 
   it("esse teste deve retornar um pagamento pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -57,9 +51,9 @@ describe("PagamentoController - findById", () => {
   });
 
   it("esse teste deve retornar erro 404 se não encontrar pagamento", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -77,13 +71,13 @@ describe("PagamentoController - create", () => {
   });
 
   it("esse teste deve criar pagamento com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_pedido: 1,
         metodo_pagamento: "PIX",
         valor: 100,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -105,12 +99,12 @@ describe("PagamentoController - update", () => {
   });
 
   it("esse teste deve atualizar pagamento com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         valor: 200,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -129,10 +123,10 @@ describe("PagamentoController - update", () => {
   });
 
   it("esse teste deve retornar erro se pagamento não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {},
-    };
+    });
 
     const res = mockResponse();
 
@@ -150,9 +144,9 @@ describe("PagamentoController - delete", () => {
   });
 
   it("esse teste deve deletar pagamento com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -172,9 +166,9 @@ describe("PagamentoController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 ao deletar pagamento inexistente", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -185,3 +179,5 @@ describe("PagamentoController - delete", () => {
     expect(res.status).toHaveBeenCalledWith(404);
   });
 });
+
+

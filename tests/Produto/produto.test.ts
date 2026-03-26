@@ -1,28 +1,19 @@
 import ProdutoController from "../../src/controllers/produto.controllers";
 import Produto from "../../src/models/Produto";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Produto");
-//simula o res para testar os métodos
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  res.end = jest.fn().mockReturnValue(res);
-  return res;
-};
-//agrupa os testes do findAll do ProdutoController
+
 describe("ProdutoController - findAll", () => {
-  afterEach(() => {//limpa os mocks após cada teste
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
   it("esse teste deve retornar validação corretamente", async () => {
-    const req: any = {
-      query: { page: "1", limit: "10" }, //preparação do query que será usado para teste
-    };
+    const req = mockRequest({
+      query: { page: "1", limit: "10" },
+    });
     const res = mockResponse();
-    //simulação do banco de dados
     (Produto.findAndCountAll as jest.Mock).mockResolvedValue({
       count: 2,
       rows: [
@@ -30,18 +21,16 @@ describe("ProdutoController - findAll", () => {
         { id_produto: 2, nome: "Produto 2" },
       ],
     });
-    //Executa
     await ProdutoController.findAll(req, res);
-    //verifica se foi chamado certo os parâmetros
+    
     expect(Produto.findAndCountAll).toHaveBeenCalledWith(
       expect.objectContaining({
         limit: 10,
         offset: 0,
       })
     );
-    //verifica se o status foi chamado com os valores corretos
     expect(res.status).toHaveBeenCalledWith(200);
-    //verifica a resposta
+   
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
         page: 1,
@@ -54,9 +43,9 @@ describe("ProdutoController - findAll", () => {
   });
 
   it("esse teste retorna erro caso a paginação esteja errada", async () => {
-    const req: any = {
+    const req = mockRequest({
       query: { page: "-1" },
-    };
+    });
     const res = mockResponse();
 
     await ProdutoController.findAll(req, res);
@@ -74,9 +63,9 @@ describe("ProdutoController - findById", () => {
   });
 
   it("esse teste deve retornar um produto procurado pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
     const res = mockResponse();
 
     const mockProduto = {
@@ -97,9 +86,9 @@ describe("ProdutoController - findById", () => {
   });
 
   it("esse teste deve retornar erro 404 caso não ache o produto", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
     const res = mockResponse();
 
     (Produto.findByPk as jest.Mock).mockResolvedValue(null);
@@ -119,7 +108,7 @@ describe("ProdutoController - create", () => {
   });
 
   it("esse teste é para criar um produto com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Produto Teste",
         descricao: "Descrição",
@@ -131,7 +120,7 @@ describe("ProdutoController - create", () => {
         id_marca: 1,
         id_categoria: 2,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -157,12 +146,12 @@ describe("ProdutoController - update", () => {
   });
 
   it("esse teste deve atualizar o produto com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Produto Atualizado",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -184,12 +173,12 @@ describe("ProdutoController - update", () => {
   });
 
   it("esse teste deve retornar erro caso o produto não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Produto Atualizado",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -210,9 +199,9 @@ describe("ProdutoController - delete", () => {
   });
 
   it("esse teste é para deletar com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -233,9 +222,9 @@ describe("ProdutoController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 caso não consiga dar o delete", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -249,3 +238,5 @@ describe("ProdutoController - delete", () => {
     });
   });
 });
+
+

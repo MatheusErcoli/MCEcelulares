@@ -1,15 +1,9 @@
 import EnderecoController from "../../src/controllers/endereco.controllers";
 import Endereco from "../../src/models/Endereco";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Endereco");
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("EnderecoController - findAll", () => {
   afterEach(() => {
@@ -17,7 +11,7 @@ describe("EnderecoController - findAll", () => {
   });
 
   it("esse teste deve retornar todos os endereços", async () => {
-    const req: any = {};
+    const req = mockRequest();
     const res = mockResponse();
 
     (Endereco.findAll as jest.Mock).mockResolvedValue([
@@ -39,9 +33,9 @@ describe("EnderecoController - findById", () => {
   });
 
   it("esse teste deve retornar um endereço pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -57,9 +51,9 @@ describe("EnderecoController - findById", () => {
   });
 
   it("esse teste deve retornar erro 404 se não encontrar o endereço", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -77,7 +71,7 @@ describe("EnderecoController - create", () => {
   });
 
   it("esse teste deve criar endereço com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         endereco: "Rua Teste",
@@ -88,7 +82,7 @@ describe("EnderecoController - create", () => {
         estado: "PR",
         cep: "12345678",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -110,12 +104,12 @@ describe("EnderecoController - update", () => {
   });
 
   it("esse teste deve atualizar endereço com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         cidade: "Curitiba",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -134,10 +128,10 @@ describe("EnderecoController - update", () => {
   });
 
   it("esse teste deve retornar erro se endereço não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {},
-    };
+    });
 
     const res = mockResponse();
 
@@ -155,9 +149,9 @@ describe("EnderecoController - delete", () => {
   });
 
   it("esse teste deve deletar endereço com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -177,9 +171,9 @@ describe("EnderecoController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 ao deletar endereço inexistente", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -190,3 +184,5 @@ describe("EnderecoController - delete", () => {
     expect(res.status).toHaveBeenCalledWith(404);
   });
 });
+
+

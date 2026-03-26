@@ -1,15 +1,9 @@
 import PedidoController from "../../src/controllers/pedido.controllers";
 import Pedido from "../../src/models/Pedido";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Pedido");
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("PedidoController - findAll", () => {
   afterEach(() => {
@@ -17,9 +11,9 @@ describe("PedidoController - findAll", () => {
   });
 
   it("esse teste deve retornar pedidos com paginação", async () => {
-    const req: any = {
+    const req = mockRequest({
       query: { page: "1", limit: "10" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -44,9 +38,9 @@ describe("PedidoController - findAll", () => {
   });
 
   it("esse teste deve retornar erro se a página for inválida", async () => {
-    const req: any = {
+    const req = mockRequest({
       query: { page: "-1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -62,9 +56,9 @@ describe("PedidoController - findById", () => {
   });
 
   it("esse teste deve retornar um pedido pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -80,9 +74,9 @@ describe("PedidoController - findById", () => {
   });
 
   it("esse teste deve retornar erro 404 se não encontrar o pedido", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -100,13 +94,13 @@ describe("PedidoController - create", () => {
   });
 
   it("esse teste deve criar um pedido com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         id_funcionario: 2,
         valor_total: 100,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -128,12 +122,12 @@ describe("PedidoController - update", () => {
   });
 
   it("esse teste deve atualizar o pedido com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         valor_total: 200,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -152,10 +146,10 @@ describe("PedidoController - update", () => {
   });
 
   it("esse teste deve retornar erro se o pedido não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {},
-    };
+    });
 
     const res = mockResponse();
 
@@ -173,9 +167,9 @@ describe("PedidoController - delete", () => {
   });
 
   it("esse teste deve deletar o pedido com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -195,9 +189,9 @@ describe("PedidoController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 ao deletar pedido inexistente", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -208,3 +202,5 @@ describe("PedidoController - delete", () => {
     expect(res.status).toHaveBeenCalledWith(404);
   });
 });
+
+

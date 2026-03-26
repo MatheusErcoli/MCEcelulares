@@ -1,18 +1,11 @@
 import UsuarioController from "../../src/controllers/usuario.controllers";
 import Usuario from "../../src/models/Usuario";
 import bcrypt from "bcrypt";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Usuario");
 jest.mock("bcrypt");
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  res.end = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("UsuarioController - findAll", () => {
   afterEach(() => {
@@ -20,9 +13,9 @@ describe("UsuarioController - findAll", () => {
   });
 
   it("deve retornar usuários com paginação", async () => {
-    const req: any = {
+    const req = mockRequest({
       query: { page: "1", limit: "10" },
-    };
+    });
     const res = mockResponse();
 
     (Usuario.findAndCountAll as jest.Mock).mockResolvedValue({
@@ -55,9 +48,9 @@ describe("UsuarioController - findAll", () => {
   });
 
   it("deve retornar erro se página inválida", async () => {
-    const req: any = {
+    const req = mockRequest({
       query: { page: "-1" },
-    };
+    });
     const res = mockResponse();
 
     await UsuarioController.findAll(req, res);
@@ -75,9 +68,9 @@ describe("UsuarioController - findById", () => {
   });
 
   it("deve retornar usuário pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
     const res = mockResponse();
 
     const mockUsuario = {
@@ -98,9 +91,9 @@ describe("UsuarioController - findById", () => {
   });
 
   it("deve retornar 404 se não encontrar usuário", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
     const res = mockResponse();
 
     (Usuario.findByPk as jest.Mock).mockResolvedValue(null);
@@ -120,7 +113,7 @@ describe("UsuarioController - create", () => {
   });
 
   it("deve criar usuário com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Teste",
         email: "teste@email.com",
@@ -128,7 +121,7 @@ describe("UsuarioController - create", () => {
         cpf: "12345678900",
         telefone: "999999999",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -169,12 +162,12 @@ describe("UsuarioController - update", () => {
   });
 
   it("deve atualizar usuário com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Atualizado",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -200,10 +193,10 @@ describe("UsuarioController - update", () => {
   });
 
   it("deve retornar erro se usuário não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {},
-    };
+    });
 
     const res = mockResponse();
 
@@ -218,12 +211,12 @@ describe("UsuarioController - update", () => {
   });
 
   it("deve retornar erro se tentar alterar email", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         email: "novo@email.com",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -248,9 +241,9 @@ describe("UsuarioController - delete", () => {
   });
 
   it("deve deletar usuário com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -270,9 +263,9 @@ describe("UsuarioController - delete", () => {
   });
 
   it("deve retornar erro 404 ao deletar usuário inexistente", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -286,3 +279,5 @@ describe("UsuarioController - delete", () => {
     });
   });
 });
+
+

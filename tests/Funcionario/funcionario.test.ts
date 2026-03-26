@@ -1,16 +1,9 @@
 import FuncionarioController from "../../src/controllers/funcionario.controllers";
 import Funcionario from "../../src/models/Funcionario";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Funcionario");
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  res.end = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("FuncionarioController - findAll", () => {
   afterEach(() => {
@@ -18,9 +11,9 @@ describe("FuncionarioController - findAll", () => {
   });
 
   it("esse teste deve retornar validação corretamente", async () => {
-    const req: any = {
+    const req = mockRequest({
       query: { page: "1", limit: "10" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -55,9 +48,9 @@ describe("FuncionarioController - findAll", () => {
   });
 
   it("esse teste retorna erro caso a paginação esteja errada", async () => {
-    const req: any = {
+    const req = mockRequest({
       query: { page: "-1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -76,9 +69,9 @@ describe("FuncionarioController - findById", () => {
   });
 
   it("deve retornar um funcionário pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -97,9 +90,9 @@ describe("FuncionarioController - findById", () => {
   });
 
   it("deve retornar 404 se funcionário não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -120,7 +113,7 @@ describe("FuncionarioController - create", () => {
   });
 
   it("esse teste é para criar um funcionário com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_pedido: 1,
         nome: "João",
@@ -131,7 +124,7 @@ describe("FuncionarioController - create", () => {
         salario: 2000,
         ativo: true,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -157,12 +150,12 @@ describe("FuncionarioController - update", () => {
   });
 
   it("esse teste deve atualizar o funcionário com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "João Atualizado",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -184,12 +177,12 @@ describe("FuncionarioController - update", () => {
   });
 
   it("esse teste deve retornar erro caso o funcionário não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Atualizado",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -210,9 +203,9 @@ describe("FuncionarioController - delete", () => {
   });
 
   it("esse teste é para deletar com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -233,9 +226,9 @@ describe("FuncionarioController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 caso não consiga dar o delete", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -249,3 +242,5 @@ describe("FuncionarioController - delete", () => {
     });
   });
 });
+
+

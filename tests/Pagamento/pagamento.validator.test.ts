@@ -3,13 +3,8 @@ import {
   createPagamentoSchema,
   updatePagamentoSchema,
 } from "../../src/validators/pagamento.validator";
+import { mockRequest, mockResponse } from "../test.helpers";
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Validação de Pagamento - create", () => {
   const middleware = validate(createPagamentoSchema);
@@ -20,13 +15,13 @@ describe("Validação de Pagamento - create", () => {
   });
 
   it("esse teste deve passar a validação com dados válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_pedido: 1,
         metodo_pagamento: "PIX",
         valor: 100,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -36,13 +31,13 @@ describe("Validação de Pagamento - create", () => {
   });
 
   it("esse teste deve falhar pois id_pedido é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_pedido: -1,
         metodo_pagamento: "PIX",
         valor: 100,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -52,13 +47,13 @@ describe("Validação de Pagamento - create", () => {
   });
 
   it("esse teste deve falhar pois valor é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_pedido: 1,
         metodo_pagamento: "PIX",
         valor: -10,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -68,13 +63,13 @@ describe("Validação de Pagamento - create", () => {
   });
 
   it("esse teste deve falhar pois método de pagamento é vazio", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_pedido: 1,
         metodo_pagamento: "",
         valor: 100,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -93,11 +88,11 @@ describe("Validação de Pagamento - update", () => {
   });
 
   it("esse teste deve aceitar update parcial", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         valor: 200,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -107,12 +102,12 @@ describe("Validação de Pagamento - update", () => {
   });
 
   it("esse teste deve aceitar múltiplos campos válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         valor: 200,
         status: "PAGO",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -122,11 +117,11 @@ describe("Validação de Pagamento - update", () => {
   });
 
   it("esse teste deve falhar pois valor é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         valor: -5,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -136,11 +131,11 @@ describe("Validação de Pagamento - update", () => {
   });
 
   it("esse teste deve falhar pois status é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         status: "INVALIDO",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -149,3 +144,5 @@ describe("Validação de Pagamento - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
+
+

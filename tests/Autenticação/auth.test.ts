@@ -1,29 +1,26 @@
 import AuthController from "../../src/controllers/auth.controllers";
 import AuthService from "../../src/services/auth.service";
 import jwt from "jsonwebtoken";
+import { mockNext, mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/services/auth.service");
 jest.mock("jsonwebtoken");
 
 describe("AuthController - login", () => {
-  let req: any;
-  let res: any;
-  let next: any;
+  let req: ReturnType<typeof mockRequest>;
+  let res: ReturnType<typeof mockResponse>;
+  let next: ReturnType<typeof mockNext>;
 
   beforeEach(() => {
-    req = {
+    req = mockRequest({
       body: {
         email: "teste@email.com",
         senha: "123456",
       },
-    };
+    });
 
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-
-    next = jest.fn();
+    res = mockResponse();
+    next = mockNext();
   });
 
   it("esse teste deve retornar 200 e token quando login for válido", async () => {

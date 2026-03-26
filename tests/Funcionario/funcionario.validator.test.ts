@@ -1,12 +1,7 @@
 import { validate } from "../../src/middlewares/validate.middleware";
 import { createFuncionarioSchema, updateFuncionarioSchema } from "../../src/validators/funcionario.validator";
+import { mockRequest, mockResponse } from "../test.helpers";
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Validação de Funcionário - create", () => {
   const middleware = validate(createFuncionarioSchema);
@@ -17,7 +12,7 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse teste deve passar a validação", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "João Silva",
         email: "joao@email.com",
@@ -25,7 +20,7 @@ describe("Validação de Funcionário - create", () => {
         cargo: "Vendedor",
         salario: 2000,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -35,12 +30,12 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse deve falhar pois o nome é muito curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Jo",
         email: "teste@email.com",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -50,12 +45,12 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse deve falhar pois o email é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "João Silva",
         email: "email-invalido",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -65,13 +60,13 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse deve falhar caso telefone seja muito curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "João Silva",
         email: "teste@email.com",
         telefone: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -81,13 +76,13 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse deve falhar caso cargo seja muito curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "João Silva",
         email: "teste@email.com",
         cargo: "A",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -97,13 +92,13 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse deve falhar caso salario seja negativo", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "João Silva",
         email: "teste@email.com",
         salario: -100,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -113,13 +108,13 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse deve aceitar id_pedido como string (coerce)", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "João Silva",
         email: "teste@email.com",
         id_pedido: "1",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -129,13 +124,13 @@ describe("Validação de Funcionário - create", () => {
   });
 
   it("esse deve aceitar data_admissao como string (coerce)", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "João Silva",
         email: "teste@email.com",
         data_admissao: "2024-01-01",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -154,11 +149,11 @@ describe("Validação de Funcionário - update", () => {
   });
 
   it("esse teste deve aceitar update parcial", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Novo Nome",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -168,13 +163,13 @@ describe("Validação de Funcionário - update", () => {
   });
 
   it("esse teste deve aceitar múltiplos campos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Atualizado",
         email: "novo@email.com",
         salario: 3000,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -184,9 +179,9 @@ describe("Validação de Funcionário - update", () => {
   });
 
   it("esse teste deve aceitar body vazio", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {},
-    };
+    });
 
     const res = mockResponse();
 
@@ -196,11 +191,11 @@ describe("Validação de Funcionário - update", () => {
   });
 
   it("esse deve falhar caso email seja inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         email: "email-invalido",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -210,11 +205,11 @@ describe("Validação de Funcionário - update", () => {
   });
 
   it("esse deve falhar caso salario seja negativo", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         salario: -500,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -224,11 +219,11 @@ describe("Validação de Funcionário - update", () => {
   });
 
   it("esse deve falhar caso telefone seja curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         telefone: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -238,11 +233,11 @@ describe("Validação de Funcionário - update", () => {
   });
 
   it("esse deve aceitar id_pedido como string (coerce)", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_pedido: "2",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -251,3 +246,5 @@ describe("Validação de Funcionário - update", () => {
     expect(next).toHaveBeenCalled();
   });
 });
+
+

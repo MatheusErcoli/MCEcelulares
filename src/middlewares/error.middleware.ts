@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 
 export const errorMiddleware = (
-  error: any,
+  error: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-
   console.error(error);
 
-  if (error.name === "ZodError") {
+  if (error instanceof ZodError) {
     return res.status(400).json({
       message: "Erro de validação",
-      errors: error.errors,
+      errors: error.issues,
     });
   }
 

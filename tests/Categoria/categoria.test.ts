@@ -1,16 +1,9 @@
 import CategoriaController from "../../src/controllers/categoria.controllers";
 import Categoria from "../../src/models/Categoria";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Categoria");
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  res.end = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("CategoriaController - findAll", () => {
   afterEach(() => {
@@ -18,7 +11,7 @@ describe("CategoriaController - findAll", () => {
   });
 
   it("esse teste deve retornar todas as categorias corretamente", async () => {
-    const req: any = {};
+    const req = mockRequest();
     const res = mockResponse();
 
     const mockCategorias = [
@@ -42,9 +35,9 @@ describe("CategoriaController - findById", () => {
   });
 
   it("deve retornar uma categoria pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -63,9 +56,9 @@ describe("CategoriaController - findById", () => {
   });
 
   it("deve retornar 404 se categoria não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -86,13 +79,13 @@ describe("CategoriaController - create", () => {
   });
 
   it("esse teste é para criar uma categoria com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Eletrônicos",
         descricao: "Produtos eletrônicos",
         ativo: true,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -118,12 +111,12 @@ describe("CategoriaController - update", () => {
   });
 
   it("esse teste deve atualizar a categoria com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Atualizado",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -145,12 +138,12 @@ describe("CategoriaController - update", () => {
   });
 
   it("esse teste deve retornar erro caso a categoria não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Atualizado",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -171,9 +164,9 @@ describe("CategoriaController - delete", () => {
   });
 
   it("esse teste é para deletar com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -194,9 +187,9 @@ describe("CategoriaController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 caso não consiga dar o delete", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -210,3 +203,5 @@ describe("CategoriaController - delete", () => {
     });
   });
 });
+
+

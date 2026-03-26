@@ -1,16 +1,10 @@
 import CarrinhoController from "../../src/controllers/carrinho.controllers";
 import Carrinho from "../../src/models/Carrinho";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Carrinho");
 
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("CarrinhoController - findAll", () => {
   afterEach(() => {
@@ -18,7 +12,7 @@ describe("CarrinhoController - findAll", () => {
   });
 
   it("esse teste deve retornar todos os carrinhos", async () => {
-    const req: any = {};
+    const req = mockRequest();
     const res = mockResponse();
 
     (Carrinho.findAll as jest.Mock).mockResolvedValue([
@@ -40,9 +34,9 @@ describe("CarrinhoController - findById", () => {
   });
 
   it("esse teste deve retornar um carrinho pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -58,9 +52,9 @@ describe("CarrinhoController - findById", () => {
   });
 
   it("esse teste deve retornar erro 404 se não encontrar o carrinho", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -78,9 +72,9 @@ describe("CarrinhoController - findActiveByUser", () => {
   });
 
   it("esse teste deve retornar carrinho ativo do usuário", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id_usuario: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -110,12 +104,12 @@ describe("CarrinhoController - create", () => {
   });
 
   it("esse teste deve criar carrinho com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         ativo: true,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -137,12 +131,12 @@ describe("CarrinhoController - update", () => {
   });
 
   it("esse teste deve atualizar carrinho com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         ativo: false,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -161,10 +155,10 @@ describe("CarrinhoController - update", () => {
   });
 
   it("esse teste deve retornar erro se carrinho não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {},
-    };
+    });
 
     const res = mockResponse();
 
@@ -182,9 +176,9 @@ describe("CarrinhoController - delete", () => {
   });
 
   it("esse teste deve deletar carrinho com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -204,9 +198,9 @@ describe("CarrinhoController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 ao deletar carrinho inexistente", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -217,3 +211,5 @@ describe("CarrinhoController - delete", () => {
     expect(res.status).toHaveBeenCalledWith(404);
   });
 });
+
+

@@ -1,16 +1,9 @@
 import MarcaController from "../../src/controllers/marca.controllers";
 import Marca from "../../src/models/Marca";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Marca");
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  res.end = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("MarcaController - findAll", () => {
   afterEach(() => {
@@ -18,7 +11,7 @@ describe("MarcaController - findAll", () => {
   });
 
   it("esse teste deve retornar todas as marcas corretamente", async () => {
-    const req: any = {};
+    const req = mockRequest();
     const res = mockResponse();
 
     const mockMarcas = [
@@ -44,9 +37,9 @@ describe("MarcaController - findById", () => {
   });
 
   it("esse teste deve retonar uma marca procurada pelo ID", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -66,9 +59,9 @@ describe("MarcaController - findById", () => {
   });
 
   it("esse teste deve retornar erro 404 caso a marca não exista", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -89,11 +82,11 @@ describe("MarcaController - create", () => {
   });
 
   it("esse teste é para criar uma marca com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Nike",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -121,12 +114,12 @@ describe("MarcaController - update", () => {
   });
 
   it("esse teste deve atualizar a marca com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Adidas",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -148,12 +141,12 @@ describe("MarcaController - update", () => {
   });
 
   it("esse teste deve retornar erro caso a marca não existir", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
       body: {
         nome: "Adidas",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -174,9 +167,9 @@ describe("MarcaController - delete", () => {
   });
 
   it("esse teste é para deletar com sucesso", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -197,9 +190,9 @@ describe("MarcaController - delete", () => {
   });
 
   it("esse teste deve retornar erro 404 caso não consiga dar o delete", async () => {
-    const req: any = {
+    const req = mockRequest({
       params: { id: "1" },
-    };
+    });
 
     const res = mockResponse();
 
@@ -213,3 +206,5 @@ describe("MarcaController - delete", () => {
     });
   });
 });
+
+

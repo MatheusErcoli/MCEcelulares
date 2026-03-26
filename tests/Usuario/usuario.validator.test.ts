@@ -3,13 +3,8 @@ import {
   createUsuarioSchema,
   updateUsuarioSchema,
 } from "../../src/validators/usuario.validator";
+import { mockRequest, mockResponse } from "../test.helpers";
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Validação de Usuario - create", () => {
   const middleware = validate(createUsuarioSchema);
@@ -20,7 +15,7 @@ describe("Validação de Usuario - create", () => {
   });
 
   it("esse teste deve passar a validação com dados válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Matheus",
         email: "matheus@email.com",
@@ -28,7 +23,7 @@ describe("Validação de Usuario - create", () => {
         cpf: "12345678900",
         telefone: "44999999999",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -38,14 +33,14 @@ describe("Validação de Usuario - create", () => {
   });
 
   it("esse teste deve falhar pois o nome é muito curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "ab",
         email: "teste@email.com",
         senha: "Senha@123",
         cpf: "12345678900",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -55,14 +50,14 @@ describe("Validação de Usuario - create", () => {
   });
 
   it("esse teste deve falhar pois o email é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Teste",
         email: "email-invalido",
         senha: "Senha@123",
         cpf: "12345678900",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -72,14 +67,14 @@ describe("Validação de Usuario - create", () => {
   });
 
   it("esse teste deve falhar pois a senha não atende os requisitos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Teste",
         email: "teste@email.com",
         senha: "123",
         cpf: "12345678900",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -89,14 +84,14 @@ describe("Validação de Usuario - create", () => {
   });
 
   it("esse teste deve falhar pois o cpf é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Teste",
         email: "teste@email.com",
         senha: "Senha@123",
         cpf: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -106,7 +101,7 @@ describe("Validação de Usuario - create", () => {
   });
 
   it("esse teste deve falhar pois o telefone é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Teste",
         email: "teste@email.com",
@@ -114,7 +109,7 @@ describe("Validação de Usuario - create", () => {
         cpf: "12345678900",
         telefone: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -133,11 +128,11 @@ describe("Validação de Usuario - update", () => {
   });
 
   it("esse teste deve aceitar update parcial com apenas nome", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Novo Nome",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -147,13 +142,13 @@ describe("Validação de Usuario - update", () => {
   });
 
   it("esse teste deve aceitar múltiplos campos válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Novo Nome",
         senha: "Senha@123",
         cpf: "12345678900",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -163,11 +158,11 @@ describe("Validação de Usuario - update", () => {
   });
 
   it("esse teste deve falhar pois a senha é inválida", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         senha: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -177,11 +172,11 @@ describe("Validação de Usuario - update", () => {
   });
 
   it("esse teste deve falhar pois o cpf é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         cpf: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -191,11 +186,11 @@ describe("Validação de Usuario - update", () => {
   });
 
   it("esse teste deve falhar pois o telefone é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         telefone: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -204,3 +199,5 @@ describe("Validação de Usuario - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
+
+

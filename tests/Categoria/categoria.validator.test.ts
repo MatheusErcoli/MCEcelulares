@@ -1,12 +1,7 @@
 import { validate } from "../../src/middlewares/validate.middleware";
 import { createCategoriaSchema, updateCategoriaSchema } from "../../src/validators/categoria.validator";
+import { mockRequest, mockResponse } from "../test.helpers";
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Validação de Categoria - create", () => {
   const middleware = validate(createCategoriaSchema);
@@ -17,13 +12,13 @@ describe("Validação de Categoria - create", () => {
   });
 
   it("esse teste deve passar a validação", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Eletrônicos",
         descricao: "Produtos eletrônicos",
         ativo: true,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -33,11 +28,11 @@ describe("Validação de Categoria - create", () => {
   });
 
   it("esse deve falhar pois o nome é muito curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "ab",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -47,11 +42,11 @@ describe("Validação de Categoria - create", () => {
   });
 
   it("esse deve falhar pois o nome é muito longo", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "a".repeat(101),
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -61,12 +56,12 @@ describe("Validação de Categoria - create", () => {
   });
 
   it("esse deve falhar caso a descrição seja muito longa", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Eletrônicos",
         descricao: "a".repeat(256),
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -76,12 +71,12 @@ describe("Validação de Categoria - create", () => {
   });
 
   it("esse deve falhar caso ativo não seja booleano", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Eletrônicos",
         ativo: "true",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -100,11 +95,11 @@ describe("Validação de Categoria - update", () => {
   });
 
   it("esse teste deve aceitar update parcial", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Nova Categoria",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -114,13 +109,13 @@ describe("Validação de Categoria - update", () => {
   });
 
   it("esse teste deve aceitar múltiplos campos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Atualizado",
         descricao: "Nova descrição",
         ativo: false,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -130,9 +125,9 @@ describe("Validação de Categoria - update", () => {
   });
 
   it("esse teste deve aceitar body vazio", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {},
-    };
+    });
 
     const res = mockResponse();
 
@@ -142,11 +137,11 @@ describe("Validação de Categoria - update", () => {
   });
 
   it("esse deve falhar caso descrição seja muito longa", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         descricao: "a".repeat(256),
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -156,11 +151,11 @@ describe("Validação de Categoria - update", () => {
   });
 
   it("esse deve falhar caso ativo não seja booleano", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         ativo: "false",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -169,3 +164,5 @@ describe("Validação de Categoria - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
+
+

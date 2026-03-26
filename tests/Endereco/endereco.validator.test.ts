@@ -3,13 +3,8 @@ import {
   createEnderecoSchema,
   updateEnderecoSchema,
 } from "../../src/validators/endereco.validator";
+import { mockRequest, mockResponse } from "../test.helpers";
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Validação de Endereco - create", () => {
   const middleware = validate(createEnderecoSchema);
@@ -20,7 +15,7 @@ describe("Validação de Endereco - create", () => {
   });
 
   it("esse teste deve passar a validação com dados válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         endereco: "Rua Teste",
@@ -29,7 +24,7 @@ describe("Validação de Endereco - create", () => {
         estado: "PR",
         cep: "12345678",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -39,13 +34,13 @@ describe("Validação de Endereco - create", () => {
   });
 
   it("esse teste deve falhar pois endereco é muito curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         endereco: "ab",
         numero: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -55,13 +50,13 @@ describe("Validação de Endereco - create", () => {
   });
 
   it("esse teste deve falhar pois numero está vazio", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         endereco: "Rua Teste",
         numero: "",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -71,14 +66,14 @@ describe("Validação de Endereco - create", () => {
   });
 
   it("esse teste deve falhar pois estado é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         endereco: "Rua Teste",
         numero: "123",
         estado: "PRR",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -88,14 +83,14 @@ describe("Validação de Endereco - create", () => {
   });
 
   it("esse teste deve falhar pois cep é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         endereco: "Rua Teste",
         numero: "123",
         cep: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -114,11 +109,11 @@ describe("Validação de Endereco - update", () => {
   });
 
   it("esse teste deve aceitar update parcial", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         cidade: "Curitiba",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -128,12 +123,12 @@ describe("Validação de Endereco - update", () => {
   });
 
   it("esse teste deve aceitar múltiplos campos válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         cidade: "Curitiba",
         estado: "PR",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -143,11 +138,11 @@ describe("Validação de Endereco - update", () => {
   });
 
   it("esse teste deve falhar pois estado é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         estado: "PAR",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -157,11 +152,11 @@ describe("Validação de Endereco - update", () => {
   });
 
   it("esse teste deve falhar pois cep é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         cep: "123",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -170,3 +165,5 @@ describe("Validação de Endereco - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
+
+

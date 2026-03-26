@@ -1,12 +1,7 @@
 import { validate } from "../../src/middlewares/validate.middleware";
 import { createMarcaSchema, updateMarcaSchema } from "../../src/validators/marca.validator";
+import { mockRequest, mockResponse } from "../test.helpers";
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Validação de Marca - create", () => {
   const middleware = validate(createMarcaSchema);
@@ -17,11 +12,11 @@ describe("Validação de Marca - create", () => {
   });
 
   it("esse teste deve passar a validação", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Nike",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -31,11 +26,11 @@ describe("Validação de Marca - create", () => {
   });
 
   it("esse deve falhar pois o nome é muito curto", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "a",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -45,11 +40,11 @@ describe("Validação de Marca - create", () => {
   });
 
   it("esse deve falhar pois o nome é muito longo", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "a".repeat(101),
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -68,11 +63,11 @@ describe("Validação de Marca - update", () => {
   });
 
   it("esse teste deve aceitar update", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "Adidas",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -82,11 +77,11 @@ describe("Validação de Marca - update", () => {
   });
 
   it("esse deve falhar caso o nome seja inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         nome: "a",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -95,3 +90,5 @@ describe("Validação de Marca - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
+
+

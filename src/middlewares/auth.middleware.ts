@@ -6,8 +6,13 @@ interface TokenPayload {
   admin: boolean;
 }
 
+interface AuthenticatedRequest extends Request {
+  userId?: number;
+  isAdmin?: boolean;
+}
+
 export default function authMiddleware(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -27,8 +32,8 @@ export default function authMiddleware(
       process.env.JWT_SECRET as string
     ) as TokenPayload;
 
-    (req as any).userId = decoded.id_usuario;
-    (req as any).isAdmin = decoded.admin;
+    req.userId = decoded.id_usuario;
+    req.isAdmin = decoded.admin;
 
     return next();
   } catch (error) {

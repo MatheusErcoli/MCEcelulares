@@ -3,14 +3,9 @@ import {
   createCarrinhoSchema,
   updateCarrinhoSchema,
 } from "../../src/validators/carrinho.validator";
+import { mockRequest, mockResponse } from "../test.helpers";
 
 
-const mockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Validação de Carrinho - create", () => {
   const middleware = validate(createCarrinhoSchema);
@@ -21,12 +16,12 @@ describe("Validação de Carrinho - create", () => {
   });
 
   it("esse teste deve passar a validação com dados válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 1,
         ativo: true,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -36,11 +31,11 @@ describe("Validação de Carrinho - create", () => {
   });
 
   it("esse teste deve falhar pois id_usuario é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: "abc",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -59,11 +54,11 @@ describe("Validação de Carrinho - update", () => {
   });
 
   it("esse teste deve aceitar update parcial", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         ativo: false,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -73,12 +68,12 @@ describe("Validação de Carrinho - update", () => {
   });
 
   it("esse teste deve aceitar múltiplos campos válidos", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: 2,
         ativo: true,
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -88,11 +83,11 @@ describe("Validação de Carrinho - update", () => {
   });
 
   it("esse teste deve falhar pois id_usuario é inválido", () => {
-    const req: any = {
+    const req = mockRequest({
       body: {
         id_usuario: "abc",
       },
-    };
+    });
 
     const res = mockResponse();
 
@@ -101,3 +96,5 @@ describe("Validação de Carrinho - update", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
+
+
