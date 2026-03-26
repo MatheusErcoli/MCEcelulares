@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Produto from "../models/Produto";
 import Marca from "../models/Marca";
 import Categoria from "../models/Categoria";
-import { PaginatedResponse } from "../types/pagination";
+import { PaginatedResponse } from "../types/paginacao";
 
 class ProdutoController {
   static async findAll(req: Request, res: Response) {

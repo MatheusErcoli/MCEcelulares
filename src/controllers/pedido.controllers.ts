@@ -3,7 +3,7 @@ import Pedido from "../models/Pedido";
 import Usuario from "../models/Usuario";
 import Funcionario from "../models/Funcionario";
 import ItemPedido from "../models/ItemPedido";
-import { PaginatedResponse } from "../types/pagination";
+import { PaginatedResponse } from "../types/paginacao";
 
 class PedidoController {
   static async findAll(req: Request, res: Response) {

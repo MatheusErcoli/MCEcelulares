@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario";
-import { PaginatedResponse } from "../types/pagination";
+import { PaginatedResponse } from "../types/paginacao";
 
 class UsuarioController {
   static async findAll(req: Request, res: Response) {
