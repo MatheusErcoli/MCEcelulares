@@ -38,7 +38,7 @@ describe("FuncionarioController - findAll", () => {
       expect.objectContaining({
         limit: 10,
         offset: 0,
-        order: [["id", "ASC"]],
+        order: [["id_funcionario", "ASC"]],
       })
     );
 

@@ -17,7 +17,7 @@ class FuncionarioController {
     const { count, rows } = await Funcionario.findAndCountAll({
       limit,
       offset,
-      order: [["id", "ASC"]],
+      order: [["id_funcionario", "ASC"]],
     });
 
     return res.status(200).json({

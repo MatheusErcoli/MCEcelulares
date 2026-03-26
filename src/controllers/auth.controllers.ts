@@ -19,7 +19,7 @@ class AuthController {
 
       const token = jwt.sign(
         {
-          id: usuario.get("id_usuario"),
+          id_usuario: usuario.get("id_usuario"),
           admin: usuario.get("admin"),
         },
         process.env.JWT_SECRET,

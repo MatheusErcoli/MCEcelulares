@@ -30,7 +30,7 @@ class PedidoController {
       col: "id",
       limit,
       offset,
-      order: [["id", "DESC"]],
+      order: [["id_pedido", "DESC"]],
     });
 
     return res.status(200).json({

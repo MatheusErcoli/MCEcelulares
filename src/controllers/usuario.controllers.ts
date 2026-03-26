@@ -19,7 +19,7 @@ class UsuarioController {
       attributes: { exclude: ["senha"] },
       limit,
       offset,
-      order: [["id", "ASC"]],
+      order: [["id_usuario", "ASC"]],
     });
 
     return res.status(200).json({
