@@ -11,7 +11,7 @@ interface AuthenticatedRequest extends Request {
   isAdmin?: boolean;
 }
 
-export default function authMiddleware(
+function authMiddleware(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -42,3 +42,5 @@ export default function authMiddleware(
     });
   }
 }
+
+export default authMiddleware;
