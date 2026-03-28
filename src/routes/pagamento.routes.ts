@@ -5,12 +5,13 @@ import {
   createPagamentoSchema,
   updatePagamentoSchema,
 } from "../validators/pagamento.validator";
+import authMiddleware from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/", PagamentoController.findAll);
+router.get("/", authMiddleware, PagamentoController.findAll);
 
-router.post("/", validate(createPagamentoSchema), PagamentoController.create);
+router.post("/", authMiddleware, validate(createPagamentoSchema), PagamentoController.create);
 
 router.get("/:id", PagamentoController.findById);
 

@@ -1,6 +1,8 @@
 import { Router } from "express";
 import MarcaController from "../controllers/marca.controllers";
 import { validate } from "../middlewares/validate.middleware";
+import authMiddleware from "../middlewares/auth.middleware";
+import adminMiddleware from "../middlewares/admin.middleware";
 import {
   createMarcaSchema,
   updateMarcaSchema,
@@ -10,12 +12,24 @@ const router = Router();
 
 router.get("/", MarcaController.findAll);
 
-router.post("/", validate(createMarcaSchema), MarcaController.create);
+router.post(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  validate(createMarcaSchema),
+  MarcaController.create,
+);
 
 router.get("/:id", MarcaController.findById);
 
-router.put("/:id", validate(updateMarcaSchema), MarcaController.update);
+router.put(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  validate(updateMarcaSchema),
+  MarcaController.update,
+);
 
-router.delete("/:id", MarcaController.delete);
+router.delete("/:id", authMiddleware, adminMiddleware, MarcaController.delete);
 
 export default router;

@@ -5,19 +5,34 @@ import {
   createItemCarrinhoSchema,
   updateItemCarrinhoSchema,
 } from "../validators/itemCarrinho.validator";
+import authMiddleware from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/", ItemCarrinhoController.findAll);
+router.get("/", authMiddleware, ItemCarrinhoController.findAll);
 
-router.post("/", validate(createItemCarrinhoSchema), ItemCarrinhoController.create,);
+router.post(
+  "/",
+  authMiddleware,
+  validate(createItemCarrinhoSchema),
+  ItemCarrinhoController.create,
+);
 
-router.get("/carrinho/:id_carrinho", ItemCarrinhoController.findByCartId);
+router.get(
+  "/carrinho/:id_carrinho",
+  authMiddleware,
+  ItemCarrinhoController.findByCartId,
+);
 
-router.get("/:id", ItemCarrinhoController.findById);
+router.get("/:id", authMiddleware, ItemCarrinhoController.findById);
 
-router.put("/:id", validate(updateItemCarrinhoSchema), ItemCarrinhoController.update,);
+router.put(
+  "/:id",
+  authMiddleware,
+  validate(updateItemCarrinhoSchema),
+  ItemCarrinhoController.update,
+);
 
-router.delete("/:id", ItemCarrinhoController.delete);
+router.delete("/:id", authMiddleware, ItemCarrinhoController.delete);
 
 export default router;

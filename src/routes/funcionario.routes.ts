@@ -1,6 +1,8 @@
 import { Router } from "express";
 import FuncionarioController from "../controllers/funcionario.controllers";
 import { validate } from "../middlewares/validate.middleware";
+import authMiddleware from "../middlewares/auth.middleware";
+import adminMiddleware from "../middlewares/admin.middleware";
 import {
   createFuncionarioSchema,
   updateFuncionarioSchema,
@@ -8,14 +10,36 @@ import {
 
 const router = Router();
 
-router.get("/", FuncionarioController.findAll);
+router.get("/", authMiddleware, adminMiddleware, FuncionarioController.findAll);
 
-router.post("/", validate(createFuncionarioSchema), FuncionarioController.create,);
+router.post(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  validate(createFuncionarioSchema),
+  FuncionarioController.create,
+);
 
-router.get("/:id", FuncionarioController.findById);
+router.get(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  FuncionarioController.findById,
+);
 
-router.put("/:id", validate(updateFuncionarioSchema), FuncionarioController.update,);
+router.put(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  validate(updateFuncionarioSchema),
+  FuncionarioController.update,
+);
 
-router.delete("/:id", FuncionarioController.delete);
+router.delete(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  FuncionarioController.delete,
+);
 
 export default router;

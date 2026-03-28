@@ -1,6 +1,8 @@
 import { Router } from "express";
 import CategoriaController from "../controllers/categoria.controllers";
 import { validate } from "../middlewares/validate.middleware";
+import authMiddleware from "../middlewares/auth.middleware";
+import adminMiddleware from "../middlewares/admin.middleware";
 import {
   createCategoriaSchema,
   updateCategoriaSchema,
@@ -10,12 +12,29 @@ const router = Router();
 
 router.get("/", CategoriaController.findAll);
 
-router.post("/", validate(createCategoriaSchema), CategoriaController.create);
+router.post(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  validate(createCategoriaSchema),
+  CategoriaController.create,
+);
 
 router.get("/:id", CategoriaController.findById);
 
-router.put("/:id", validate(updateCategoriaSchema), CategoriaController.update);
+router.put(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  validate(updateCategoriaSchema),
+  CategoriaController.update,
+);
 
-router.delete("/:id", CategoriaController.delete);
+router.delete(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  CategoriaController.delete,
+);
 
 export default router;
