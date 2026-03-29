@@ -2,6 +2,7 @@
 import Produto from "../models/Produto";
 import Marca from "../models/Marca";
 import Categoria from "../models/Categoria";
+import { PaginatedResponse } from "../types/paginacao";
 
 class ProdutoController {
 static async findAll(req: Request, res: Response) {
@@ -38,13 +39,15 @@ static async findAll(req: Request, res: Response) {
       order: [["id_produto", "ASC"]],
     });
 
-    return res.status(200).json({
+    const response: PaginatedResponse<(typeof rows)[number]> = {
       page,
       limit,
       total: count,
       totalPages: Math.ceil(count / limit),
       data: rows,
-    });
+    };
+    
+    return res.status(200).json(response);
   }
   static async findById(req: Request, res: Response) {
     const { id } = req.params;
