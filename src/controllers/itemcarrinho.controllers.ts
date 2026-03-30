@@ -37,51 +37,79 @@ class ItemCarrinhoController {
     return res.status(200).json(itens);
   }
 
-  static async create(req: Request, res: Response) {
-    const { id_carrinho, id_produto, preco_unitario, quantidade } = req.body;
+static async create(req: Request, res: Response) {
+    try {
+      const { id_carrinho, id_produto, preco_unitario} = req.body;
 
-    const novoItemCarrinho = await ItemCarrinho.create({
-      id_carrinho,
-      id_produto,
-      preco_unitario,
-      quantidade,
-    });
+      const exists = await ItemCarrinho.findOne({ where: { id_carrinho, id_produto }});
+      if (exists) {
+        return res.status(409).json({ 
+          message: "Este produto já está no carrinho. Use a rota de update para alterar a quantidade." 
+        });
+      }
 
-    return res.status(201).json(novoItemCarrinho);
+      const novoItemCarrinho = await ItemCarrinho.create({
+        id_carrinho,
+        id_produto,
+        preco_unitario,
+        quantidade:1, 
+      });
+
+      return res.status(201).json(novoItemCarrinho);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao criar item no carrinho." });
+    }
   }
 
   static async update(req: Request, res: Response) {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
+      const { quantidade } = req.body; 
 
-    const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
+      const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
 
-    if (!itemCarrinho) {
-      return res.status(404).json({
-        message: "Item do carrinho não encontrado",
-      });
+      if (!itemCarrinho) {
+        return res.status(404).json({ message: "Item não encontrado" });
+      }
+
+      if (quantidade !== undefined) {
+        const novaQuantidade = itemCarrinho.quantidade + Number(quantidade);
+
+        if (novaQuantidade <= 0) {
+          return res.status(400).json({ 
+            message: "A quantidade não pode ser menor que 1. Para remover o produto, utilize a rota de DELETE." 
+          });
+        }
+
+        itemCarrinho.quantidade = novaQuantidade;
+      }
+
+      await itemCarrinho.save();
+      return res.status(200).json(itemCarrinho);
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao atualizar item do carrinho." });
     }
-
-    const dados = req.body;
-
-    await itemCarrinho.update(dados);
-
-    return res.status(200).json(itemCarrinho);
   }
 
   static async delete(req: Request, res: Response) {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
+      const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
 
-    const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
+      if (!itemCarrinho) {
+        return res.status(404).json({ message: "Item não encontrado" });
+      }
 
-    if (!itemCarrinho) {
-      return res.status(404).json({
-        message: "Item do carrinho não encontrado",
-      });
+      await itemCarrinho.destroy();
+      return res.status(204).send();
+      
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao deletar item do carrinho." });
     }
-
-    await itemCarrinho.destroy();
-
-    return res.status(204).send();
   }
 }
 

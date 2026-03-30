@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Carrinho from "../models/Carrinho";
-import CartService from "../services/cart.service";
 
 class CarrinhoController {
   static async findAll(req: Request, res: Response) {
@@ -11,15 +10,26 @@ class CarrinhoController {
     return res.status(200).json(carrinhos);
   }
 
-static async findById(req: Request, res: Response) {
+  static async findById(req: Request, res: Response) {
     try {
-      const { id } = req.params; 
+      const { id } = req.params;
 
       if (!id) {
-        return res.status(400).json({ message: "ID do usuário inválido." });
+        return res.status(400).json({ message: "ID inválido." });
       }
 
-      const carrinho = await CartService.getCompleteCart(Number(id));
+      const carrinho = await Carrinho.findOne({
+        where: {
+          id_usuario: Number(id),
+          ativo: true
+        },
+        include: [
+          {
+            association: "itens",
+            include: ["produto"]
+          }
+        ]
+      });
 
       if (!carrinho) {
         return res.status(404).json({ message: "Carrinho não encontrado" });
@@ -32,27 +42,23 @@ static async findById(req: Request, res: Response) {
     }
   }
 
-  static async addItem(req: Request, res: Response) {
-    try {
-      const { id_usuario, id_produto, quantidade, preco_unitario } = req.body;
+  static async create(req: Request, res: Response) {
+try {
+      const { id_usuario } = req.body;
 
-      await CartService.addItem(
-        Number(id_usuario),
-        Number(id_produto),
-        Number(quantidade),
-        Number(preco_unitario)
-      );
+      const [carrinho] = await Carrinho.findOrCreate({
+        where: { id_usuario: Number(id_usuario), ativo: true },
+        defaults: { id_usuario: Number(id_usuario) }
+      });
 
-      return res.status(200).json({
-        success: true,
-        message: "Item adicionado ao carrinho!"
+      return res.status(200).json({ 
+        id_carrinho: carrinho.id_carrinho,
+        id_usuario: carrinho.id_usuario
       });
 
     } catch (error) {
-      console.error("ERRO FATAL NO BANCO DE DADOS:", error);
-      return res.status(500).json({
-        message: "Erro ao adicionar item ao carrinho!",
-      });
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao inicializar carrinho." });
     }
   }
 
