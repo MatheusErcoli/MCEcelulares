@@ -1,11 +1,11 @@
 import { Router } from "express";
-import ItemCarrinhoController from "../controllers/itemCarrinho.controllers";
 import { validate } from "../middlewares/validate.middleware";
 import {
   createItemCarrinhoSchema,
   updateItemCarrinhoSchema,
 } from "../validators/itemCarrinho.validator";
 import authMiddleware from "../middlewares/auth.middleware";
+import ItemCarrinhoController from "../controllers/itemcarrinho.controllers";
 
 const router = Router();
 
