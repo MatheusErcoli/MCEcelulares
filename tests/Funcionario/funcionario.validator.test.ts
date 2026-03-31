@@ -18,7 +18,7 @@ describe("Validacao de Funcionario - create", () => {
       body: {
         nome: "Joao Silva",
         email: "joao@email.com",
-        telefone: "12345678",
+        telefone: "12345678999",
         cargo: "Vendedor",
         salario: 2000,
         ativo: true,
