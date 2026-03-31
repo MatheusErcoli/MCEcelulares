@@ -7,7 +7,7 @@ export const createCategoriaSchema = z.object({
 });
 
 export const updateCategoriaSchema = z.object({
-  nome: z.string().trim().min(1, "Nome da categoria é obrigatório").min(3, "Nome deve ter no mínimo 3 caracteres").max(100, "Nome muito longo").optional(),
+  nome: z.string().trim().min(3, "Nome deve ter no mínimo 3 caracteres").max(100, "Nome muito longo").optional(),
   descricao: z.string().trim().max(255, "Descrição muito longa").optional(),
   ativo: z.boolean().optional()
 });

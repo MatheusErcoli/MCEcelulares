@@ -5,5 +5,5 @@ export const createMarcaSchema = z.object({
 });
 
 export const updateMarcaSchema = z.object({
-  nome: z.string().min(1, "Nome da Marca é obrigatório").min(2, "Nome deve ter no mínimo 2 caracteres").max(100, "Nome muito longo").optional(),
+  nome: z.string().min(2, "Nome deve ter no mínimo 2 caracteres").max(100, "Nome muito longo").optional(),
 });
