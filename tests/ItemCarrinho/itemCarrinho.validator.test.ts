@@ -123,7 +123,7 @@ describe("Validação de ItemCarrinho - update", () => {
   it("esse teste deve falhar pois quantidade é inválida", () => {
     const req = mockRequest({
       body: {
-        quantidade: 0,
+        quantidade: 1.1,
       },
     });
 
