@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Produto from "../models/Produto";
 import ProductService from "../services/product.service";
-import { PaginatedResponse } from "../types/paginacao";
+import { PaginatedResponse } from "../types/paginated";
 
 class ProdutoController {
   static async findAll(req: Request, res: Response) {

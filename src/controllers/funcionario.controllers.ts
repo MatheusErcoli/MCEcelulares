@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Funcionario from "../models/Funcionario";
-import { PaginatedResponse } from "../types/paginacao";
+import { PaginatedResponse } from "../types/paginated";
 
 class FuncionarioController {
   static async findAll(req: Request, res: Response) {
