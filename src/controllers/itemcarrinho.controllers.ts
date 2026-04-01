@@ -39,26 +39,29 @@ class ItemCarrinhoController {
 
 static async create(req: Request, res: Response) {
     try {
-      const { id_carrinho, id_produto, preco_unitario} = req.body;
+      const { id_carrinho, id_produto, preco_unitario } = req.body;
 
       const exists = await ItemCarrinho.findOne({ where: { id_carrinho, id_produto }});
+      
       if (exists) {
-        return res.status(409).json({ 
-          message: "Este produto já está no carrinho. Use a rota de update para alterar a quantidade." 
-        });
+        exists.quantidade += 1;
+        await exists.save();
+        
+        return res.status(200).json(exists);
       }
 
       const novoItemCarrinho = await ItemCarrinho.create({
         id_carrinho,
         id_produto,
         preco_unitario,
-        quantidade:1, 
+        quantidade: 1, 
       });
 
       return res.status(201).json(novoItemCarrinho);
+      
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Erro ao criar item no carrinho." });
+      return res.status(500).json({ message: "Erro ao adicionar item ao carrinho." });
     }
   }
 

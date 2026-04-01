@@ -4,7 +4,7 @@ export const createItemCarrinhoSchema = z.object({
   id_carrinho: z.coerce.number().int().positive(),
   id_produto: z.coerce.number().int().positive(),
   preco_unitario: z.coerce.number().positive(),
-  quantidade: z.coerce.number().int().min(1)
+  quantidade: z.coerce.number().int().min(1).default(1)
 });
 
 export const updateItemCarrinhoSchema = z.object({
