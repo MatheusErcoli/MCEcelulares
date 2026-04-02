@@ -57,7 +57,7 @@ try {
       });
 
     } catch (error) {
-      console.error(error);
+      console.error(error, "Erro ao inicializar carrinho." );
       return res.status(500).json({ message: "Erro ao inicializar carrinho." });
     }
   }

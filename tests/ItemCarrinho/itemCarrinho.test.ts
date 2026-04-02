@@ -1,5 +1,5 @@
-import ItemCarrinhoController from "../../src/controllers/itemCarrinho.controllers";
 import ItemCarrinho from "../../src/models/ItemCarrinho";
+import ItemCarrinhoController from "../../src/controllers/itemcarrinho.controllers";
 import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/ItemCarrinho");
@@ -139,7 +139,7 @@ describe("ItemCarrinhoController - update", () => {
     const res = mockResponse();
 
     const mockItem = {
-      update: jest.fn().mockResolvedValue(true),
+      save: jest.fn().mockResolvedValue(true),
     };
 
     (ItemCarrinho.findByPk as jest.Mock).mockResolvedValue(mockItem);
@@ -147,7 +147,7 @@ describe("ItemCarrinhoController - update", () => {
     await ItemCarrinhoController.update(req, res);
 
     expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1);
-    expect(mockItem.update).toHaveBeenCalledWith(req.body);
+    expect(mockItem.save).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
   });

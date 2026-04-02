@@ -37,16 +37,16 @@ class ItemCarrinhoController {
     return res.status(200).json(itens);
   }
 
-static async create(req: Request, res: Response) {
+  static async create(req: Request, res: Response) {
     try {
       const { id_carrinho, id_produto, preco_unitario } = req.body;
 
-      const exists = await ItemCarrinho.findOne({ where: { id_carrinho, id_produto }});
-      
+      const exists = await ItemCarrinho.findOne({ where: { id_carrinho, id_produto } });
+
       if (exists) {
         exists.quantidade += 1;
         await exists.save();
-        
+
         return res.status(200).json(exists);
       }
 
@@ -54,13 +54,13 @@ static async create(req: Request, res: Response) {
         id_carrinho,
         id_produto,
         preco_unitario,
-        quantidade: 1, 
+        quantidade: 1,
       });
 
       return res.status(201).json(novoItemCarrinho);
-      
+
     } catch (error) {
-      console.error(error);
+      console.error(error, "Erro ao adicionar item ao carrinho.");
       return res.status(500).json({ message: "Erro ao adicionar item ao carrinho." });
     }
   }
@@ -68,7 +68,7 @@ static async create(req: Request, res: Response) {
   static async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { quantidade } = req.body; 
+      const { quantidade } = req.body;
 
       const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
 
@@ -80,8 +80,8 @@ static async create(req: Request, res: Response) {
         const novaQuantidade = itemCarrinho.quantidade + Number(quantidade);
 
         if (novaQuantidade <= 0) {
-          return res.status(400).json({ 
-            message: "A quantidade não pode ser menor que 1. Para remover o produto, utilize a rota de DELETE." 
+          return res.status(400).json({
+            message: "A quantidade não pode ser menor que 1. Para remover o produto, utilize a rota de DELETE."
           });
         }
 
@@ -92,7 +92,7 @@ static async create(req: Request, res: Response) {
       return res.status(200).json(itemCarrinho);
 
     } catch (error) {
-      console.error(error);
+      console.error(error, "Erro ao atualizar item do carrinho.");
       return res.status(500).json({ message: "Erro ao atualizar item do carrinho." });
     }
   }
@@ -108,9 +108,9 @@ static async create(req: Request, res: Response) {
 
       await itemCarrinho.destroy();
       return res.status(204).send();
-      
+
     } catch (error) {
-      console.error(error);
+      console.error(error, "Erro ao deletar item do carrinho.");
       return res.status(500).json({ message: "Erro ao deletar item do carrinho." });
     }
   }

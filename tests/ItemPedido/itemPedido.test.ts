@@ -1,4 +1,4 @@
-import ItemPedidoController from "../../src/controllers/itemPedido.controllers";
+import ItemPedidoController from "../../src/controllers/itempedido.controllers";
 import ItemPedido from "../../src/models/ItemPedido";
 import { mockRequest, mockResponse } from "../test.helpers";
 

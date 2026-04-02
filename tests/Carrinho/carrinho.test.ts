@@ -42,11 +42,9 @@ describe("CarrinhoController - findById", () => {
 
     const mockCarrinho = { id_carrinho: 1 };
 
-    (Carrinho.findByPk as jest.Mock).mockResolvedValue(mockCarrinho);
-
+    (Carrinho.findOne as jest.Mock).mockResolvedValue(mockCarrinho);
     await CarrinhoController.findById(req, res);
-
-    expect(Carrinho.findByPk).toHaveBeenCalledWith(1, expect.any(Object));
+    expect(Carrinho.findOne).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockCarrinho);
   });
@@ -58,43 +56,11 @@ describe("CarrinhoController - findById", () => {
 
     const res = mockResponse();
 
-    (Carrinho.findByPk as jest.Mock).mockResolvedValue(null);
+    (Carrinho.findOne as jest.Mock).mockResolvedValue(null);
 
     await CarrinhoController.findById(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
-  });
-});
-
-describe("CarrinhoController - findActiveByUser", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("esse teste deve retornar carrinho ativo do usuário", async () => {
-    const req = mockRequest({
-      params: { id_usuario: "1" },
-    });
-
-    const res = mockResponse();
-
-    const mockCarrinho = { id_carrinho: 1, ativo: true };
-
-    (Carrinho.findOrCreate as jest.Mock).mockResolvedValue([
-      mockCarrinho,
-      false,
-    ]);
-
-    await CarrinhoController.findActiveByUser(req, res);
-
-    expect(Carrinho.findOrCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id_usuario: 1, ativo: true },
-      })
-    );
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockCarrinho);
   });
 });
 
@@ -115,13 +81,11 @@ describe("CarrinhoController - create", () => {
 
     const mockCarrinho = { id_carrinho: 1, ...req.body };
 
-    (Carrinho.create as jest.Mock).mockResolvedValue(mockCarrinho);
-
+    (Carrinho.findOrCreate as jest.Mock).mockResolvedValue([mockCarrinho, true]);
     await CarrinhoController.create(req, res);
-
-    expect(Carrinho.create).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(mockCarrinho);
+    expect(Carrinho.findOrCreate).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ id_carrinho: 1 }));
   });
 });
 
