@@ -10,7 +10,7 @@ import ItemPedido from './ItemPedido';
 import Pagamento from './Pagamento';
 import Funcionario from './Funcionario';
 
-export function definirRelacionamentos() {
+export function StablishRelations() {
   // Categoria -> Produto (one-to-many)
   Categoria.hasMany(Produto, {
     foreignKey: 'id_categoria',
