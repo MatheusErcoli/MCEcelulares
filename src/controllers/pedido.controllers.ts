@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import Pedido from "../models/Pedido";
 import Usuario from "../models/Usuario";
-import Funcionario from "../models/Funcionario";
 import ItemPedido from "../models/ItemPedido";
+import Endereco from "../models/Endereco";
 import { PaginatedResponse } from "../types/paginated";
 
 class PedidoController {
@@ -24,11 +24,11 @@ class PedidoController {
       },
       include: [
         { model: Usuario, as: "usuario" },
-        { model: Funcionario, as: "funcionario" },
+        { model: Endereco, as: "endereco" },
         { model: ItemPedido, as: "itens" },
       ],
       distinct: true,
-      col: "id",
+      col: "id_pedido",
       limit,
       offset,
       order: [["id_pedido", "DESC"]],
@@ -51,7 +51,7 @@ class PedidoController {
     const pedido = await Pedido.findByPk(Number(id), {
       include: [
         { model: Usuario, as: "usuario" },
-        { model: Funcionario, as: "funcionario" },
+        { model: Endereco, as: "endereco" },
         { model: ItemPedido, as: "itens" },
       ],
     });
@@ -66,11 +66,11 @@ class PedidoController {
   }
 
   static async create(req: Request, res: Response) {
-    const { id_usuario, id_funcionario, data, valor_total } = req.body;
+    const { id_usuario, id_endereco, data, valor_total } = req.body;
 
     const pedido = await Pedido.create({
       id_usuario,
-      id_funcionario,
+      id_endereco,
       data,
       valor_total,
       ativo: true,

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { HttpError } from "../types/http_error";
 
 interface TokenPayload {
   id_usuario: number;
@@ -19,9 +20,7 @@ function authMiddleware(
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({
-      message: "Token não informado",
-    });
+    return next(new HttpError(401, "Token não informado"));
   }
 
   const [, token] = authHeader.split(" ");
@@ -37,9 +36,7 @@ function authMiddleware(
 
     return next();
   } catch (error) {
-    return res.status(401).json({
-      message: "Token inválido",
-    });
+    return next(new HttpError(401, "Token inválido"));
   }
 }
 

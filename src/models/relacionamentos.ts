@@ -8,7 +8,6 @@ import Endereco from './Endereco';
 import Pedido from './Pedido';
 import ItemPedido from './ItemPedido';
 import Pagamento from './Pagamento';
-import Funcionario from './Funcionario';
 
 export function StablishRelations() {
   // Categoria -> Produto (one-to-many)
@@ -64,6 +63,12 @@ export function StablishRelations() {
     foreignKey: 'id_usuario',
     as: 'pedidos'
   });
+  
+  // Endereco -> Pedido (one-to-many)
+  Endereco.hasMany(Pedido, {
+    foreignKey: 'id_endereco',
+    as: 'pedidos_endereco' // Nome diferente para não conflitar caso já exista outro
+  });
 
   // Endereco -> Usuario (many-to-one)
   Endereco.belongsTo(Usuario, {
@@ -101,22 +106,16 @@ export function StablishRelations() {
     as: 'usuario'
   });
 
-  // Pedido -> Funcionario (many-to-one)
-  Pedido.belongsTo(Funcionario, {
-    foreignKey: 'id_funcionario',
-    as: 'funcionario'
-  });
-
-  // Funcionario -> Pedido (one-to-many)
-  Funcionario.hasMany(Pedido, {
-    foreignKey: 'id_funcionario',
-    as: 'pedidos'
-  });
-
   // Pedido -> ItemPedido (one-to-many)
   Pedido.hasMany(ItemPedido, {
     foreignKey: 'id_pedido',
     as: 'itens'
+  });
+  
+  // Pedido -> Endereco (many-to-one)
+  Pedido.belongsTo(Endereco, {
+    foreignKey: 'id_endereco',
+    as: 'endereco'
   });
 
   // ItemPedido -> Pedido (many-to-one)

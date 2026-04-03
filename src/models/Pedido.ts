@@ -4,7 +4,7 @@ import sequelize from "../config/database";
 class Pedido extends Model {
   declare id_pedido: number;
   declare id_usuario: number;
-  declare id_funcionario: number | null;
+  declare id_endereco: number;
   declare data: Date;
   declare valor_total: number;
   declare ativo: boolean;
@@ -22,8 +22,9 @@ Pedido.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    id_funcionario: {
+    id_endereco: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     data: {
       type: DataTypes.DATE,

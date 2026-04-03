@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
+import { HttpError } from "../types/http_error";
 
 export const errorMiddleware = (
   error: Error,
@@ -8,6 +9,12 @@ export const errorMiddleware = (
   next: NextFunction
 ) => {
   console.error(error);
+
+if (error instanceof ZodError) {
+  return res.status(400).json({
+    message: error.issues.map((issue) => issue.message).join("\n"),
+  });
+}
 
   if (error instanceof ZodError) {
     return res.status(400).json({
