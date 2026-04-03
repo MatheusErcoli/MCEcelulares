@@ -5,7 +5,7 @@ import {
   updateItemCarrinhoSchema,
 } from "../validators/itemCarrinho.validator";
 import authMiddleware from "../middlewares/auth.middleware";
-import ItemCarrinhoController from "../controllers/itemCarrinho.controllers";
+import ItemCarrinhoController from "../controllers/itemcarrinho.controllers";
 
 const router = Router();
 

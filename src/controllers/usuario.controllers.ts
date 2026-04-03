@@ -39,6 +39,7 @@ class UsuarioController {
 
     const usuario = await Usuario.findByPk(Number(id), {
       attributes: { exclude: ["senha"] },
+      include: ['enderecos'],
     });
 
     if (!usuario) {

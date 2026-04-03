@@ -60,7 +60,9 @@ class ProdutoController {
     });
 
     return res.status(201).json(produto);
-  }  static async findById(req: Request, res: Response) {
+  }
+  
+  static async findById(req: Request, res: Response) {
     const { id } = req.params;
 
     const produto = await Produto.findByPk(Number(id), {

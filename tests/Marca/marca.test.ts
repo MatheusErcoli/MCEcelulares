@@ -10,25 +10,23 @@ describe("MarcaController - findAll", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve retornar todas as marcas corretamente", async () => {
-    const req = mockRequest();
-    const res = mockResponse();
+it("esse teste deve retornar todas as marcas corretamente", async () => {
+  const req = mockRequest({ query: {} });
+  const res = mockResponse();
 
-    const mockMarcas = [
-      { id: 1, nome: "Nike" },
-      { id: 2, nome: "Adidas" },
-    ];
+  const mockMarcas = [
+    { id: 1, nome: "Nike" },
+    { id: 2, nome: "Adidas" },
+  ];
 
-    (Marca.findAll as jest.Mock).mockResolvedValue(mockMarcas);
+  (Marca.findAll as jest.Mock).mockResolvedValue(mockMarcas);
 
-    await MarcaController.findAll(req, res);
+  await MarcaController.findAll(req, res);
 
-    expect(Marca.findAll).toHaveBeenCalled();
-
-    expect(res.status).toHaveBeenCalledWith(200);
-
-    expect(res.json).toHaveBeenCalledWith(mockMarcas);
-  });
+  expect(Marca.findAll).toHaveBeenCalled();
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith(mockMarcas);
+});
 });
 
 describe("MarcaController - findById", () => {

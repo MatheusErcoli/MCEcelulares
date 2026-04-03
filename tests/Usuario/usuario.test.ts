@@ -76,6 +76,7 @@ describe("UsuarioController - findById", () => {
     const mockUsuario = {
       id_usuario: 1,
       nome: "Teste",
+      enderecos: [],
     };
 
     (Usuario.findByPk as jest.Mock).mockResolvedValue(mockUsuario);
@@ -84,6 +85,7 @@ describe("UsuarioController - findById", () => {
 
     expect(Usuario.findByPk).toHaveBeenCalledWith(1, {
       attributes: { exclude: ["senha"] },
+      include: ["enderecos"],
     });
 
     expect(res.status).toHaveBeenCalledWith(200);

@@ -1,11 +1,11 @@
 import { Router } from "express";
-import ItemPedidoController from "../controllers/itemPedido.controllers";
 import { validate } from "../middlewares/validate.middleware";
 import {
   createItemPedidoSchema,
   updateItemPedidoSchema,
 } from "../validators/itemPedido.validator";
 import authMiddleware from "../middlewares/auth.middleware";
+import ItemPedidoController from "../controllers/itempedido.controllers";
 
 const router = Router();
 
