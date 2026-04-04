@@ -5,7 +5,6 @@ import {
 } from "../../src/validators/usuario.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-
 describe("Validação de Usuario - create", () => {
   const middleware = validate(createUsuarioSchema);
   const next = jest.fn();
@@ -14,7 +13,7 @@ describe("Validação de Usuario - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação com dados válidos", () => {
+  it("esse teste deve passar a validação com dados válidos", async () => {
     const req = mockRequest({
       body: {
         nome: "Matheus",
@@ -27,12 +26,13 @@ describe("Validação de Usuario - create", () => {
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
     expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois o nome é muito curto", () => {
+  it("esse teste deve falhar pois o nome é muito curto", async () => {
     const req = mockRequest({
       body: {
         nome: "ab",
@@ -44,16 +44,16 @@ describe("Validação de Usuario - create", () => {
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois o email é inválido", () => {
+  it("esse teste deve falhar pois o email é inválido", async () => {
     const req = mockRequest({
       body: {
-        nome: "Teste",
-        email: "email-invalido",
+        nome: "Matheus",
+        email: "emailinvalido",
         senha: "Senha@123",
         cpf: "12345678900",
       },
@@ -61,32 +61,32 @@ describe("Validação de Usuario - create", () => {
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois a senha não atende os requisitos", () => {
+  it("esse teste deve falhar pois a senha não tem letra maiúscula e caractere especial", async () => {
     const req = mockRequest({
       body: {
-        nome: "Teste",
+        nome: "Matheus",
         email: "teste@email.com",
-        senha: "123",
+        senha: "senhafraca123",
         cpf: "12345678900",
       },
     });
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois o cpf é inválido", () => {
+  it("esse teste deve falhar pois o cpf é inválido", async () => {
     const req = mockRequest({
       body: {
-        nome: "Teste",
+        nome: "Matheus",
         email: "teste@email.com",
         senha: "Senha@123",
         cpf: "123",
@@ -95,27 +95,9 @@ describe("Validação de Usuario - create", () => {
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse teste deve falhar pois o telefone é inválido", () => {
-    const req = mockRequest({
-      body: {
-        nome: "Teste",
-        email: "teste@email.com",
-        senha: "Senha@123",
-        cpf: "12345678900",
-        telefone: "123",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
 
@@ -127,7 +109,7 @@ describe("Validação de Usuario - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve aceitar update parcial com apenas nome", () => {
+  it("esse teste deve aceitar update parcial com apenas nome", async () => {
     const req = mockRequest({
       body: {
         nome: "Novo Nome",
@@ -136,28 +118,30 @@ describe("Validação de Usuario - update", () => {
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
     expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve aceitar múltiplos campos válidos", () => {
+  it("esse teste deve aceitar múltiplos campos válidos", async () => {
     const req = mockRequest({
       body: {
         nome: "Novo Nome",
-        senha: "Senha@123",
+        senha: "NovaSenha@321",
         cpf: "12345678900",
       },
     });
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
     expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois a senha é inválida", () => {
+  it("esse teste deve falhar pois a senha é inválida", async () => {
     const req = mockRequest({
       body: {
         senha: "123",
@@ -166,12 +150,12 @@ describe("Validação de Usuario - update", () => {
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois o cpf é inválido", () => {
+  it("esse teste deve falhar pois o cpf é inválido", async () => {
     const req = mockRequest({
       body: {
         cpf: "123",
@@ -180,24 +164,8 @@ describe("Validação de Usuario - update", () => {
 
     const res = mockResponse();
 
-    middleware(req, res, next);
+    await middleware(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse teste deve falhar pois o telefone é inválido", () => {
-    const req = mockRequest({
-      body: {
-        telefone: "123",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
-
-

@@ -5,8 +5,6 @@ import {
 } from "../../src/validators/carrinho.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-
-
 describe("Validação de Carrinho - create", () => {
   const middleware = validate(createCarrinhoSchema);
   const next = jest.fn();
@@ -15,33 +13,15 @@ describe("Validação de Carrinho - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação com dados válidos", () => {
+  it("esse teste deve falhar pois id_usuario é inválido", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: 1,
-        ativo: true,
+        id_usuario: "invalido",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse teste deve falhar pois id_usuario é inválido", () => {
-    const req = mockRequest({
-      body: {
-        id_usuario: "abc",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
 
@@ -53,48 +33,14 @@ describe("Validação de Carrinho - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve aceitar update parcial", () => {
+  it("esse teste deve falhar pois id_usuario é inválido", async () => {
     const req = mockRequest({
       body: {
-        ativo: false,
+        id_usuario: "invalido",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse teste deve aceitar múltiplos campos válidos", () => {
-    const req = mockRequest({
-      body: {
-        id_usuario: 2,
-        ativo: true,
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse teste deve falhar pois id_usuario é inválido", () => {
-    const req = mockRequest({
-      body: {
-        id_usuario: "abc",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
-
-

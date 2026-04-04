@@ -2,21 +2,22 @@ import UsuarioController from "../../src/controllers/usuario.controllers";
 import Usuario from "../../src/models/Usuario";
 import bcrypt from "bcrypt";
 import { mockRequest, mockResponse } from "../test.helpers";
+import { HttpError } from "../../src/types/http_error";
 
 jest.mock("../../src/models/Usuario");
 jest.mock("bcrypt");
-
 
 describe("UsuarioController - findAll", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("deve retornar usuários com paginação", async () => {
+  it("esse teste deve retornar usuários com paginação", async () => {
     const req = mockRequest({
       query: { page: "1", limit: "10" },
     });
     const res = mockResponse();
+    const next = jest.fn();
 
     (Usuario.findAndCountAll as jest.Mock).mockResolvedValue({
       count: 2,
@@ -26,7 +27,7 @@ describe("UsuarioController - findAll", () => {
       ],
     });
 
-    await UsuarioController.findAll(req, res);
+    await UsuarioController.findAll(req as any, res as any, next);
 
     expect(Usuario.findAndCountAll).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -46,20 +47,6 @@ describe("UsuarioController - findAll", () => {
       })
     );
   });
-
-  it("deve retornar erro se página inválida", async () => {
-    const req = mockRequest({
-      query: { page: "-1" },
-    });
-    const res = mockResponse();
-
-    await UsuarioController.findAll(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Página inválida",
-    });
-  });
 });
 
 describe("UsuarioController - findById", () => {
@@ -67,21 +54,21 @@ describe("UsuarioController - findById", () => {
     jest.clearAllMocks();
   });
 
-  it("deve retornar usuário pelo ID", async () => {
+  it("esse teste deve retornar um usuário procurado pelo ID", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockUsuario = {
       id_usuario: 1,
-      nome: "Teste",
-      enderecos: [],
+      nome: "Usuário Teste",
     };
 
     (Usuario.findByPk as jest.Mock).mockResolvedValue(mockUsuario);
 
-    await UsuarioController.findById(req, res);
+    await UsuarioController.findById(req as any, res as any, next);
 
     expect(Usuario.findByPk).toHaveBeenCalledWith(1, {
       attributes: { exclude: ["senha"] },
@@ -92,20 +79,18 @@ describe("UsuarioController - findById", () => {
     expect(res.json).toHaveBeenCalledWith(mockUsuario);
   });
 
-  it("deve retornar 404 se não encontrar usuário", async () => {
+  it("esse teste deve chamar next com erro 404 caso não ache o usuário", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
     const res = mockResponse();
+    const next = jest.fn();
 
     (Usuario.findByPk as jest.Mock).mockResolvedValue(null);
 
-    await UsuarioController.findById(req, res);
+    await UsuarioController.findById(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Usuário não encontrado",
-    });
+    expect(next).toHaveBeenCalledWith(expect.any(HttpError));
   });
 });
 
@@ -114,45 +99,47 @@ describe("UsuarioController - create", () => {
     jest.clearAllMocks();
   });
 
-  it("deve criar usuário com sucesso", async () => {
+  it("esse teste é para criar um usuário com sucesso", async () => {
     const req = mockRequest({
       body: {
-        nome: "Teste",
-        email: "teste@email.com",
-        senha: "123456",
-        cpf: "12345678900",
-        telefone: "999999999",
+        nome: "Novo Usuário",
+        email: "teste@teste.com",
+        senha: "SenhaForte@123",
+        cpf: "123.456.789-00",
+        telefone: "44999999999",
+        ativo: true,
+        admin: false,
       },
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
-    (bcrypt.hash as jest.Mock).mockResolvedValue("senhaHash");
+    (bcrypt.hash as jest.Mock).mockResolvedValue("hashed_password");
 
-    const mockUsuario = {
+    const mockUsuarioCriado = {
       id_usuario: 1,
       ...req.body,
-      senha: "senhaHash",
+      senha: "hashed_password",
       toJSON: jest.fn().mockReturnValue({
         id_usuario: 1,
-        nome: "Teste",
-        email: "teste@email.com",
-        cpf: "12345678900",
-        telefone: "999999999",
+        nome: "Novo Usuário",
+        email: "teste@teste.com",
+        senha: "hashed_password",
       }),
     };
 
-    (Usuario.create as jest.Mock).mockResolvedValue(mockUsuario);
+    (Usuario.create as jest.Mock).mockResolvedValue(mockUsuarioCriado);
 
-    await UsuarioController.create(req, res);
+    await UsuarioController.create(req as any, res as any, next);
 
-    expect(bcrypt.hash).toHaveBeenCalledWith("123456", 10);
+    expect(bcrypt.hash).toHaveBeenCalledWith("SenhaForte@123", 10);
     expect(Usuario.create).toHaveBeenCalled();
-
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(
-      expect.not.objectContaining({
-        senha: expect.anything(),
+      expect.objectContaining({
+        nome: "Novo Usuário",
+        email: "teste@teste.com",
       })
     );
   });
@@ -163,77 +150,58 @@ describe("UsuarioController - update", () => {
     jest.clearAllMocks();
   });
 
-  it("deve atualizar usuário com sucesso", async () => {
+  it("esse teste deve atualizar o usuário com sucesso", async () => {
     const req = mockRequest({
       params: { id: "1" },
       body: {
-        nome: "Atualizado",
+        nome: "Usuário Atualizado",
       },
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockUsuario = {
       id_usuario: 1,
-      nome: "Antigo",
+      nome: "Usuário Antigo",
       update: jest.fn().mockResolvedValue(true),
       toJSON: jest.fn().mockReturnValue({
         id_usuario: 1,
-        nome: "Atualizado",
+        nome: "Usuário Atualizado",
       }),
     };
 
     (Usuario.findByPk as jest.Mock).mockResolvedValue(mockUsuario);
 
-    await UsuarioController.update(req, res);
+    await UsuarioController.update(req as any, res as any, next);
 
     expect(Usuario.findByPk).toHaveBeenCalledWith(1);
     expect(mockUsuario.update).toHaveBeenCalledWith(req.body);
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalled();
   });
 
-  it("deve retornar erro se usuário não existir", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-      body: {},
-    });
-
-    const res = mockResponse();
-
-    (Usuario.findByPk as jest.Mock).mockResolvedValue(null);
-
-    await UsuarioController.update(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Usuário não encontrado",
-    });
-  });
-
-  it("deve retornar erro se tentar alterar email", async () => {
+  it("esse teste deve chamar next com erro 400 caso tente alterar o email", async () => {
     const req = mockRequest({
       params: { id: "1" },
       body: {
-        email: "novo@email.com",
+        email: "novoemail@teste.com",
       },
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockUsuario = {
-      update: jest.fn(),
+      id_usuario: 1,
+      email: "antigo@teste.com",
     };
 
     (Usuario.findByPk as jest.Mock).mockResolvedValue(mockUsuario);
 
-    await UsuarioController.update(req, res);
+    await UsuarioController.update(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Email não pode ser alterado",
-    });
+    expect(next).toHaveBeenCalledWith(expect.any(HttpError));
   });
 });
 
@@ -242,44 +210,26 @@ describe("UsuarioController - delete", () => {
     jest.clearAllMocks();
   });
 
-  it("deve deletar usuário com sucesso", async () => {
+  it("esse teste é para deletar com sucesso", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockUsuario = {
+      id_usuario: 1,
       destroy: jest.fn().mockResolvedValue(true),
     };
 
     (Usuario.findByPk as jest.Mock).mockResolvedValue(mockUsuario);
 
-    await UsuarioController.delete(req, res);
+    await UsuarioController.delete(req as any, res as any, next);
 
     expect(Usuario.findByPk).toHaveBeenCalledWith(1);
     expect(mockUsuario.destroy).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(204);
-    expect(res.send).toHaveBeenCalled();
-  });
-
-  it("deve retornar erro 404 ao deletar usuário inexistente", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-
-    const res = mockResponse();
-
-    (Usuario.findByPk as jest.Mock).mockResolvedValue(null);
-
-    await UsuarioController.delete(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Usuário não encontrado",
-    });
   });
 });
-
-

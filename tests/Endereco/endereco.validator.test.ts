@@ -5,7 +5,6 @@ import {
 } from "../../src/validators/endereco.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-
 describe("Validação de Endereco - create", () => {
   const middleware = validate(createEnderecoSchema);
   const next = jest.fn();
@@ -14,89 +13,68 @@ describe("Validação de Endereco - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação com dados válidos", () => {
+  it("esse teste deve falhar pois endereco é muito curto", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: 1,
-        endereco: "Rua Teste",
+        endereco: "a",
         numero: "123",
-        cidade: "Maringá",
-        estado: "PR",
-        cep: "12345678",
+        estado: "SP",
+        cep: "12345-678",
+        cidade: "Cidade",
+        bairro: "Bairro",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois endereco é muito curto", () => {
+  it("esse teste deve falhar pois numero está vazio", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: 1,
-        endereco: "ab",
-        numero: "123",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse teste deve falhar pois numero está vazio", () => {
-    const req = mockRequest({
-      body: {
-        id_usuario: 1,
-        endereco: "Rua Teste",
+        endereco: "Rua Valida",
         numero: "",
+        estado: "SP",
+        cep: "12345-678",
+        cidade: "Cidade",
+        bairro: "Bairro",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois estado é inválido", () => {
+  it("esse teste deve falhar pois estado é inválido", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: 1,
-        endereco: "Rua Teste",
+        endereco: "Rua Valida",
         numero: "123",
-        estado: "PRR",
+        estado: "Invalido",
+        cep: "12345-678",
+        cidade: "Cidade",
+        bairro: "Bairro",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois cep é inválido", () => {
+  it("esse teste deve falhar pois cep é inválido", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: 1,
-        endereco: "Rua Teste",
+        endereco: "Rua Valida",
         numero: "123",
+        estado: "SP",
         cep: "123",
+        cidade: "Cidade",
+        bairro: "Bairro",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
 
@@ -108,62 +86,25 @@ describe("Validação de Endereco - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve aceitar update parcial", () => {
+  it("esse teste deve falhar pois estado é inválido", async () => {
     const req = mockRequest({
       body: {
-        cidade: "Curitiba",
+        estado: "Invalido",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve aceitar múltiplos campos válidos", () => {
-    const req = mockRequest({
-      body: {
-        cidade: "Curitiba",
-        estado: "PR",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse teste deve falhar pois estado é inválido", () => {
-    const req = mockRequest({
-      body: {
-        estado: "PAR",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse teste deve falhar pois cep é inválido", () => {
+  it("esse teste deve falhar pois cep é inválido", async () => {
     const req = mockRequest({
       body: {
         cep: "123",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
-
-

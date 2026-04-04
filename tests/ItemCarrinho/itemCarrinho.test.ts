@@ -4,7 +4,6 @@ import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/ItemCarrinho");
 
-
 describe("ItemCarrinhoController - findAll", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -13,13 +12,14 @@ describe("ItemCarrinhoController - findAll", () => {
   it("esse teste deve retornar todos os itens do carrinho", async () => {
     const req = mockRequest();
     const res = mockResponse();
+    const next = jest.fn();
 
     (ItemCarrinho.findAll as jest.Mock).mockResolvedValue([
       { id_item_carrinho: 1 },
       { id_item_carrinho: 2 },
     ]);
 
-    await ItemCarrinhoController.findAll(req, res);
+    await ItemCarrinhoController.findAll(req, res, next);
 
     expect(ItemCarrinho.findAll).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
@@ -38,12 +38,13 @@ describe("ItemCarrinhoController - findById", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockItem = { id_item_carrinho: 1 };
 
     (ItemCarrinho.findByPk as jest.Mock).mockResolvedValue(mockItem);
 
-    await ItemCarrinhoController.findById(req, res);
+    await ItemCarrinhoController.findById(req, res, next);
 
     expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1, expect.any(Object));
     expect(res.status).toHaveBeenCalledWith(200);
@@ -56,12 +57,13 @@ describe("ItemCarrinhoController - findById", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     (ItemCarrinho.findByPk as jest.Mock).mockResolvedValue(null);
 
-    await ItemCarrinhoController.findById(req, res);
+    await ItemCarrinhoController.findById(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
 
@@ -76,12 +78,13 @@ describe("ItemCarrinhoController - findByCartId", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     (ItemCarrinho.findAll as jest.Mock).mockResolvedValue([
       { id_item_carrinho: 1 },
     ]);
 
-    await ItemCarrinhoController.findByCartId(req, res);
+    await ItemCarrinhoController.findByCartId(req, res, next);
 
     expect(ItemCarrinho.findAll).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -105,17 +108,19 @@ describe("ItemCarrinhoController - create", () => {
         id_carrinho: 1,
         id_produto: 2,
         preco_unitario: 50,
-        quantidade: 3,
       },
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
-    const mockItem = { id_item_carrinho: 1, ...req.body };
+    const mockItem = { id_item_carrinho: 1, ...req.body, quantidade: 1 };
 
+    // Adicionado mock para o findOne que verifica se o item já existe
+    (ItemCarrinho.findOne as jest.Mock).mockResolvedValue(null);
     (ItemCarrinho.create as jest.Mock).mockResolvedValue(mockItem);
 
-    await ItemCarrinhoController.create(req, res);
+    await ItemCarrinhoController.create(req, res, next);
 
     expect(ItemCarrinho.create).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
@@ -137,14 +142,16 @@ describe("ItemCarrinhoController - update", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockItem = {
+      quantidade: 2,
       save: jest.fn().mockResolvedValue(true),
     };
 
     (ItemCarrinho.findByPk as jest.Mock).mockResolvedValue(mockItem);
 
-    await ItemCarrinhoController.update(req, res);
+    await ItemCarrinhoController.update(req, res, next);
 
     expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1);
     expect(mockItem.save).toHaveBeenCalled();
@@ -159,12 +166,13 @@ describe("ItemCarrinhoController - update", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     (ItemCarrinho.findByPk as jest.Mock).mockResolvedValue(null);
 
-    await ItemCarrinhoController.update(req, res);
+    await ItemCarrinhoController.update(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
 
@@ -179,6 +187,7 @@ describe("ItemCarrinhoController - delete", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockItem = {
       destroy: jest.fn().mockResolvedValue(true),
@@ -186,7 +195,7 @@ describe("ItemCarrinhoController - delete", () => {
 
     (ItemCarrinho.findByPk as jest.Mock).mockResolvedValue(mockItem);
 
-    await ItemCarrinhoController.delete(req, res);
+    await ItemCarrinhoController.delete(req, res, next);
 
     expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1);
     expect(mockItem.destroy).toHaveBeenCalled();
@@ -201,13 +210,12 @@ describe("ItemCarrinhoController - delete", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     (ItemCarrinho.findByPk as jest.Mock).mockResolvedValue(null);
 
-    await ItemCarrinhoController.delete(req, res);
+    await ItemCarrinhoController.delete(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
-
-

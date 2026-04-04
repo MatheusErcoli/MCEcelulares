@@ -1,106 +1,106 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario";
 import { PaginatedResponse } from "../types/paginated";
+import { HttpError } from "../types/http_error";
 
 class UsuarioController {
-  static async findAll(req: Request, res: Response) {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+  static async findAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const page = Math.max(1, parseInt(req.query.page as string) || 1);
+      const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
 
-    if (page < 1) {
-      return res.status(400).json({
-        message: "Página inválida",
+      const { count, rows } = await Usuario.findAndCountAll({
+        attributes: { exclude: ["senha"] },
+        limit,
+        offset: (page - 1) * limit,
+        order: [["id_usuario", "ASC"]],
       });
+
+      const response: PaginatedResponse<(typeof rows)[number]> = {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit),
+        data: rows,
+      };
+
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
     }
-
-    const offset = (page - 1) * limit;
-
-    const { count, rows } = await Usuario.findAndCountAll({
-      attributes: { exclude: ["senha"] },
-      limit,
-      offset,
-      order: [["id_usuario", "ASC"]],
-    });
-
-    const response: PaginatedResponse<(typeof rows)[number]> = {
-      page,
-      limit,
-      total: count,
-      totalPages: Math.ceil(count / limit),
-      data: rows,
-    };
-
-    return res.status(200).json(response);
   }
 
-  static async findById(req: Request, res: Response) {
-    const { id } = req.params;
+  static async findById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-    const usuario = await Usuario.findByPk(Number(id), {
-      attributes: { exclude: ["senha"] },
-      include: ['enderecos'],
-    });
-
-    if (!usuario) {
-      return res.status(404).json({
-        message: "Usuário não encontrado",
+      const usuario = await Usuario.findByPk(Number(id), {
+        attributes: { exclude: ["senha"] },
+        include: ['enderecos'],
       });
+
+      if (!usuario) {
+        throw new HttpError(404, "Usuário não encontrado");
+      }
+
+      return res.status(200).json(usuario);
+    } catch (error) {
+      next(error);
     }
-
-    return res.status(200).json(usuario);
   }
 
-  static async create(req: Request, res: Response) {
-    const {
-      nome,
-      email,
-      senha,
-      cpf,
-      telefone,
-      ativo = true,
-      admin = false,
-    } = req.body;
+  static async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {
+        nome,
+        email,
+        senha,
+        cpf,
+        telefone,
+        ativo = true,
+        admin = false,
+      } = req.body;
 
-    const senhaHash = await bcrypt.hash(senha, 10);
+      const senhaHash = await bcrypt.hash(senha, 10);
 
-    const usuario = await Usuario.create({
-      nome,
-      email,
-      senha: senhaHash,
-      cpf,
-      telefone,
-      ativo,
-      admin,
-    });
+      const usuario = await Usuario.create({
+        nome,
+        email,
+        senha: senhaHash,
+        cpf,
+        telefone,
+        ativo,
+        admin,
+      });
 
-    const usuarioSemSenha = usuario.toJSON();
-    delete usuarioSemSenha.senha;
+      const usuarioSemSenha = usuario.toJSON();
+      delete usuarioSemSenha.senha;
 
-    return res.status(201).json(usuarioSemSenha);
+      return res.status(201).json(usuarioSemSenha);
+    } catch (error) {
+      next(error);
+    }
   }
 
-  static async update(req: Request, res: Response) {
+static async update(req: Request, res: Response, next: NextFunction) {
+  try {
     const { id } = req.params;
 
     const usuario = await Usuario.findByPk(Number(id));
 
     if (!usuario) {
-      return res.status(404).json({
-        message: "Usuário não encontrado",
-      });
-    }
-
-    const dados = req.body;
-
-    if (dados.senha) {
-      dados.senha = await bcrypt.hash(dados.senha, 10);
+      throw new HttpError(404, "Usuário não encontrado");
     }
 
     if (req.body.email) {
-      return res.status(400).json({
-        message: "Email não pode ser alterado",
-      });
+      throw new HttpError(400, "Email não pode ser alterado");
+    }
+    
+    const dados = { ...req.body };
+
+    if (dados.senha) {
+      dados.senha = await bcrypt.hash(dados.senha, 10);
     }
 
     await usuario.update(dados);
@@ -109,22 +109,27 @@ class UsuarioController {
     delete usuarioSemSenha.senha;
 
     return res.status(200).json(usuarioSemSenha);
+  } catch (error) {
+    next(error);
   }
+}
 
-  static async delete(req: Request, res: Response) {
-    const { id } = req.params;
+  static async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-    const usuario = await Usuario.findByPk(Number(id));
+      const usuario = await Usuario.findByPk(Number(id));
 
-    if (!usuario) {
-      return res.status(404).json({
-        message: "Usuário não encontrado",
-      });
+      if (!usuario) {
+        throw new HttpError(404, "Usuário não encontrado");
+      }
+
+      await usuario.destroy();
+
+      return res.status(204).send();
+    } catch (error) {
+      next(error);
     }
-
-    await usuario.destroy();
-
-    return res.status(204).send();
   }
 }
 

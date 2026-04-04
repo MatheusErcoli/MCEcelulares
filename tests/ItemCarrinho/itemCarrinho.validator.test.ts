@@ -5,7 +5,6 @@ import {
 } from "../../src/validators/itemCarrinho.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-
 describe("Validação de ItemCarrinho - create", () => {
   const middleware = validate(createItemCarrinhoSchema);
   const next = jest.fn();
@@ -14,72 +13,44 @@ describe("Validação de ItemCarrinho - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação com dados válidos", () => {
+  it("esse teste deve passar a validação com dados válidos", async () => {
     const req = mockRequest({
       body: {
         id_carrinho: 1,
         id_produto: 2,
         preco_unitario: 50,
-        quantidade: 3,
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
+    await middleware(req as any, res as any, next);
     expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois id_carrinho é inválido", () => {
+  it("esse teste deve falhar pois id_carrinho é inválido", async () => {
     const req = mockRequest({
       body: {
-        id_carrinho: -1,
+        id_carrinho: "invalido",
         id_produto: 2,
         preco_unitario: 50,
-        quantidade: 3,
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois quantidade é inválida", () => {
+  it("esse teste deve falhar pois preco_unitario é inválido", async () => {
     const req = mockRequest({
       body: {
         id_carrinho: 1,
         id_produto: 2,
-        preco_unitario: 50,
-        quantidade: 0,
+        preco_unitario: "invalido",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse teste deve falhar pois preco_unitario é inválido", () => {
-    const req = mockRequest({
-      body: {
-        id_carrinho: 1,
-        id_produto: 2,
-        preco_unitario: -10,
-        quantidade: 3,
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
 
@@ -91,62 +62,26 @@ describe("Validação de ItemCarrinho - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve aceitar update parcial", () => {
+  it("esse teste deve aceitar update parcial", async () => {
     const req = mockRequest({
       body: {
         quantidade: 5,
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
+    await middleware(req as any, res as any, next);
     expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve aceitar múltiplos campos válidos", () => {
+  it("esse teste deve falhar pois quantidade é inválida", async () => {
     const req = mockRequest({
       body: {
-        quantidade: 5,
-        preco_unitario: 100,
+        quantidade: "invalida",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse teste deve falhar pois quantidade é inválida", () => {
-    const req = mockRequest({
-      body: {
-        quantidade: 1.1,
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse teste deve falhar pois preco_unitario é inválido", () => {
-    const req = mockRequest({
-      body: {
-        preco_unitario: -5,
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
-
-

@@ -1,242 +1,265 @@
-import ProdutoController from "../../src/controllers/produto.controllers";
-import Produto from "../../src/models/Produto";
+import { validate } from "../../src/middlewares/validate.middleware";
+import {
+  createProdutoSchema,
+  updateProdutoSchema,
+} from "../../src/validators/produto.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-jest.mock("../../src/models/Produto");
+describe("Validacao de Produto - create", () => {
+  const middleware = validate(createProdutoSchema);
+  const next = jest.fn();
 
-describe("ProdutoController - findAll", () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve retornar validação corretamente", async () => {
-    const req = mockRequest({
-      query: { page: "1", limit: "10" },
-    });
-    const res = mockResponse();
-    (Produto.findAndCountAll as jest.Mock).mockResolvedValue({
-      count: 2,
-      rows: [
-        { id_produto: 1, nome: "Produto 1" },
-        { id_produto: 2, nome: "Produto 2" },
-      ],
-    });
-    await ProdutoController.findAll(req, res);
-    
-    expect(Produto.findAndCountAll).toHaveBeenCalledWith(
-      expect.objectContaining({
-        limit: 10,
-        offset: 0,
-      })
-    );
-    expect(res.status).toHaveBeenCalledWith(200);
-   
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        page: 1,
-        limit: 10,
-        total: 2,
-        totalPages: 1,
-        data: expect.any(Array),
-      })
-    );
-  });
-
-  it("esse teste retorna erro caso a paginação esteja errada", async () => {
-    const req = mockRequest({
-      query: { page: "-1" },
-    });
-    const res = mockResponse();
-
-    await ProdutoController.findAll(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Página inválida",
-    });
-  });
-});
-
-describe("ProdutoController - findById", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("esse teste deve retornar um produto procurado pelo ID", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-    const res = mockResponse();
-
-    const mockProduto = {
-      id_produto: 1,
-      nome: "Produto Teste",
-    };
-
-    (Produto.findByPk as jest.Mock).mockResolvedValue(mockProduto);
-
-    await ProdutoController.findById(req, res);
-
-    expect(Produto.findByPk).toHaveBeenCalledWith(1, {
-      include: ["marca", "categoria"],
-    });
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockProduto);
-  });
-
-  it("esse teste deve retornar erro 404 caso não ache o produto", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-    const res = mockResponse();
-
-    (Produto.findByPk as jest.Mock).mockResolvedValue(null);
-
-    await ProdutoController.findById(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Produto não encontrado",
-    });
-  });
-});
-
-describe("ProdutoController - create", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("esse teste é para criar um produto com sucesso", async () => {
+  it("esse teste deve passar a validacao", async () => {
     const req = mockRequest({
       body: {
         nome: "Produto Teste",
-        descricao: "Descrição",
         preco: 100,
         estoque: 10,
-        imagem: "https://imagem.com/produto.jpg",
-        destaque: true,
-        ativo: true,
         id_marca: 1,
-        id_categoria: 2,
+        id_categoria: 1,
       },
     });
 
     const res = mockResponse();
 
-    const mockProdutoCriado = {
-      id_produto: 1,
-      ...req.body,
-    };
+    await middleware(req as any, res as any, next);
 
-    (Produto.create as jest.Mock).mockResolvedValue(mockProdutoCriado);
+    expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
+  });
 
-    await ProdutoController.create(req, res);
+  it("esse tem que falhar pois o nome e invalido", async () => {
+    const req = mockRequest({
+      body: {
+        nome: "ab",
+        preco: 100,
+        estoque: 10,
+        id_marca: 1,
+        id_categoria: 1,
+      },
+    });
 
-    expect(Produto.create).toHaveBeenCalledWith(req.body);
+    const res = mockResponse();
 
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(mockProdutoCriado);
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse tem que falhar pois o preco e negativo", async () => {
+    const req = mockRequest({
+      body: {
+        nome: "Produto Teste",
+        preco: -10,
+        estoque: 10,
+        id_marca: 1,
+        id_categoria: 1,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse deve falhar caso o estoque for negativo", async () => {
+    const req = mockRequest({
+      body: {
+        nome: "Produto Teste",
+        preco: 100,
+        estoque: -1,
+        id_marca: 1,
+        id_categoria: 1,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse deve falhar caso estoque nao for um numero inteiro", async () => {
+    const req = mockRequest({
+      body: {
+        nome: "Produto Teste",
+        preco: 100,
+        estoque: 10.5,
+        id_marca: 1,
+        id_categoria: 1,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse deve falhar se id_marca nao for enviado", async () => {
+    const req = mockRequest({
+      body: {
+        nome: "Produto Teste",
+        preco: 100,
+        estoque: 10,
+        id_categoria: 1,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse deve falhar se id_categoria nao for enviado", async () => {
+    const req = mockRequest({
+      body: {
+        nome: "Produto Teste",
+        preco: 100,
+        estoque: 10,
+        id_marca: 1,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
 
-describe("ProdutoController - update", () => {
-  afterEach(() => {
+describe("Validacao de Produto - update", () => {
+  const middleware = validate(updateProdutoSchema);
+  const next = jest.fn();
+
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve atualizar o produto com sucesso", async () => {
+  it("esse teste e de update parcial aceitando apenas um nome", async () => {
     const req = mockRequest({
-      params: { id: "1" },
       body: {
-        nome: "Produto Atualizado",
+        nome: "Novo nome",
       },
     });
 
     const res = mockResponse();
 
-    const mockProduto = {
-      id_produto: 1,
-      nome: "Produto Antigo",
-      update: jest.fn().mockResolvedValue(true),
-    };
+    await middleware(req as any, res as any, next);
 
-    (Produto.findByPk as jest.Mock).mockResolvedValue(mockProduto);
-
-    await ProdutoController.update(req, res);
-
-    expect(Produto.findByPk).toHaveBeenCalledWith(1);
-    expect(mockProduto.update).toHaveBeenCalledWith(req.body);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockProduto);
+    expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve retornar erro caso o produto não existir", async () => {
+  it("esse teste deve aceitar multiplos campos", async () => {
     const req = mockRequest({
-      params: { id: "1" },
       body: {
         nome: "Produto Atualizado",
+        preco: 200,
+        estoque: 5,
       },
     });
 
     const res = mockResponse();
 
-    (Produto.findByPk as jest.Mock).mockResolvedValue(null);
+    await middleware(req as any, res as any, next);
 
-    await ProdutoController.update(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Produto não encontrado",
-    });
-  });
-});
-
-describe("ProdutoController - delete", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+    expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste é para deletar com sucesso", async () => {
+  it("esse teste deve falhar caso preco for negativo", async () => {
     const req = mockRequest({
-      params: { id: "1" },
+      body: {
+        preco: -10,
+      },
     });
 
     const res = mockResponse();
 
-    const mockProduto = {
-      id_produto: 1,
-      destroy: jest.fn().mockResolvedValue(true),
-    };
+    await middleware(req as any, res as any, next);
 
-    (Produto.findByPk as jest.Mock).mockResolvedValue(mockProduto);
-
-    await ProdutoController.delete(req, res);
-
-    expect(Produto.findByPk).toHaveBeenCalledWith(1);
-    expect(mockProduto.destroy).toHaveBeenCalled();
-
-    expect(res.status).toHaveBeenCalledWith(204);
-    expect(res.send).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve retornar erro 404 caso não consiga dar o delete", async () => {
+  it("esse teste deve falhar caso estoque for negativo", async () => {
     const req = mockRequest({
-      params: { id: "1" },
+      body: {
+        estoque: -1,
+      },
     });
 
     const res = mockResponse();
 
-    (Produto.findByPk as jest.Mock).mockResolvedValue(null);
+    await middleware(req as any, res as any, next);
 
-    await ProdutoController.delete(req, res);
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
 
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Produto não encontrado",
+  it("esse teste deve falhar caso estoque nao for inteiro", async () => {
+    const req = mockRequest({
+      body: {
+        estoque: 10.5,
+      },
     });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse teste deve falhar caso a url da imagem for invalida", async () => {
+    const req = mockRequest({
+      body: {
+        imagem: "url-invalida",
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse teste deve falhar caso id_marca nao seja inteiro", async () => {
+    const req = mockRequest({
+      body: {
+        id_marca: 1.5,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse teste deve falhar caso id_categoria nao seja inteiro", async () => {
+    const req = mockRequest({
+      body: {
+        id_categoria: 2.5,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
-
-

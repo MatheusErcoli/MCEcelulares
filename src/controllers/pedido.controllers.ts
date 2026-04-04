@@ -1,117 +1,114 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Pedido from "../models/Pedido";
 import Usuario from "../models/Usuario";
 import ItemPedido from "../models/ItemPedido";
 import Endereco from "../models/Endereco";
 import { PaginatedResponse } from "../types/paginated";
+import { HttpError } from "../types/http_error";
 
 class PedidoController {
-  static async findAll(req: Request, res: Response) {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+  static async findAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const page = Math.max(1, parseInt(req.query.page as string) || 1);
+      const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
 
-    if (page < 1) {
-      return res.status(400).json({
-        message: "Página inválida",
+      const { count, rows } = await Pedido.findAndCountAll({
+        where: { ativo: true },
+        include: ["usuario", "endereco", "itens"],
+        distinct: true,
+        col: "id_pedido",
+        limit,
+        offset: (page - 1) * limit,
+        order: [["id_pedido", "DESC"]],
       });
+
+      const response: PaginatedResponse<(typeof rows)[number]> = {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit),
+        data: rows,
+      };
+
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error)
     }
+  }
 
-    const offset = (page - 1) * limit;
+  static async findById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-    const { count, rows } = await Pedido.findAndCountAll({
-      where: {
+      const pedido = await Pedido.findByPk(Number(id), {
+        include: ["usuario", "endereco", "itens"],
+      });
+
+      if (!pedido) {
+        throw new HttpError(404, "Pedido não encontrado");
+      }
+
+      return res.status(200).json(pedido);
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id_usuario, id_endereco, data, valor_total } = req.body;
+
+      const pedido = await Pedido.create({
+        id_usuario,
+        id_endereco,
+        data,
+        valor_total,
         ativo: true,
-      },
-      include: [
-        { model: Usuario, as: "usuario" },
-        { model: Endereco, as: "endereco" },
-        { model: ItemPedido, as: "itens" },
-      ],
-      distinct: true,
-      col: "id_pedido",
-      limit,
-      offset,
-      order: [["id_pedido", "DESC"]],
-    });
-
-    const response: PaginatedResponse<(typeof rows)[number]> = {
-      page,
-      limit,
-      total: count,
-      totalPages: Math.ceil(count / limit),
-      data: rows,
-    };
-
-    return res.status(200).json(response);
-  }
-
-  static async findById(req: Request, res: Response) {
-    const { id } = req.params;
-
-    const pedido = await Pedido.findByPk(Number(id), {
-      include: [
-        { model: Usuario, as: "usuario" },
-        { model: Endereco, as: "endereco" },
-        { model: ItemPedido, as: "itens" },
-      ],
-    });
-
-    if (!pedido) {
-      return res.status(404).json({
-        message: "Pedido não encontrado",
+        status: "CRIADO",
       });
+
+      return res.status(201).json(pedido);
+    } catch (error) {
+      next(error)
     }
-
-    return res.status(200).json(pedido);
   }
 
-  static async create(req: Request, res: Response) {
-    const { id_usuario, id_endereco, data, valor_total } = req.body;
+  static async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-    const pedido = await Pedido.create({
-      id_usuario,
-      id_endereco,
-      data,
-      valor_total,
-      ativo: true,
-      status: "CRIADO",
-    });
+      const pedido = await Pedido.findByPk(Number(id));
 
-    return res.status(201).json(pedido);
+      if (!pedido) {
+        throw new HttpError(404, "Pedido não encontrado");
+      }
+
+      const dados = req.body;
+
+      await pedido.update(dados);
+
+      return res.status(200).json(pedido);
+    } catch (error) {
+      next(error)
+    }
   }
 
-  static async update(req: Request, res: Response) {
+  static async delete(req: Request, res: Response, next: NextFunction) {
+    try {
     const { id } = req.params;
 
     const pedido = await Pedido.findByPk(Number(id));
 
     if (!pedido) {
-      return res.status(404).json({
-        message: "Pedido não encontrado",
-      });
-    }
-
-    const dados = req.body;
-
-    await pedido.update(dados);
-
-    return res.status(200).json(pedido);
-  }
-
-  static async delete(req: Request, res: Response) {
-    const { id } = req.params;
-
-    const pedido = await Pedido.findByPk(Number(id));
-
-    if (!pedido) {
-      return res.status(404).json({
-        message: "Pedido não encontrado",
-      });
+        throw new HttpError(404, "Pedido não encontrado");
     }
 
     await pedido.destroy();
 
     return res.status(204).send();
+    } catch (error) {
+      next(error)
+    }
   }
 }
 

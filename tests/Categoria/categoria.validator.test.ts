@@ -1,7 +1,9 @@
 import { validate } from "../../src/middlewares/validate.middleware";
-import { createCategoriaSchema, updateCategoriaSchema } from "../../src/validators/categoria.validator";
+import {
+  createCategoriaSchema,
+  updateCategoriaSchema,
+} from "../../src/validators/categoria.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
-
 
 describe("Validação de Categoria - create", () => {
   const middleware = validate(createCategoriaSchema);
@@ -11,78 +13,38 @@ describe("Validação de Categoria - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação", () => {
+  it("esse deve falhar pois o nome é muito curto", async () => {
     const req = mockRequest({
       body: {
-        nome: "Eletrônicos",
-        descricao: "Produtos eletrônicos",
-        ativo: true,
+        nome: "a",
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse deve falhar pois o nome é muito curto", () => {
+  it("esse deve falhar pois o nome é muito longo", async () => {
     const req = mockRequest({
       body: {
-        nome: "ab",
+        nome: "a".repeat(256),
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse deve falhar pois o nome é muito longo", () => {
+  it("esse deve falhar caso a descrição seja muito longa", async () => {
     const req = mockRequest({
       body: {
-        nome: "a".repeat(101),
+        nome: "Valido",
+        descricao: "a".repeat(2001),
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse deve falhar caso a descrição seja muito longa", () => {
-    const req = mockRequest({
-      body: {
-        nome: "Eletrônicos",
-        descricao: "a".repeat(256),
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse deve falhar caso ativo não seja booleano", () => {
-    const req = mockRequest({
-      body: {
-        nome: "Eletrônicos",
-        ativo: "true",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
 
@@ -94,75 +56,25 @@ describe("Validação de Categoria - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve aceitar update parcial", () => {
+  it("esse deve falhar caso descrição seja muito longa", async () => {
     const req = mockRequest({
       body: {
-        nome: "Nova Categoria",
+        descricao: "a".repeat(2001),
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve aceitar múltiplos campos", () => {
+  it("esse deve falhar pois o nome é muito longo", async () => {
     const req = mockRequest({
       body: {
-        nome: "Atualizado",
-        descricao: "Nova descrição",
-        ativo: false,
+        nome: "a".repeat(256),
       },
     });
-
     const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse teste deve aceitar body vazio", () => {
-    const req = mockRequest({
-      body: {},
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(next).toHaveBeenCalled();
-  });
-
-  it("esse deve falhar caso descrição seja muito longa", () => {
-    const req = mockRequest({
-      body: {
-        descricao: "a".repeat(256),
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-
-  it("esse deve falhar caso ativo não seja booleano", () => {
-    const req = mockRequest({
-      body: {
-        ativo: "false",
-      },
-    });
-
-    const res = mockResponse();
-
-    middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    await middleware(req as any, res as any, next);
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
-
-

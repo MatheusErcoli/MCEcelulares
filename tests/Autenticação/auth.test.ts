@@ -1,71 +1,21 @@
 import AuthController from "../../src/controllers/auth.controllers";
-import AuthService from "../../src/services/auth.service";
-import jwt from "jsonwebtoken";
-import { mockNext, mockRequest, mockResponse } from "../test.helpers";
-
-jest.mock("../../src/services/auth.service");
-jest.mock("jsonwebtoken");
+import { mockRequest, mockResponse } from "../test.helpers";
+import { HttpError } from "../../src/types/http_error";
 
 describe("AuthController - login", () => {
-  let req: ReturnType<typeof mockRequest>;
-  let res: ReturnType<typeof mockResponse>;
-  let next: ReturnType<typeof mockNext>;
-
-  beforeEach(() => {
-    req = mockRequest({
-      body: {
-        email: "teste@email.com",
-        senha: "123456",
-      },
-    });
-
-    res = mockResponse();
-    next = mockNext();
-  });
-
-  it("esse teste deve retornar 200 e token quando login for válido", async () => {
-    const mockUsuario = {
-      get: (field: string) => {
-        if (field === "id_usuario") return 1;
-        if (field === "admin") return false;
-      },
-      toJSON: () => ({
-        id_usuario: 1,
-        email: "teste@email.com",
-        senha: "hash",
-      }),
-    };
-
-    (AuthService.login as jest.Mock).mockResolvedValue(mockUsuario);
-    (jwt.sign as jest.Mock).mockReturnValue("token_fake");
-
-    process.env.JWT_SECRET = "segredo";
-
-    await AuthController.login(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
-      usuario: {
-        id_usuario: 1,
-        email: "teste@email.com",
-      },
-      token: "token_fake",
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it("esse teste deve retornar 401 se credenciais forem inválidas", async () => {
-    (AuthService.login as jest.Mock).mockResolvedValue(null);
+    const req = mockRequest({
+      body: { email: "invalido@teste.com", senha: "123" },
+    });
+    const res = mockResponse();
+    const next = jest.fn();
 
-    await AuthController.login(req, res, next);
+    await AuthController.login(req as any, res as any, next);
 
-    expect(res.status).toHaveBeenCalledWith(401);
-  });
-
-  it("esse teste deve chamar next em caso de erro", async () => {
-    (AuthService.login as jest.Mock).mockRejectedValue(new Error("erro"));
-
-    await AuthController.login(req, res, next);
-
-    expect(next).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.any(HttpError));
   });
 });

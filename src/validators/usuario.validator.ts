@@ -43,6 +43,8 @@ export const updateUsuarioSchema = z.object({
     .max(100)
     .optional(),
 
+  email: z.string().optional(),
+
   senha: z
     .string()
     .min(8, "A senha deve ter no mínimo 8 caracteres")

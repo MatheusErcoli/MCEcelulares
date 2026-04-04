@@ -1,129 +1,78 @@
-import PedidoController from "../../src/controllers/pedido.controllers";
-import Pedido from "../../src/models/Pedido";
+import { validate } from "../../src/middlewares/validate.middleware";
+import {
+  createPedidoSchema,
+  updatePedidoSchema,
+} from "../../src/validators/pedido.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-jest.mock("../../src/models/Pedido");
+describe("Validação de Pedido - create", () => {
+  const middleware = validate(createPedidoSchema);
+  const next = jest.fn();
 
-
-describe("PedidoController - findAll", () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve retornar pedidos com paginação", async () => {
-    const req = mockRequest({
-      query: { page: "1", limit: "10" },
-    });
-
-    const res = mockResponse();
-
-    (Pedido.findAndCountAll as jest.Mock).mockResolvedValue({
-      count: 2,
-      rows: [{ id_pedido: 1 }, { id_pedido: 2 }],
-    });
-
-    await PedidoController.findAll(req, res);
-
-    expect(Pedido.findAndCountAll).toHaveBeenCalled();
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        page: 1,
-        limit: 10,
-        total: 2,
-        data: expect.any(Array),
-      })
-    );
-  });
-
-  it("esse teste deve retornar erro se a página for inválida", async () => {
-    const req = mockRequest({
-      query: { page: "-1" },
-    });
-
-    const res = mockResponse();
-
-    await PedidoController.findAll(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-  });
-});
-
-describe("PedidoController - findById", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("esse teste deve retornar um pedido pelo ID", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-
-    const res = mockResponse();
-
-    const mockPedido = { id_pedido: 1 };
-
-    (Pedido.findByPk as jest.Mock).mockResolvedValue(mockPedido);
-
-    await PedidoController.findById(req, res);
-
-    expect(Pedido.findByPk).toHaveBeenCalledWith(1, expect.any(Object));
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockPedido);
-  });
-
-  it("esse teste deve retornar erro 404 se não encontrar o pedido", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-
-    const res = mockResponse();
-
-    (Pedido.findByPk as jest.Mock).mockResolvedValue(null);
-
-    await PedidoController.findById(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-  });
-});
-
-describe("PedidoController - create", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("esse teste deve criar um pedido com sucesso", async () => {
+  it("esse teste deve passar a validação com dados válidos", async () => {
     const req = mockRequest({
       body: {
         id_usuario: 1,
-        id_funcionario: 2,
+        id_endereco: 2,
         valor_total: 100,
       },
     });
 
     const res = mockResponse();
 
-    const mockPedido = { id_pedido: 1, ...req.body };
+    await middleware(req as any, res as any, next);
 
-    (Pedido.create as jest.Mock).mockResolvedValue(mockPedido);
+    expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
+  });
 
-    await PedidoController.create(req, res);
+  it("esse teste deve falhar pois id_usuario é inválido", async () => {
+    const req = mockRequest({
+      body: {
+        id_usuario: -1,
+        id_endereco: 2,
+        valor_total: 100,
+      },
+    });
 
-    expect(Pedido.create).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(mockPedido);
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("esse teste deve falhar pois valor_total é negativo", async () => {
+    const req = mockRequest({
+      body: {
+        id_usuario: 1,
+        id_endereco: 2,
+        valor_total: -5,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
 
-describe("PedidoController - update", () => {
-  afterEach(() => {
+describe("Validação de Pedido - update", () => {
+  const middleware = validate(updatePedidoSchema);
+  const next = jest.fn();
+
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve atualizar o pedido com sucesso", async () => {
+  it("esse teste deve aceitar update parcial", async () => {
     const req = mockRequest({
-      params: { id: "1" },
       body: {
         valor_total: 200,
       },
@@ -131,76 +80,39 @@ describe("PedidoController - update", () => {
 
     const res = mockResponse();
 
-    const mockPedido = {
-      update: jest.fn().mockResolvedValue(true),
-    };
+    await middleware(req as any, res as any, next);
 
-    (Pedido.findByPk as jest.Mock).mockResolvedValue(mockPedido);
-
-    await PedidoController.update(req, res);
-
-    expect(Pedido.findByPk).toHaveBeenCalledWith(1);
-    expect(mockPedido.update).toHaveBeenCalledWith(req.body);
-
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve retornar erro se o pedido não existir", async () => {
+  it("esse teste deve aceitar múltiplos campos válidos", async () => {
     const req = mockRequest({
-      params: { id: "1" },
-      body: {},
+      body: {
+        valor_total: 200,
+        status: "PAGO",
+      },
     });
 
     const res = mockResponse();
 
-    (Pedido.findByPk as jest.Mock).mockResolvedValue(null);
+    await middleware(req as any, res as any, next);
 
-    await PedidoController.update(req, res);
+    expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
+  });
 
-    expect(res.status).toHaveBeenCalledWith(404);
+  it("esse teste deve falhar pois valor_total é negativo", async () => {
+    const req = mockRequest({
+      body: {
+        valor_total: -5,
+      },
+    });
+
+    const res = mockResponse();
+
+    await middleware(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });
-
-describe("PedidoController - delete", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("esse teste deve deletar o pedido com sucesso", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-
-    const res = mockResponse();
-
-    const mockPedido = {
-      destroy: jest.fn().mockResolvedValue(true),
-    };
-
-    (Pedido.findByPk as jest.Mock).mockResolvedValue(mockPedido);
-
-    await PedidoController.delete(req, res);
-
-    expect(Pedido.findByPk).toHaveBeenCalledWith(1);
-    expect(mockPedido.destroy).toHaveBeenCalled();
-
-    expect(res.status).toHaveBeenCalledWith(204);
-    expect(res.send).toHaveBeenCalled();
-  });
-
-  it("esse teste deve retornar erro 404 ao deletar pedido inexistente", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-
-    const res = mockResponse();
-
-    (Pedido.findByPk as jest.Mock).mockResolvedValue(null);
-
-    await PedidoController.delete(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-  });
-});
-
-

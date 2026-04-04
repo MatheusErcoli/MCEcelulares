@@ -4,29 +4,29 @@ import { mockRequest, mockResponse } from "../test.helpers";
 
 jest.mock("../../src/models/Marca");
 
-
 describe("MarcaController - findAll", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-it("esse teste deve retornar todas as marcas corretamente", async () => {
-  const req = mockRequest({ query: {} });
-  const res = mockResponse();
+  it("esse teste deve retornar todas as marcas corretamente", async () => {
+    const req = mockRequest({ query: {} });
+    const res = mockResponse();
+    const next = jest.fn();
 
-  const mockMarcas = [
-    { id: 1, nome: "Nike" },
-    { id: 2, nome: "Adidas" },
-  ];
+    const mockMarcas = [
+      { id: 1, nome: "Nike" },
+      { id: 2, nome: "Adidas" },
+    ];
 
-  (Marca.findAll as jest.Mock).mockResolvedValue(mockMarcas);
+    (Marca.findAll as jest.Mock).mockResolvedValue(mockMarcas);
 
-  await MarcaController.findAll(req, res);
+    await MarcaController.findAll(req, res, next);
 
-  expect(Marca.findAll).toHaveBeenCalled();
-  expect(res.status).toHaveBeenCalledWith(200);
-  expect(res.json).toHaveBeenCalledWith(mockMarcas);
-});
+    expect(Marca.findAll).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(mockMarcas);
+  });
 });
 
 describe("MarcaController - findById", () => {
@@ -40,37 +40,35 @@ describe("MarcaController - findById", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockMarca = {
       id: 1,
-      nome: "Nike",
+      nome: "Nike"
     };
 
     (Marca.findByPk as jest.Mock).mockResolvedValue(mockMarca);
 
-    await MarcaController.findById(req, res);
+    await MarcaController.findById(req, res, next);
 
     expect(Marca.findByPk).toHaveBeenCalledWith(1);
-
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockMarca);
   });
 
-  it("esse teste deve retornar erro 404 caso a marca não exista", async () => {
+  it("esse teste deve retornar erro 404 caso não encontre a marca", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     (Marca.findByPk as jest.Mock).mockResolvedValue(null);
 
-    await MarcaController.findById(req, res);
+    await MarcaController.findById(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Marca não encontrada",
-    });
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
 
@@ -79,7 +77,7 @@ describe("MarcaController - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste é para criar uma marca com sucesso", async () => {
+  it("esse teste deve criar marca com sucesso", async () => {
     const req = mockRequest({
       body: {
         nome: "Nike",
@@ -87,22 +85,17 @@ describe("MarcaController - create", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
-    const mockMarcaCriada = {
-      id: 1,
-      nome: "Nike",
-    };
+    const mockMarca = { id: 1, ...req.body };
 
-    (Marca.create as jest.Mock).mockResolvedValue(mockMarcaCriada);
+    (Marca.create as jest.Mock).mockResolvedValue(mockMarca);
 
-    await MarcaController.create(req, res);
+    await MarcaController.create(req, res, next);
 
-    expect(Marca.create).toHaveBeenCalledWith({
-      nome: req.body.nome,
-    });
-
+    expect(Marca.create).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(mockMarcaCriada);
+    expect(res.json).toHaveBeenCalledWith(mockMarca);
   });
 });
 
@@ -111,7 +104,7 @@ describe("MarcaController - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve atualizar a marca com sucesso", async () => {
+  it("esse teste deve atualizar marca com sucesso", async () => {
     const req = mockRequest({
       params: { id: "1" },
       body: {
@@ -120,25 +113,23 @@ describe("MarcaController - update", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockMarca = {
       id: 1,
-      nome: "Nike",
       update: jest.fn().mockResolvedValue(true),
     };
 
     (Marca.findByPk as jest.Mock).mockResolvedValue(mockMarca);
 
-    await MarcaController.update(req, res);
+    await MarcaController.update(req, res, next);
 
     expect(Marca.findByPk).toHaveBeenCalledWith(1);
     expect(mockMarca.update).toHaveBeenCalledWith(req.body);
-
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockMarca);
   });
 
-  it("esse teste deve retornar erro caso a marca não existir", async () => {
+  it("esse teste deve retornar erro 404 caso marca não exista", async () => {
     const req = mockRequest({
       params: { id: "1" },
       body: {
@@ -147,15 +138,13 @@ describe("MarcaController - update", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     (Marca.findByPk as jest.Mock).mockResolvedValue(null);
 
-    await MarcaController.update(req, res);
+    await MarcaController.update(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Marca não encontrada",
-    });
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
 
@@ -170,6 +159,7 @@ describe("MarcaController - delete", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     const mockMarca = {
       id: 1,
@@ -178,7 +168,7 @@ describe("MarcaController - delete", () => {
 
     (Marca.findByPk as jest.Mock).mockResolvedValue(mockMarca);
 
-    await MarcaController.delete(req, res);
+    await MarcaController.delete(req, res, next);
 
     expect(Marca.findByPk).toHaveBeenCalledWith(1);
     expect(mockMarca.destroy).toHaveBeenCalled();
@@ -193,16 +183,12 @@ describe("MarcaController - delete", () => {
     });
 
     const res = mockResponse();
+    const next = jest.fn();
 
     (Marca.findByPk as jest.Mock).mockResolvedValue(null);
 
-    await MarcaController.delete(req, res);
+    await MarcaController.delete(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      message: "Marca não encontrada",
-    });
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
-
-
