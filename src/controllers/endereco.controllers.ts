@@ -23,9 +23,7 @@ class EnderecoController {
       include: ["usuario"],
     });
 
-    if (!endereco) {
-        throw new HttpError(404, "Endereço não encontrado");
-    }
+    if (!endereco) throw new HttpError(404, "Endereço não encontrado");
 
     return res.status(200).json(endereco);
     } catch (error) {
@@ -69,9 +67,7 @@ class EnderecoController {
 
     const enderecoEncontrado = await Endereco.findByPk(Number(id));
 
-    if (!enderecoEncontrado) {
-        throw new HttpError(404, "Não foi possível atualizar: Endereço não encontrado");
-    }
+    if (!enderecoEncontrado) throw new HttpError(404, "Não foi possível atualizar: Endereço não encontrado");
 
     const dados = req.body;
 
@@ -89,9 +85,7 @@ class EnderecoController {
 
     const endereco = await Endereco.findByPk(Number(id));
 
-    if (!endereco) {
-        throw new HttpError(404, "Não foi possível excluir: Endereço não encontrado");
-    }
+    if (!endereco) throw new HttpError(404, "Não foi possível excluir: Endereço não encontrado");
 
     await endereco.destroy();
 

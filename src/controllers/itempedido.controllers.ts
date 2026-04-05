@@ -9,11 +9,6 @@ class ItemPedidoController {
         include: ["pedido","produto"],
       });
 
-      if (itensPedido.length === 0) {
-        throw new HttpError(404, "Nenhum item do pedido foi encontrado");
-      }
-
-
       return res.status(200).json(itensPedido);
     } catch (error) {
       next(error)
@@ -28,9 +23,7 @@ class ItemPedidoController {
         include: ["pedido", "produto"],
       });
 
-      if (!itemPedido) {
-        throw new HttpError(404, "Item do pedido não encontrado");
-      }
+      if (!itemPedido) throw new HttpError(404, "Item do pedido não encontrado");
 
       return res.status(200).json(itemPedido);
     } catch (error) {
@@ -61,9 +54,7 @@ class ItemPedidoController {
 
     const itemPedido = await ItemPedido.findByPk(Number(id));
 
-    if (!itemPedido) {
-        throw new HttpError(404, "Item do pedido não encontrado");
-    }
+    if (!itemPedido) throw new HttpError(404, "Item do pedido não encontrado");
 
     const dados = req.body;
 
@@ -81,9 +72,7 @@ class ItemPedidoController {
 
     const itemPedido = await ItemPedido.findByPk(Number(id));
 
-    if (!itemPedido) {
-        throw new HttpError(404, "Item do pedido não encontrado");
-    }
+    if (!itemPedido) throw new HttpError(404, "Item do pedido não encontrado");
 
     await itemPedido.destroy();
 

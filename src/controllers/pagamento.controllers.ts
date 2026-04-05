@@ -23,9 +23,7 @@ class PagamentoController {
         include: ["pedido"],
       });
 
-      if (!pagamento) {
-        throw new HttpError(404, "Pagamento não encontrado");
-      }
+      if (!pagamento) throw new HttpError(404, "Pagamento não encontrado");
 
       return res.status(200).json(pagamento);
     } catch (error) {
@@ -58,9 +56,7 @@ class PagamentoController {
 
     const pagamento = await Pagamento.findByPk(Number(id));
 
-    if (!pagamento) {
-        throw new HttpError(404, "Pagamento não encontrado");
-    }
+    if (!pagamento) throw new HttpError(404, "Pagamento não encontrado");
 
     const dados = req.body;
 
@@ -78,9 +74,7 @@ class PagamentoController {
 
     const pagamento = await Pagamento.findByPk(Number(id));
 
-    if (!pagamento) {
-        throw new HttpError(404, "Pagamento não encontrado");
-    }
+    if (!pagamento) throw new HttpError(404, "Pagamento não encontrado");
 
     await pagamento.destroy();
 

@@ -19,9 +19,7 @@ class CategoriaController {
 
       const categoria = await Categoria.findByPk(Number(id));
 
-      if (!categoria) {
-        throw new HttpError(404, "Categoria não encontrada.");
-      }
+      if (!categoria) throw new HttpError(404, "Categoria não encontrada.");
 
       return res.status(200).json(categoria);
     } catch (error) {
@@ -51,9 +49,7 @@ class CategoriaController {
 
     const categoria = await Categoria.findByPk(Number(id));
 
-    if (!categoria) {
-        throw new HttpError(404, "Não foi possível atualizar: Categoria não encontrada.");
-    }
+    if (!categoria) throw new HttpError(404, "Não foi possível atualizar: Categoria não encontrada.");
 
     const dados = req.body;
 
@@ -71,9 +67,7 @@ class CategoriaController {
 
     const categoria = await Categoria.findByPk(Number(id));
 
-    if (!categoria) {
-        throw new HttpError(404, "Não foi possível excluir: Categoria não encontrada.");
-    }
+    if (!categoria) throw new HttpError(404, "Não foi possível excluir: Categoria não encontrada.");
 
     await categoria.destroy();
 

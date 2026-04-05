@@ -136,12 +136,7 @@ describe("UsuarioController - create", () => {
     expect(bcrypt.hash).toHaveBeenCalledWith("SenhaForte@123", 10);
     expect(Usuario.create).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        nome: "Novo Usuário",
-        email: "teste@teste.com",
-      })
-    );
+    expect(res.json).toHaveBeenCalledWith({ message: "Usuário criado com sucesso" });
   });
 });
 

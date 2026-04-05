@@ -26,16 +26,17 @@ describe("ItemPedidoController - findAll", () => {
     expect(res.json).toHaveBeenCalledWith(expect.any(Array));
   });
 
-  it("esse teste deve chamar o next com erro 404 se nenhum item for encontrado", async () => {
+  it("esse teste deve retornar 200 com array vazio se nenhum item existir", async () => {
     const req = mockRequest();
     const res = mockResponse();
     const next = jest.fn();
 
-    (ItemPedido.findAll as jest.Mock).mockResolvedValue([]); // Array vazio aciona o erro no controller
+    (ItemPedido.findAll as jest.Mock).mockResolvedValue([]);
 
     await ItemPedidoController.findAll(req, res, next);
 
-    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([]);
   });
 });
 

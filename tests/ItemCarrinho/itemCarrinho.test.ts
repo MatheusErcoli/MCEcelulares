@@ -124,7 +124,10 @@ describe("ItemCarrinhoController - create", () => {
 
     expect(ItemCarrinho.create).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(mockItem);
+    expect(res.json).toHaveBeenCalledWith({
+      id_produto: mockItem.id_produto,
+      preco_unitario: mockItem.preco_unitario,
+    });
   });
 });
 

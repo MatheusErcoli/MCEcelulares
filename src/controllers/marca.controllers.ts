@@ -4,25 +4,32 @@ import Produto from "../models/Produto";
 import { HttpError } from "../types/http_error";
 
 class MarcaController {
-static async findAll(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { id_categoria } = req.query;
+  static async findAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const where: Record<string, number> = {};
 
-    const marcas = await Marca.findAll({
-      include: id_categoria ? [
-        { 
-          model: Produto, 
-          where: { id_categoria: Number(id_categoria) }, 
-          attributes: [], 
-          required: true }
+      const id_categoria = req.query.id_categoria && req.query.id_categoria !== "undefined"
+        ? Number(req.query.id_categoria)
+        : undefined;
+
+      if (id_categoria) where.id_categoria = id_categoria;
+
+      const marcas = await Marca.findAll({
+        include: id_categoria ? [
+          {
+            model: Produto, as: 'produtos',
+            where,
+            attributes: [],
+            required: true
+          }
         ] : [],
-    });
+      });
 
-    return res.status(200).json(marcas);
-  } catch (error) {
-    next(error);
+      return res.status(200).json(marcas);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
   static async findById(req: Request, res: Response, next: NextFunction) {
     try {
@@ -30,9 +37,7 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
 
       const marca = await Marca.findByPk(Number(id));
 
-      if (!marca) {
-        throw new HttpError(404, "Marca não encontrada");
-      }
+      if (!marca) throw new HttpError(404, "Marca não encontrada");
 
       return res.status(200).json(marca);
     } catch (error) {
@@ -54,17 +59,15 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-    const { id } = req.params;
+      const { id } = req.params;
 
-    const marca = await Marca.findByPk(Number(id));
+      const marca = await Marca.findByPk(Number(id));
 
-    if (!marca) {
-        throw new HttpError(404, "Marca não encontrada");
-    }
+      if (!marca) throw new HttpError(404, "Marca não encontrada");
 
-    await marca.update(req.body);
+      await marca.update(req.body);
 
-    return res.status(200).json(marca);
+      return res.status(200).json(marca);
     } catch (error) {
       next(error)
     }
@@ -72,17 +75,15 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
-    const { id } = req.params;
+      const { id } = req.params;
 
-    const marca = await Marca.findByPk(Number(id));
+      const marca = await Marca.findByPk(Number(id));
 
-    if (!marca) {
-        throw new HttpError(404, "Marca não encontrada");
-    }
+      if (!marca) throw new HttpError(404, "Marca não encontrada");
 
-    await marca.destroy();
+      await marca.destroy();
 
-    return res.status(204).send();
+      return res.status(204).send();
     } catch (error) {
       next(error)
     }

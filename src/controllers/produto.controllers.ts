@@ -9,12 +9,19 @@ class ProdutoController {
       const page = Math.max(1, parseInt(req.query.page as string) || 1);
       const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
 
+      const where: Record<string, number | boolean> = {};
+
+      if (req.query.id_categoria && req.query.id_categoria !== "undefined")
+        where.id_categoria = Number(req.query.id_categoria);
+
+      if (req.query.id_marca && req.query.id_marca !== "undefined")
+        where.id_marca = Number(req.query.id_marca);
+
+      if (req.query.destaque === "true")
+        where.destaque = true;
+
       const { count, rows } = await Produto.findAndCountAll({
-        where: {
-          id_categoria: req.query.id_categoria ? Number(req.query.id_categoria) : undefined,
-          id_marca: req.query.id_marca ? Number(req.query.id_marca) : undefined,
-          destaque: req.query.destaque === "true" ? true : undefined,
-        },
+        where,
         include: ["marca", "categoria"],
         limit,
         offset: (page - 1) * limit,

@@ -40,9 +40,7 @@ class UsuarioController {
         include: ['enderecos'],
       });
 
-      if (!usuario) {
-        throw new HttpError(404, "Usuário não encontrado");
-      }
+      if (!usuario) throw new HttpError(404, "Usuário não encontrado");
 
       return res.status(200).json(usuario);
     } catch (error) {
@@ -74,45 +72,38 @@ class UsuarioController {
         admin,
       });
 
-      const usuarioSemSenha = usuario.toJSON();
-      delete usuarioSemSenha.senha;
-
-      return res.status(201).json(usuarioSemSenha);
+      return res.status(201).json({ message: "Usuário criado com sucesso" });
     } catch (error) {
       next(error);
     }
   }
 
-static async update(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { id } = req.params;
+  static async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-    const usuario = await Usuario.findByPk(Number(id));
+      const usuario = await Usuario.findByPk(Number(id));
 
-    if (!usuario) {
-      throw new HttpError(404, "Usuário não encontrado");
+      if (!usuario) throw new HttpError(404, "Usuário não encontrado");
+
+      if (req.body.email) throw new HttpError(400, "Email não pode ser alterado");
+
+      const dados = { ...req.body };
+
+      if (dados.senha) {
+        dados.senha = await bcrypt.hash(dados.senha, 10);
+      }
+
+      await usuario.update(dados);
+
+      const usuarioSemSenha = usuario.toJSON();
+      delete usuarioSemSenha.senha;
+
+      return res.status(200).json(usuarioSemSenha);
+    } catch (error) {
+      next(error);
     }
-
-    if (req.body.email) {
-      throw new HttpError(400, "Email não pode ser alterado");
-    }
-    
-    const dados = { ...req.body };
-
-    if (dados.senha) {
-      dados.senha = await bcrypt.hash(dados.senha, 10);
-    }
-
-    await usuario.update(dados);
-
-    const usuarioSemSenha = usuario.toJSON();
-    delete usuarioSemSenha.senha;
-
-    return res.status(200).json(usuarioSemSenha);
-  } catch (error) {
-    next(error);
   }
-}
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
@@ -120,9 +111,7 @@ static async update(req: Request, res: Response, next: NextFunction) {
 
       const usuario = await Usuario.findByPk(Number(id));
 
-      if (!usuario) {
-        throw new HttpError(404, "Usuário não encontrado");
-      }
+      if (!usuario) throw new HttpError(404, "Usuário não encontrado");
 
       await usuario.destroy();
 

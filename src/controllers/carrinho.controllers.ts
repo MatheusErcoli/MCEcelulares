@@ -48,8 +48,7 @@ class CarrinhoController {
       });
 
       return res.status(200).json({
-        id_carrinho: carrinho.id_carrinho,
-        id_usuario: carrinho.id_usuario
+        id_carrinho: carrinho.id_carrinho
       });
 
     } catch (error) {
@@ -63,9 +62,7 @@ class CarrinhoController {
 
       const carrinho = await Carrinho.findByPk(Number(id));
 
-      if (!carrinho) {
-        throw new HttpError(404, "Não foi possível atualizar: Carrinho não encontrado");
-      }
+      if (!carrinho) throw new HttpError(404, "Não foi possível atualizar: Carrinho não encontrado");
 
       const dados = req.body;
 
@@ -84,10 +81,7 @@ class CarrinhoController {
 
       const carrinho = await Carrinho.findByPk(Number(id));
 
-      if (!carrinho) {
-        throw new HttpError(404, "Não foi possível excluir: Carrinho não encontrado");
-      }
-
+      if (!carrinho) throw new HttpError(404, "Não foi possível excluir: Carrinho não encontrado");
       await carrinho.destroy();
       return res.status(204).send()
     } catch (error) {
