@@ -30,11 +30,10 @@ describe("Validação de Pedido - create", () => {
     expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois id_usuario é inválido", async () => {
+  it("esse teste deve falhar pois id_endereco é inválido", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: -1,
-        id_endereco: 2,
+        id_endereco: -1,
         valor_total: 100,
       },
     });

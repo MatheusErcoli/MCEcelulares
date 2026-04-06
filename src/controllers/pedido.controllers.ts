@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import Pedido from "../models/Pedido";
-import Usuario from "../models/Usuario";
 import ItemPedido from "../models/ItemPedido";
-import Endereco from "../models/Endereco";
 import { PaginatedResponse } from "../types/paginated";
 import { HttpError } from "../types/http_error";
 import ItemCarrinho from "../models/ItemCarrinho";
 import Carrinho from "../models/Carrinho";
+
+interface AuthenticatedRequest extends Request {
+  userId?: number;
+}
 
 class PedidoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
@@ -16,7 +18,11 @@ class PedidoController {
 
       const { count, rows } = await Pedido.findAndCountAll({
         where: { ativo: true },
-        include: ["usuario", "endereco", "itens"],
+        include: [
+          "usuario",
+          "endereco",
+          { association: "itens", include: ["produto"] },
+        ],
         distinct: true,
         col: "id_pedido",
         limit,
@@ -34,7 +40,7 @@ class PedidoController {
 
       return res.status(200).json(response);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
@@ -43,53 +49,54 @@ class PedidoController {
       const { id } = req.params;
 
       const pedido = await Pedido.findByPk(Number(id), {
-        include: ["usuario", "endereco", "itens"],
+        include: [
+          "usuario",
+          "endereco",
+          { association: "itens", include: ["produto"] },
+        ],
       });
 
-      if (!pedido) {
-        throw new HttpError(404, "Pedido não encontrado");
-      }
+      if (!pedido) throw new HttpError(404, "Pedido não encontrado");
 
       return res.status(200).json(pedido);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
-static async create(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { id_usuario, id_endereco, valor_total } = req.body;
+  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const id_usuario = req.userId;
+      const { id_endereco, valor_total } = req.body;
 
-    const pedido = await Pedido.create({
-      id_usuario,
-      id_endereco,
-      valor_total,
-    });
+      const carrinho = await Carrinho.findOne({ where: { id_usuario } });
 
-    const carrinho = await Carrinho.findOne({ where: { id_usuario } });
-    
-    if (!carrinho) throw new HttpError(404, "Carrinho não encontrado");
+      if (!carrinho) throw new HttpError(404, "Carrinho não encontrado");
 
-    const itensCarrinho = await ItemCarrinho.findAll({
-      where: { id_carrinho: carrinho.id_carrinho },
-    });
+      const itensCarrinho = await ItemCarrinho.findAll({
+        where: { id_carrinho: carrinho.id_carrinho },
+      });
 
-    await ItemPedido.bulkCreate(
-      itensCarrinho.map((item) => ({
-        id_pedido: pedido.id_pedido,
-        id_produto: item.id_produto,
-        quantidade: item.quantidade,
-        preco_unitario: item.preco_unitario,
-      }))
-    );
+      if (itensCarrinho.length === 0) throw new HttpError(400, "Carrinho vazio");
 
-    await ItemCarrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
+      const pedido = await Pedido.create({ id_usuario, id_endereco, valor_total });
 
-    return res.status(201).json(pedido);
-  } catch (error) {
-    next(error);
+      await ItemPedido.bulkCreate(
+        itensCarrinho.map((item) => ({
+          id_pedido: pedido.id_pedido,
+          id_produto: item.id_produto,
+          quantidade: item.quantidade,
+          preco_unitario: item.preco_unitario,
+        }))
+      );
+
+      await Carrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
+
+      return res.status(201).json(pedido);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
@@ -97,17 +104,13 @@ static async create(req: Request, res: Response, next: NextFunction) {
 
       const pedido = await Pedido.findByPk(Number(id));
 
-      if (!pedido) {
-        throw new HttpError(404, "Pedido não encontrado");
-      }
+      if (!pedido) throw new HttpError(404, "Pedido não encontrado");
 
-      const dados = req.body;
-
-      await pedido.update(dados);
+      await pedido.update(req.body);
 
       return res.status(200).json(pedido);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
@@ -117,15 +120,13 @@ static async create(req: Request, res: Response, next: NextFunction) {
 
       const pedido = await Pedido.findByPk(Number(id));
 
-      if (!pedido) {
-        throw new HttpError(404, "Pedido não encontrado");
-      }
+      if (!pedido) throw new HttpError(404, "Pedido não encontrado");
 
       await pedido.destroy();
 
       return res.status(204).send();
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 }

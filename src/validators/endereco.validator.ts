@@ -1,80 +1,74 @@
 import { z } from "zod";
 
 export const createEnderecoSchema = z.object({
-  id_usuario: z.number(),
-
-  endereco: z.string()
+  endereco: z.string({ error: "Endereço é obrigatório" })
     .trim()
     .min(1, "Endereço é obrigatório")
     .min(3, "Endereço muito curto")
-    .max(255),
+    .max(255, "Endereço muito longo"),
 
-  numero: z.string()
+  numero: z.string({ error: "Número é obrigatório" })
     .trim()
     .min(1, "Número é obrigatório")
-    .max(20),
+    .max(20, "Número muito longo"),
 
-  complemento: z.string()
+  cidade: z.string({ error: "Cidade é obrigatória" })
     .trim()
-    .max(255)
+    .min(1, "Cidade é obrigatória")
+    .max(100, "Cidade muito longa"),
+
+  estado: z.string({ error: "Estado é obrigatório" })
+    .trim()
+    .length(2, "Estado deve ter 2 letras"),
+
+  cep: z.string({ error: "CEP é obrigatório" })
+    .trim()
+    .regex(/^\d{8}$/, "CEP deve conter 8 números"),
+
+  complemento: z.string({ error: "Complemento inválido" })
+    .trim()
+    .max(255, "Complemento muito longo")
     .optional(),
 
-  bairro: z.string()
+  bairro: z.string({ error: "Bairro inválido" })
     .trim()
-    .max(100)
-    .optional(),
-
-  cidade: z.string()
-    .trim()
-    .max(100)
-    .optional(),
-
-  estado: z.string()
-    .trim()
-    .length(2, "Estado deve ter 2 letras")
-    .optional(),
-
-  cep: z.string()
-    .trim()
-    .regex(/^\d{8}$/, "CEP deve conter 8 números")
+    .max(100, "Bairro muito longo")
     .optional(),
 });
 
 export const updateEnderecoSchema = z.object({
-  id_usuario: z.number().optional(),
-
-  endereco: z.string()
+  endereco: z.string({ error: "Endereço inválido" })
     .trim()
     .min(3, "Endereço muito curto")
-    .max(255)
+    .max(255, "Endereço muito longo")
     .optional(),
 
-  numero: z.string()
+  numero: z.string({ error: "Número inválido" })
     .trim()
-    .max(20)
+    .max(20, "Número muito longo")
     .optional(),
 
-  complemento: z.string()
+  complemento: z.string({ error: "Complemento inválido" })
     .trim()
-    .max(255)
+    .max(255, "Complemento muito longo")
     .optional(),
 
-  bairro: z.string()
+  bairro: z.string({ error: "Bairro inválido" })
     .trim()
-    .max(100)
+    .max(100, "Bairro muito longo")
     .optional(),
 
-  cidade: z.string()
+  cidade: z.string({ error: "Cidade inválida" })
     .trim()
-    .max(100)
+    .max(100, "Cidade muito longa")
     .optional(),
 
-  estado: z.string()
+  estado: z.string({ error: "Estado inválido" })
     .trim()
     .length(2, "Estado deve ter 2 letras")
     .optional(),
 
-  cep: z.string()
+  cep: z.string({ error: "CEP inválido" })
     .trim()
     .regex(/^\d{8}$/, "CEP deve conter 8 números")
     .optional(),

@@ -20,6 +20,7 @@ class AuthController {
 
       return res.status(200).json({
         id_usuario: usuario.id_usuario,
+        nome: usuario.nome,
         token
       });
 

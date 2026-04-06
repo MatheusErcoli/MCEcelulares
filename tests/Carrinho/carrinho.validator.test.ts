@@ -13,15 +13,16 @@ describe("Validação de Carrinho - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve falhar pois id_usuario é inválido", async () => {
+  it("esse teste deve passar pois o schema de criação aceita o body enviado", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: "invalido",
+        id_usuario: 1,
       },
     });
     const res = mockResponse();
     await middleware(req as any, res as any, next);
-    expect(next).toHaveBeenCalledWith(expect.anything());
+    expect(next).toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 });
 
@@ -33,10 +34,10 @@ describe("Validação de Carrinho - update", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve falhar pois id_usuario é inválido", async () => {
+  it("esse teste deve falhar pois ativo é inválido (não é boolean)", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: "invalido",
+        ativo: "invalido",
       },
     });
     const res = mockResponse();

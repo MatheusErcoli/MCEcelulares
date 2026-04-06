@@ -50,7 +50,7 @@ describe("CarrinhoController - findById", () => {
     expect(res.json).toHaveBeenCalledWith(mockCarrinho);
   });
 
-  it("esse teste deve retornar status 200 e null se não encontrar o carrinho", async () => {
+  it("esse teste deve chamar next com erro se não encontrar o carrinho", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
@@ -62,8 +62,7 @@ describe("CarrinhoController - findById", () => {
 
     await CarrinhoController.findById(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(null);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
 

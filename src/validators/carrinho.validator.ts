@@ -1,11 +1,8 @@
 import { z } from "zod";
- 
-export const createCarrinhoSchema = z.object({
-  id_usuario: z.coerce.number(),
-});
- 
+
+export const createCarrinhoSchema = z.object({});
+
 export const updateCarrinhoSchema = z.object({
-  id_usuario: z.coerce.number().optional(),
-  data_criacao: z.coerce.date().optional(),
-  ativo: z.boolean().optional()
+  data_criacao: z.coerce.date({ error: "Data inválida" }).optional(),
+  ativo: z.boolean({ error: "Campo ativo deve ser verdadeiro ou falso" }).optional(),
 });

@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import Carrinho from "../models/Carrinho";
 import { HttpError } from "../types/http_error";
 
+interface AuthenticatedRequest extends Request {
+  userId?: number;
+}
+
 class CarrinhoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -20,17 +24,11 @@ class CarrinhoController {
       const { id } = req.params;
 
       const carrinho = await Carrinho.findOne({
-        where: {
-          id_usuario: Number(id),
-          ativo: true
-        },
-        include: [
-          {
-            association: "itens",
-            include: ["produto"]
-          }
-        ]
+        where: { id_usuario: Number(id), ativo: true },
+        include: [{ association: "itens", include: ["produto"] }],
       });
+
+      if (!carrinho) throw new HttpError(404, "Carrinho não encontrado");
 
       return res.status(200).json(carrinho);
     } catch (error) {
@@ -38,21 +36,18 @@ class CarrinhoController {
     }
   }
 
-  static async create(req: Request, res: Response, next: NextFunction) {
+  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const { id_usuario } = req.body;
+      const id_usuario = req.userId;
 
       const [carrinho] = await Carrinho.findOrCreate({
-        where: { id_usuario: Number(id_usuario), ativo: true },
-        defaults: { id_usuario: Number(id_usuario) }
+        where: { id_usuario, ativo: true },
+        defaults: { id_usuario },
       });
 
-      return res.status(200).json({
-        id_carrinho: carrinho.id_carrinho
-      });
-
+      return res.status(200).json({ id_carrinho: carrinho.id_carrinho });
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
@@ -64,14 +59,11 @@ class CarrinhoController {
 
       if (!carrinho) throw new HttpError(404, "Não foi possível atualizar: Carrinho não encontrado");
 
-      const dados = req.body;
-
-      await carrinho.update(dados);
+      await carrinho.update(req.body);
 
       return res.status(200).json(carrinho);
-
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
@@ -82,10 +74,12 @@ class CarrinhoController {
       const carrinho = await Carrinho.findByPk(Number(id));
 
       if (!carrinho) throw new HttpError(404, "Não foi possível excluir: Carrinho não encontrado");
+
       await carrinho.destroy();
-      return res.status(204).send()
+
+      return res.status(204).send();
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 }

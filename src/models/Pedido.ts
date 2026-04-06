@@ -40,14 +40,13 @@ Pedido.init(
     },
     status: {
       type: DataTypes.ENUM(
-        "CRIADO",
         "AGUARDANDO_PAGAMENTO",
         "PAGO",
         "ENVIADO",
         "ENTREGUE",
         "CANCELADO",
       ),
-      defaultValue: "CRIADO",
+      defaultValue: "AGUARDANDO_PAGAMENTO",
     },
   },
   {
