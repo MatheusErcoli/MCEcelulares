@@ -25,7 +25,7 @@ class ProdutoController {
         include: ["marca", "categoria"],
         limit,
         offset: (page - 1) * limit,
-        order: [["id_produto", "ASC"]],
+        order: [["id_produto", "DESC"]],
       });
 
       const response: PaginatedResponse<(typeof rows)[number]> = {
