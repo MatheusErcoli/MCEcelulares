@@ -2,20 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import Marca from "../models/Marca";
 import Produto from "../models/Produto";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErroMarca } from "../utils/findByIdOuErroMarca";
+import { adicionarFiltroQueryNumero } from "../utils/pegarNumeroQuery";
 
 class MarcaController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const where: Record<string, number> = {};
 
-      const id_categoria = req.query.id_categoria && req.query.id_categoria !== "undefined"
-        ? Number(req.query.id_categoria)
-        : undefined;
+      adicionarFiltroQueryNumero(where, "id_categoria", req.query.id_categoria as string);
 
-      if (id_categoria) where.id_categoria = id_categoria;
+      const temFiltroCategoria = !!where.id_categoria;
 
       const marcas = await Marca.findAll({
-        include: id_categoria ? [
+        include: temFiltroCategoria ? [
           {
             model: Produto, as: 'produtos',
             where,
@@ -35,9 +35,7 @@ class MarcaController {
     try {
       const { id } = req.params;
 
-      const marca = await Marca.findByPk(Number(id));
-
-      if (!marca) throw new HttpError(404, "Marca não encontrada");
+      const marca = await findByIdOuErroMarca(Number(id));
 
       return res.status(200).json(marca);
     } catch (error) {
@@ -61,9 +59,7 @@ class MarcaController {
     try {
       const { id } = req.params;
 
-      const marca = await Marca.findByPk(Number(id));
-
-      if (!marca) throw new HttpError(404, "Marca não encontrada");
+      const marca = await findByIdOuErroMarca(Number(id));
 
       await marca.update(req.body);
 
@@ -77,9 +73,7 @@ class MarcaController {
     try {
       const { id } = req.params;
 
-      const marca = await Marca.findByPk(Number(id));
-
-      if (!marca) throw new HttpError(404, "Marca não encontrada");
+      const marca = await findByIdOuErroMarca(Number(id));
 
       await marca.destroy();
 

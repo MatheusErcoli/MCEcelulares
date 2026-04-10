@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Pagamento from "../models/Pagamento";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErroPagamento } from "../utils/findByIdOuErroPagamento";
 
 class PagamentoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
@@ -19,11 +20,9 @@ class PagamentoController {
     try {
       const { id } = req.params;
 
-      const pagamento = await Pagamento.findByPk(Number(id), {
+      const pagamento = await findByIdOuErroPagamento(Number(id), {
         include: ["pedido"],
       });
-
-      if (!pagamento) throw new HttpError(404, "Pagamento não encontrado");
 
       return res.status(200).json(pagamento);
     } catch (error) {
@@ -54,9 +53,7 @@ class PagamentoController {
     try {
     const { id } = req.params;
 
-    const pagamento = await Pagamento.findByPk(Number(id));
-
-    if (!pagamento) throw new HttpError(404, "Pagamento não encontrado");
+    const pagamento = await findByIdOuErroPagamento(Number(id));
 
     const dados = req.body;
 
@@ -72,9 +69,7 @@ class PagamentoController {
     try {
     const { id } = req.params;
 
-    const pagamento = await Pagamento.findByPk(Number(id));
-
-    if (!pagamento) throw new HttpError(404, "Pagamento não encontrado");
+    const pagamento = await findByIdOuErroPagamento(Number(id));
 
     await pagamento.destroy();
 

@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import Pedido from "../models/Pedido";
 import ItemPedido from "../models/ItemPedido";
-import { PaginatedResponse } from "../types/paginated";
+import { PaginacaoResponse } from "../types/paginacao";
 import { HttpError } from "../types/http_error";
 import ItemCarrinho from "../models/ItemCarrinho";
 import Carrinho from "../models/Carrinho";
+import { obterPaginacao } from "../utils/paginacao";
+import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
+import { findByIdOuErroPedido } from "../utils/findByIdOuErroPedido";
+import { carrinhoNaoEncontrado } from "../utils/carrinhoNaoEncontrado";
+import { carrinhoVazio } from "../utils/carrinhoVazio";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
@@ -13,8 +18,7 @@ interface AuthenticatedRequest extends Request {
 class PedidoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = Math.max(1, parseInt(req.query.page as string) || 1);
-      const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+      const { page, limit, offset } = obterPaginacao(req.query);
 
       const { count, rows } = await Pedido.findAndCountAll({
         where: { ativo: true },
@@ -30,13 +34,7 @@ class PedidoController {
         order: [["id_pedido", "DESC"]],
       });
 
-      const response: PaginatedResponse<(typeof rows)[number]> = {
-        page,
-        limit,
-        total: count,
-        totalPages: Math.ceil(count / limit),
-        data: rows,
-      };
+      const response = fazerPaginacaoResponse(page, limit, count, rows);
 
       return res.status(200).json(response);
     } catch (error) {
@@ -48,7 +46,7 @@ class PedidoController {
     try {
       const { id } = req.params;
 
-      const pedido = await Pedido.findByPk(Number(id), {
+      const pedido = await findByIdOuErroPedido(Number(id), {
         include: [
           "usuario",
           "endereco",
@@ -64,22 +62,26 @@ class PedidoController {
     }
   }
 
-  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction,) {
     try {
       const id_usuario = req.userId;
       const { id_endereco, valor_total } = req.body;
 
-      const carrinho = await Carrinho.findOne({ where: { id_usuario } });
-
-      if (!carrinho) throw new HttpError(404, "Carrinho não encontrado");
+      const carrinho = carrinhoNaoEncontrado(
+        await Carrinho.findOne({ where: { id_usuario } }),
+      );
 
       const itensCarrinho = await ItemCarrinho.findAll({
         where: { id_carrinho: carrinho.id_carrinho },
       });
 
-      if (itensCarrinho.length === 0) throw new HttpError(400, "Carrinho vazio");
+      carrinhoVazio(itensCarrinho);
 
-      const pedido = await Pedido.create({ id_usuario, id_endereco, valor_total });
+      const pedido = await Pedido.create({
+        id_usuario,
+        id_endereco,
+        valor_total,
+      });
 
       await ItemPedido.bulkCreate(
         itensCarrinho.map((item) => ({
@@ -87,7 +89,7 @@ class PedidoController {
           id_produto: item.id_produto,
           quantidade: item.quantidade,
           preco_unitario: item.preco_unitario,
-        }))
+        })),
       );
 
       await Carrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
@@ -102,9 +104,7 @@ class PedidoController {
     try {
       const { id } = req.params;
 
-      const pedido = await Pedido.findByPk(Number(id));
-
-      if (!pedido) throw new HttpError(404, "Pedido não encontrado");
+      const pedido = await findByIdOuErroPedido(Number(id));
 
       await pedido.update(req.body);
 
@@ -118,9 +118,7 @@ class PedidoController {
     try {
       const { id } = req.params;
 
-      const pedido = await Pedido.findByPk(Number(id));
-
-      if (!pedido) throw new HttpError(404, "Pedido não encontrado");
+      const pedido = await findByIdOuErroPedido(Number(id));
 
       await pedido.destroy();
 

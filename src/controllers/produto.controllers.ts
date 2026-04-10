@@ -1,24 +1,26 @@
 import { NextFunction, Request, Response } from "express";
 import Produto from "../models/Produto";
-import { PaginatedResponse } from "../types/paginated";
+import { PaginacaoResponse } from "../types/paginacao";
 import { HttpError } from "../types/http_error";
+import { obterPaginacao } from "../utils/paginacao";
+import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
+import { findByIdOuErroProduto } from "../utils/findByIdOuErroProduto";
+import { adicionarFiltroNumero } from "../utils/adicionarFiltroNumero";
+import { adicionarFiltroBoolean } from "../utils/adicionarFiltroBoolean";
 
 class ProdutoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = Math.max(1, parseInt(req.query.page as string) || 1);
-      const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+      const { page, limit, offset } = obterPaginacao(req.query);
+
+      const query = req.query;
 
       const where: Record<string, number | boolean> = {};
 
-      if (req.query.id_categoria && req.query.id_categoria !== "undefined")
-        where.id_categoria = Number(req.query.id_categoria);
+      adicionarFiltroNumero(where, "id_categoria", query.id_categoria as string);
+      adicionarFiltroNumero(where, "id_marca", query.id_marca as string);
+      adicionarFiltroBoolean(where, "destaque", query.destaque as string);
 
-      if (req.query.id_marca && req.query.id_marca !== "undefined")
-        where.id_marca = Number(req.query.id_marca);
-
-      if (req.query.destaque === "true")
-        where.destaque = true;
 
       const { count, rows } = await Produto.findAndCountAll({
         where,
@@ -28,13 +30,12 @@ class ProdutoController {
         order: [["id_produto", "DESC"]],
       });
 
-      const response: PaginatedResponse<(typeof rows)[number]> = {
+      const response = fazerPaginacaoResponse(
         page,
         limit,
-        total: count,
-        totalPages: Math.ceil(count / limit),
-        data: rows,
-      }
+        count,
+        rows
+      );
 
       return res.status(200).json(response);
 
@@ -47,13 +48,9 @@ class ProdutoController {
     try {
       const { id } = req.params;
 
-      const produto = await Produto.findByPk(Number(id), {
+      const produto = await findByIdOuErroProduto(Number(id), {
         include: ["marca", "categoria"],
       });
-
-      if (!produto) {
-        throw new HttpError(404, "Produto não encontrado");
-      }
 
       return res.status(200).json(produto);
     } catch (error) {
@@ -97,11 +94,7 @@ class ProdutoController {
     try {
       const { id } = req.params;
 
-      const produto = await Produto.findByPk(Number(id));
-
-      if (!produto) {
-        throw new HttpError(404, "Produto não encontrado");
-      }
+      const produto = await findByIdOuErroProduto(Number(id));
 
       const dados = req.body;
 
@@ -117,11 +110,7 @@ class ProdutoController {
     try {
       const { id } = req.params;
 
-      const produto = await Produto.findByPk(Number(id));
-
-      if (!produto) {
-        throw new HttpError(404, "Produto não encontrado");
-      }
+      const produto = await findByIdOuErroProduto(Number(id));
 
       await produto.destroy();
 

@@ -1,32 +1,28 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario";
-import { PaginatedResponse } from "../types/paginated";
+import { PaginacaoResponse } from "../types/paginacao";
 import { HttpError } from "../types/http_error";
-import { findByIdOuErro } from "../utils/findByIdOuErro";
+import { findByIdOuErroUsuario } from "../utils/findByIdOuErroUsuario";
 import { hashSenha } from "../utils/HashSenha";
 import { tratarSenha } from "../utils/tratarSenha";
+import { obterPaginacao } from "../utils/paginacao";
+import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
+import { emailNaoPodeAlterar } from "../utils/emailNaoPodeAlterar";
 
 class UsuarioController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = Math.max(1, parseInt(req.query.page as string) || 1);
-      const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+      const { page, limit, offset } = obterPaginacao(req.query);
 
       const { count, rows } = await Usuario.findAndCountAll({
         attributes: { exclude: ["senha"] },
         limit,
-        offset: (page - 1) * limit,
+        offset,
         order: [["id_usuario", "ASC"]],
       });
 
-      const response: PaginatedResponse<(typeof rows)[number]> = {
-        page,
-        limit,
-        total: count,
-        totalPages: Math.ceil(count / limit),
-        data: rows,
-      };
+      const response = fazerPaginacaoResponse(page, limit, count, rows);
 
       return res.status(200).json(response);
     } catch (error) {
@@ -38,7 +34,7 @@ class UsuarioController {
     try {
       const { id } = req.params;
 
-      const usuario = await findByIdOuErro(Number(id), {
+      const usuario = await findByIdOuErroUsuario(Number(id), {
         attributes: { exclude: ["senha"] },
         include: ['enderecos'],
       });
@@ -83,9 +79,9 @@ class UsuarioController {
     try {
       const { id } = req.params;
 
-      const usuario = await findByIdOuErro(Number(id));
+      const usuario = await findByIdOuErroUsuario(Number(id));
 
-      if (req.body.email) throw new HttpError(400, "Email não pode ser alterado");
+      emailNaoPodeAlterar(req.body);
 
       const dados = await tratarSenha({ ...req.body });
 
@@ -104,7 +100,7 @@ class UsuarioController {
     try {
       const { id } = req.params;
 
-      const usuario = await findByIdOuErro(Number(id));
+      const usuario = await findByIdOuErroUsuario(Number(id));
 
       await usuario.destroy();
 
