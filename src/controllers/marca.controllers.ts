@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Marca from "../models/Marca";
 import Produto from "../models/Produto";
 import { HttpError } from "../types/http_error";
-import { findByIdOuErroMarca } from "../utils/findByIdOuErroMarca";
+import { findByIdOuErroMarca } from "../utils/FindByIdOuErro/findByIdOuErroMarca";
 import { adicionarFiltroQueryNumero } from "../utils/pegarNumeroQuery";
 
 class MarcaController {

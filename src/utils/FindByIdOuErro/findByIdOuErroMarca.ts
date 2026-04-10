@@ -1,6 +1,6 @@
 import { FindOptions } from "sequelize";
-import Marca from "../models/Marca";
-import { HttpError } from "../types/http_error";
+import Marca from "../../models/Marca";
+import { HttpError } from "../../types/http_error";
 
 export async function findByIdOuErroMarca(id: number, options?: FindOptions) {
   const marca = options

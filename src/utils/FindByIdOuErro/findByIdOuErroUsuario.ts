@@ -1,6 +1,6 @@
 import { FindOptions } from "sequelize";
-import Usuario from "../models/Usuario";
-import { HttpError } from "../types/http_error";
+import Usuario from "../../models/Usuario";
+import { HttpError } from "../../types/http_error";
 
 export async function findByIdOuErroUsuario(id: number, options?: FindOptions) {
   const usuario = options

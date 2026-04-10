@@ -7,7 +7,7 @@ import ItemCarrinho from "../models/ItemCarrinho";
 import Carrinho from "../models/Carrinho";
 import { obterPaginacao } from "../utils/paginacao";
 import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
-import { findByIdOuErroPedido } from "../utils/findByIdOuErroPedido";
+import { findByIdOuErroPedido } from "../utils/FindByIdOuErro/findByIdOuErroPedido";
 import { carrinhoNaoEncontrado } from "../utils/carrinhoNaoEncontrado";
 import { carrinhoVazio } from "../utils/carrinhoVazio";
 

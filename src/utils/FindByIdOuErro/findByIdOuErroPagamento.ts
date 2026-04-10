@@ -1,6 +1,6 @@
 import { FindOptions } from "sequelize";
-import Pagamento from "../models/Pagamento";
-import { HttpError } from "../types/http_error";
+import Pagamento from "../../models/Pagamento";
+import { HttpError } from "../../types/http_error";
 
 export async function findByIdOuErroPagamento(id: number, options?: FindOptions) {
   const pagamento = options

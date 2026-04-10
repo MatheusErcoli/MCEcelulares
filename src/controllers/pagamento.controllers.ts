@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Pagamento from "../models/Pagamento";
 import { HttpError } from "../types/http_error";
-import { findByIdOuErroPagamento } from "../utils/findByIdOuErroPagamento";
+import { findByIdOuErroPagamento } from "../utils/FindByIdOuErro/findByIdOuErroPagamento";
 
 class PagamentoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {

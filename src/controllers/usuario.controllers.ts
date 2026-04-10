@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario";
 import { PaginacaoResponse } from "../types/paginacao";
 import { HttpError } from "../types/http_error";
-import { findByIdOuErroUsuario } from "../utils/findByIdOuErroUsuario";
+import { findByIdOuErroUsuario } from "../utils/FindByIdOuErro/findByIdOuErroUsuario";
 import { hashSenha } from "../utils/HashSenha";
 import { tratarSenha } from "../utils/tratarSenha";
 import { obterPaginacao } from "../utils/paginacao";

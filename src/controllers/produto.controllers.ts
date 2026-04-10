@@ -4,7 +4,7 @@ import { PaginacaoResponse } from "../types/paginacao";
 import { HttpError } from "../types/http_error";
 import { obterPaginacao } from "../utils/paginacao";
 import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
-import { findByIdOuErroProduto } from "../utils/findByIdOuErroProduto";
+import { findByIdOuErroProduto } from "../utils/FindByIdOuErro/findByIdOuErroProduto";
 import { adicionarFiltroNumero } from "../utils/adicionarFiltroNumero";
 import { adicionarFiltroBoolean } from "../utils/adicionarFiltroBoolean";
 
