@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Categoria from "../models/Categoria";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErroCategoria } from "../utils/FindByIdOuErro/findByIdOuErroCategoria";
 
 class CategoriaController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
@@ -17,9 +18,7 @@ class CategoriaController {
     try {
       const { id } = req.params;
 
-      const categoria = await Categoria.findByPk(Number(id));
-
-      if (!categoria) throw new HttpError(404, "Categoria não encontrada.");
+      const categoria = await findByIdOuErroCategoria(Number(id));
 
       return res.status(200).json(categoria);
     } catch (error) {
@@ -47,9 +46,7 @@ class CategoriaController {
     try {
     const { id } = req.params;
 
-    const categoria = await Categoria.findByPk(Number(id));
-
-    if (!categoria) throw new HttpError(404, "Não foi possível atualizar: Categoria não encontrada.");
+    const categoria = await findByIdOuErroCategoria(Number(id));
 
     const dados = req.body;
 
@@ -65,9 +62,7 @@ class CategoriaController {
     try {
     const { id } = req.params;
 
-    const categoria = await Categoria.findByPk(Number(id));
-
-    if (!categoria) throw new HttpError(404, "Não foi possível excluir: Categoria não encontrada.");
+    const categoria = await findByIdOuErroCategoria(Number(id));
 
     await categoria.destroy();
 

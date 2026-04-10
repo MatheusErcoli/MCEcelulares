@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Carrinho from "../models/Carrinho";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErroCarrinho } from "../utils/FindByIdOuErro/findByIdOuErroCarrinho";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
@@ -55,9 +56,7 @@ class CarrinhoController {
     try {
       const { id } = req.params;
 
-      const carrinho = await Carrinho.findByPk(Number(id));
-
-      if (!carrinho) throw new HttpError(404, "Não foi possível atualizar: Carrinho não encontrado");
+      const carrinho = await findByIdOuErroCarrinho(Number(id));
 
       await carrinho.update(req.body);
 
@@ -71,9 +70,7 @@ class CarrinhoController {
     try {
       const { id } = req.params;
 
-      const carrinho = await Carrinho.findByPk(Number(id));
-
-      if (!carrinho) throw new HttpError(404, "Não foi possível excluir: Carrinho não encontrado");
+      const carrinho = await findByIdOuErroCarrinho(Number(id));
 
       await carrinho.destroy();
 

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Endereco from "../models/Endereco";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErroEndereco } from "../utils/FindByIdOuErro/findByIdOuErroEndereco";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
@@ -25,11 +26,9 @@ class EnderecoController {
     try {
       const { id } = req.params;
 
-      const endereco = await Endereco.findByPk(Number(id), {
+      const endereco = await findByIdOuErroEndereco(Number(id), {
         include: ["usuario"],
       });
-
-      if (!endereco) throw new HttpError(404, "Endereço não encontrado");
 
       return res.status(200).json(endereco);
     } catch (error) {
@@ -63,9 +62,7 @@ class EnderecoController {
     try {
       const { id } = req.params;
 
-      const enderecoEncontrado = await Endereco.findByPk(Number(id));
-
-      if (!enderecoEncontrado) throw new HttpError(404, "Não foi possível atualizar: Endereço não encontrado");
+      const enderecoEncontrado = await findByIdOuErroEndereco(Number(id));
 
       await enderecoEncontrado.update(req.body);
 
@@ -79,9 +76,7 @@ class EnderecoController {
     try {
       const { id } = req.params;
 
-      const endereco = await Endereco.findByPk(Number(id));
-
-      if (!endereco) throw new HttpError(404, "Não foi possível excluir: Endereço não encontrado");
+      const endereco = await findByIdOuErroEndereco(Number(id));
 
       await endereco.destroy();
 

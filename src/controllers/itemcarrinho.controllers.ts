@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import ItemCarrinho from "../models/ItemCarrinho";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErroItemCarrinho } from "../utils/FindByIdOuErro/findByIdOuErroItemCarrinho";
+import { atualizarQuantidadeItem } from "../utils/atualizarQuantidadeItem";
 
 class ItemCarrinhoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
@@ -19,11 +21,9 @@ class ItemCarrinhoController {
     try {
       const { id } = req.params;
 
-      const itemCarrinho = await ItemCarrinho.findByPk(Number(id), {
+      const itemCarrinho = await findByIdOuErroItemCarrinho(Number(id), {
         include: ["carrinho", "produto"],
       });
-
-      if (!itemCarrinho) throw new HttpError(404, "Item do carrinho não encontrado");
 
       return res.status(200).json(itemCarrinho);
     } catch (error) {
@@ -81,19 +81,12 @@ class ItemCarrinhoController {
       const { id } = req.params;
       const { quantidade } = req.body;
 
-      const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
+      const itemCarrinho = await findByIdOuErroItemCarrinho(Number(id));
 
-      if (!itemCarrinho) throw new HttpError(404, "Erro ao atualizar: Item do carrinho não encontrado");
+      const { removido } = await atualizarQuantidadeItem(itemCarrinho, quantidade);
 
-      if (quantidade !== undefined) {
-        const novaQuantidade = itemCarrinho.quantidade + Number(quantidade);
-
-        if (novaQuantidade <= 0) {
-          await itemCarrinho.destroy();
-          return res.status(204).send();
-        }
-
-        itemCarrinho.quantidade = novaQuantidade;
+      if (removido){
+        return res.status(204).send();
       }
 
       await itemCarrinho.save();
@@ -112,9 +105,7 @@ class ItemCarrinhoController {
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const itemCarrinho = await ItemCarrinho.findByPk(Number(id));
-
-      if (!itemCarrinho) throw new HttpError(404, "Item do carrinho não encontrado");
+      const itemCarrinho = await findByIdOuErroItemCarrinho(Number(id));
 
       await itemCarrinho.destroy();
       return res.status(204).send();

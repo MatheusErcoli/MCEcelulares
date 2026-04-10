@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import ItemPedido from "../models/ItemPedido";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErroItemPedido } from "../utils/FindByIdOuErro/findByIdOuErroItemPedido";
 
 class ItemPedidoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
@@ -19,11 +20,9 @@ class ItemPedidoController {
     try {
       const { id } = req.params;
 
-      const itemPedido = await ItemPedido.findByPk(Number(id), {
+      const itemPedido = await findByIdOuErroItemPedido(Number(id), {
         include: ["pedido", "produto"],
       });
-
-      if (!itemPedido) throw new HttpError(404, "Item do pedido não encontrado");
 
       return res.status(200).json(itemPedido);
     } catch (error) {
@@ -52,9 +51,7 @@ class ItemPedidoController {
     try {
     const { id } = req.params;
 
-    const itemPedido = await ItemPedido.findByPk(Number(id));
-
-    if (!itemPedido) throw new HttpError(404, "Item do pedido não encontrado");
+    const itemPedido = await findByIdOuErroItemPedido(Number(id));
 
     const dados = req.body;
 
@@ -70,9 +67,7 @@ class ItemPedidoController {
     try {
     const { id } = req.params;
 
-    const itemPedido = await ItemPedido.findByPk(Number(id));
-
-    if (!itemPedido) throw new HttpError(404, "Item do pedido não encontrado");
+    const itemPedido = await findByIdOuErroItemPedido(Number(id));
 
     await itemPedido.destroy();
 
