@@ -3,6 +3,9 @@ import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario";
 import { PaginatedResponse } from "../types/paginated";
 import { HttpError } from "../types/http_error";
+import { findByIdOuErro } from "../utils/findByIdOuErro";
+import { hashSenha } from "../utils/HashSenha";
+import { tratarSenha } from "../utils/tratarSenha";
 
 class UsuarioController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
@@ -35,12 +38,10 @@ class UsuarioController {
     try {
       const { id } = req.params;
 
-      const usuario = await Usuario.findByPk(Number(id), {
+      const usuario = await findByIdOuErro(Number(id), {
         attributes: { exclude: ["senha"] },
         include: ['enderecos'],
       });
-
-      if (!usuario) throw new HttpError(404, "Usuário não encontrado");
 
       return res.status(200).json(usuario);
     } catch (error) {
@@ -60,7 +61,7 @@ class UsuarioController {
         admin = false,
       } = req.body;
 
-      const senhaHash = await bcrypt.hash(senha, 10);
+      const senhaHash = await hashSenha(senha);
 
       const usuario = await Usuario.create({
         nome,
@@ -82,17 +83,11 @@ class UsuarioController {
     try {
       const { id } = req.params;
 
-      const usuario = await Usuario.findByPk(Number(id));
-
-      if (!usuario) throw new HttpError(404, "Usuário não encontrado");
+      const usuario = await findByIdOuErro(Number(id));
 
       if (req.body.email) throw new HttpError(400, "Email não pode ser alterado");
 
-      const dados = { ...req.body };
-
-      if (dados.senha) {
-        dados.senha = await bcrypt.hash(dados.senha, 10);
-      }
+      const dados = await tratarSenha({ ...req.body });
 
       await usuario.update(dados);
 
@@ -109,9 +104,7 @@ class UsuarioController {
     try {
       const { id } = req.params;
 
-      const usuario = await Usuario.findByPk(Number(id));
-
-      if (!usuario) throw new HttpError(404, "Usuário não encontrado");
+      const usuario = await findByIdOuErro(Number(id));
 
       await usuario.destroy();
 
