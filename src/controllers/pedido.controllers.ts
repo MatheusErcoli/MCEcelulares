@@ -20,8 +20,14 @@ class PedidoController {
     try {
       const { page, limit, offset } = obterPaginacao(req.query);
 
+      const where: Record<string, any> = { ativo: true };
+
+      if (req.query.status) {
+        where.status = req.query.status;
+      }
+
       const { count, rows } = await Pedido.findAndCountAll({
-        where: { ativo: true },
+        where,
         include: [
           "usuario",
           "endereco",
@@ -62,7 +68,7 @@ class PedidoController {
     }
   }
 
-  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction,) {
+  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const id_usuario = req.userId;
       const { id_endereco, valor_total } = req.body;
