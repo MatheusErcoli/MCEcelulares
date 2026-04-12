@@ -62,4 +62,10 @@ Produto.init({
     timestamps: false
 });
 
+Produto.addHook('beforeSave', (produto: Produto) => {
+    if (produto.estoque <= 0) {
+        produto.ativo = false;
+    }
+});
+
 export default Produto;

@@ -10,6 +10,9 @@ import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
 import { findByIdOuErroPedido } from "../utils/FindByIdOuErro/findByIdOuErroPedido";
 import { carrinhoNaoEncontrado } from "../utils/carrinhoNaoEncontrado";
 import { carrinhoVazio } from "../utils/carrinhoVazio";
+import Produto from "../models/Produto";
+import { decrementarEstoque } from "../utils/decrementarEstoque";
+import { validarItensCarrinho } from "../utils/validarItensCarrinho";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
@@ -68,7 +71,7 @@ class PedidoController {
     }
   }
 
-  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const id_usuario = req.userId;
       const { id_endereco, valor_total } = req.body;
@@ -83,12 +86,9 @@ class PedidoController {
       });
 
       carrinhoVazio(itensCarrinho);
+      validarItensCarrinho(itensCarrinho);
 
-      const pedido = await Pedido.create({
-        id_usuario,
-        id_endereco,
-        valor_total,
-      });
+      const pedido = await Pedido.create({ id_usuario, id_endereco, valor_total });
 
       await ItemPedido.bulkCreate(
         itensCarrinho.map((item: any) => ({
@@ -99,6 +99,7 @@ class PedidoController {
         })),
       );
 
+      await decrementarEstoque(itensCarrinho);
       await Carrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
 
       return res.status(201).json(pedido);

@@ -2,7 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import ItemCarrinho from "../models/ItemCarrinho";
 import { HttpError } from "../types/http_error";
 import { findByIdOuErroItemCarrinho } from "../utils/FindByIdOuErro/findByIdOuErroItemCarrinho";
+import { findByIdOuErroProduto } from "../utils/FindByIdOuErro/findByIdOuErroProduto";
 import { atualizarQuantidadeItem } from "../utils/atualizarQuantidadeItem";
+import { validarProdutoDisponivel } from "../utils/validarProdutoDisponivel";
+import { upsertItemCarrinho } from "../utils/upsertItemCarrinho";
 
 class ItemCarrinhoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
@@ -46,33 +49,21 @@ class ItemCarrinhoController {
     }
   }
 
-  static async create(req: Request, res: Response, next: NextFunction) {
+static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const { id_carrinho, id_produto, preco_unitario } = req.body;
 
-      const exists = await ItemCarrinho.findOne({ where: { id_carrinho, id_produto } });
+      const produto = await findByIdOuErroProduto(Number(id_produto));
+      validarProdutoDisponivel(produto);
 
-      if (exists) {
-        exists.quantidade += 1;
-        await exists.save();
+      const { item, criado } = await upsertItemCarrinho(id_carrinho, id_produto, preco_unitario);
 
-        return res.status(200).json(exists);
-      }
-
-      const itemCarrinho = await ItemCarrinho.create({
-        id_carrinho,
-        id_produto,
-        preco_unitario,
-        quantidade: 1
+      return res.status(criado ? 201 : 200).json({
+        id_produto: item.id_produto,
+        preco_unitario: item.preco_unitario,
       });
-
-      return res.status(201).json({
-        id_produto: itemCarrinho.id_produto,
-        preco_unitario: itemCarrinho.preco_unitario
-      });
-
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
