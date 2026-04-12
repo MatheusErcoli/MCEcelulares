@@ -23,7 +23,7 @@ export const createEnderecoSchema = z.object({
 
   cep: z.string({ error: "CEP é obrigatório" })
     .trim()
-    .regex(/^\d{8}$/, "CEP deve conter 8 números"),
+    .regex(/^\d{5}-\d{3}$/, "CEP deve conter 8 números"),
 
   complemento: z.string({ error: "Complemento inválido" })
     .trim()
@@ -70,6 +70,6 @@ export const updateEnderecoSchema = z.object({
 
   cep: z.string({ error: "CEP inválido" })
     .trim()
-    .regex(/^\d{8}$/, "CEP deve conter 8 números")
+    .regex(/^\d{5}-\d{3}$/, "CEP deve conter 8 números")
     .optional(),
 });

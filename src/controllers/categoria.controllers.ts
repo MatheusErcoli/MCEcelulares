@@ -2,15 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import Categoria from "../models/Categoria";
 import { HttpError } from "../types/http_error";
 import { findByIdOuErroCategoria } from "../utils/FindByIdOuErro/findByIdOuErroCategoria";
+import { adicionarFiltroBoolean } from "../utils/adicionarFiltroBoolean";
 
 class CategoriaController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const categorias = await Categoria.findAll();
+      const where: Record<string, number | boolean> = {};
+
+      adicionarFiltroBoolean(where, "ativo", (req.query.ativo as string) ?? "true");
+
+      const categorias = await Categoria.findAll({ where });
 
       return res.status(200).json(categorias);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
@@ -28,15 +33,15 @@ class CategoriaController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-    const { nome, descricao } = req.body;
+      const { nome, descricao } = req.body;
 
-    const categoria = await Categoria.create({
-      nome,
-      descricao,
-      ativo:true,
-    });
+      const categoria = await Categoria.create({
+        nome,
+        descricao,
+        ativo: true,
+      });
 
-    return res.status(201).json(categoria);
+      return res.status(201).json(categoria);
     } catch (error) {
       next(error)
     }
@@ -44,15 +49,15 @@ class CategoriaController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-    const { id } = req.params;
+      const { id } = req.params;
 
-    const categoria = await findByIdOuErroCategoria(Number(id));
+      const categoria = await findByIdOuErroCategoria(Number(id));
 
-    const dados = req.body;
+      const dados = req.body;
 
-    await categoria.update(dados);
+      await categoria.update(dados);
 
-    return res.status(200).json(categoria);
+      return res.status(200).json(categoria);
     } catch (error) {
       next(error)
     }
@@ -60,13 +65,13 @@ class CategoriaController {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
-    const { id } = req.params;
+      const { id } = req.params;
 
-    const categoria = await findByIdOuErroCategoria(Number(id));
+      const categoria = await findByIdOuErroCategoria(Number(id));
 
-    await categoria.destroy();
+      await categoria.destroy();
 
-    return res.status(204).send();
+      return res.status(204).send();
     } catch (error) {
       next(error)
     }

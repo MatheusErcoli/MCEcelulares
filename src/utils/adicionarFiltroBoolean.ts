@@ -5,5 +5,7 @@ export function adicionarFiltroBoolean(
 ) {
     if (valor === "true") {
         where[campo] = true;
+    } else if (valor === "false") {
+        where[campo] = false;
     }
 }

@@ -9,40 +9,29 @@ import { adicionarFiltroNumero } from "../utils/adicionarFiltroNumero";
 import { adicionarFiltroBoolean } from "../utils/adicionarFiltroBoolean";
 
 class ProdutoController {
-  static async findAll(req: Request, res: Response, next: NextFunction) {
+static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, limit, offset } = obterPaginacao(req.query);
+        const { page, limit } = obterPaginacao(req.query);
+        const where: Record<string, number | boolean> = {};
 
-      const query = req.query;
+        adicionarFiltroNumero(where, "id_categoria", req.query.id_categoria as string);
+        adicionarFiltroNumero(where, "id_marca", req.query.id_marca as string);
+        adicionarFiltroBoolean(where, "destaque", req.query.destaque as string);
+        adicionarFiltroBoolean(where, "ativo", (req.query.ativo as string) ?? "true");
 
-      const where: Record<string, number | boolean> = {};
+        const { count, rows } = await Produto.findAndCountAll({
+            where,
+            include: ["marca", "categoria"],
+            limit,
+            offset: (page - 1) * limit,
+            order: [["id_produto", "DESC"]],
+        });
 
-      adicionarFiltroNumero(where, "id_categoria", query.id_categoria as string);
-      adicionarFiltroNumero(where, "id_marca", query.id_marca as string);
-      adicionarFiltroBoolean(where, "destaque", query.destaque as string);
-
-
-      const { count, rows } = await Produto.findAndCountAll({
-        where,
-        include: ["marca", "categoria"],
-        limit,
-        offset: (page - 1) * limit,
-        order: [["id_produto", "DESC"]],
-      });
-
-      const response = fazerPaginacaoResponse(
-        page,
-        limit,
-        count,
-        rows
-      );
-
-      return res.status(200).json(response);
-
+        return res.status(200).json(fazerPaginacaoResponse(page, limit, count, rows));
     } catch (error) {
-      next(error);
+        next(error);
     }
-  }
+}
 
   static async findById(req: Request, res: Response, next: NextFunction) {
     try {

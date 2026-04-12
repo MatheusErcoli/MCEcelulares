@@ -3,33 +3,37 @@ import Marca from "../models/Marca";
 import Produto from "../models/Produto";
 import { HttpError } from "../types/http_error";
 import { findByIdOuErroMarca } from "../utils/FindByIdOuErro/findByIdOuErroMarca";
-import { adicionarFiltroQueryNumero } from "../utils/pegarNumeroQuery";
+import { adicionarFiltroNumero } from "../utils/adicionarFiltroNumero";
+import { adicionarFiltroBoolean } from "../utils/adicionarFiltroBoolean";
 
 class MarcaController {
-  static async findAll(req: Request, res: Response, next: NextFunction) {
+static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const where: Record<string, number> = {};
+        const whereMarca: Record<string, number | boolean> = {};
+        const whereProduto: Record<string, number | boolean> = {};
 
-      adicionarFiltroQueryNumero(where, "id_categoria", req.query.id_categoria as string);
+        adicionarFiltroBoolean(whereMarca, "ativo", (req.query.ativo as string) ?? "true");
+        adicionarFiltroNumero(whereProduto, "id_categoria", req.query.id_categoria as string);
 
-      const temFiltroCategoria = !!where.id_categoria;
+        const temFiltroCategoria = !!whereProduto.id_categoria;
 
-      const marcas = await Marca.findAll({
-        include: temFiltroCategoria ? [
-          {
-            model: Produto, as: 'produtos',
-            where,
-            attributes: [],
-            required: true
-          }
-        ] : [],
-      });
+        const marcas = await Marca.findAll({
+            where: whereMarca,
+            include: temFiltroCategoria ? [
+                {
+                    model: Produto, as: 'produtos',
+                    where: whereProduto,
+                    attributes: [],
+                    required: true
+                }
+            ] : [],
+        });
 
-      return res.status(200).json(marcas);
+        return res.status(200).json(marcas);
     } catch (error) {
-      next(error);
+        next(error);
     }
-  }
+}
 
   static async findById(req: Request, res: Response, next: NextFunction) {
     try {
@@ -47,7 +51,7 @@ class MarcaController {
     try {
       const { nome } = req.body;
 
-      const marca = await Marca.create({ nome });
+      const marca = await Marca.create({ nome, ativo: true });
 
       return res.status(201).json(marca);
     } catch (error) {

@@ -47,7 +47,7 @@ export const updateUsuarioSchema = z.object({
     .optional(),
 
   cpf: z.string({ error: "CPF inválido" })
-    .regex(/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$/, "CPF inválido")
+    .regex(/^(\d{3}\.\d{3}\.\d{3}-\d{2})$/, "CPF inválido")
     .optional(),
 
   telefone: z.string({ error: "Telefone inválido" })
