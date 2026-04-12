@@ -4,7 +4,7 @@ import sequelize from "../config/database";
 class ItemPedido extends Model {
     declare id_item: number;
     declare id_pedido: number;
-    declare id_produto: number;
+    declare nome_produto: string;
     declare quantidade: number;
     declare preco_unitario: number;
 }
@@ -19,8 +19,8 @@ ItemPedido.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    id_produto: {
-        type: DataTypes.INTEGER,
+    nome_produto: {
+        type: DataTypes.STRING(150),
         allowNull: false
     },
     quantidade: {

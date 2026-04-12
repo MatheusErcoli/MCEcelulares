@@ -40,11 +40,7 @@ export function StablishRelations() {
     as: 'itensCarrinho'
   });
 
-  // Produto -> ItemPedido (one-to-many)
-  Produto.hasMany(ItemPedido, {
-    foreignKey: 'id_produto',
-    as: 'itensPedido'
-  });
+
 
   // Usuario -> Endereco (one-to-many)
   Usuario.hasMany(Endereco, {
@@ -122,12 +118,6 @@ export function StablishRelations() {
   ItemPedido.belongsTo(Pedido, {
     foreignKey: 'id_pedido',
     as: 'pedido'
-  });
-
-  // ItemPedido -> Produto (many-to-one)
-  ItemPedido.belongsTo(Produto, {
-    foreignKey: 'id_produto',
-    as: 'produto'
   });
 
   // Pagamento -> Pedido (many-to-one)

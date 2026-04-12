@@ -12,7 +12,7 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
         const whereMarca: Record<string, number | boolean> = {};
         const whereProduto: Record<string, number | boolean> = {};
 
-        adicionarFiltroBoolean(whereMarca, "ativo", (req.query.ativo as string) ?? "true");
+        adicionarFiltroBoolean(whereMarca, "ativo", req.query.ativo as string);
         adicionarFiltroNumero(whereProduto, "id_categoria", req.query.id_categoria as string);
 
         const temFiltroCategoria = !!whereProduto.id_categoria;

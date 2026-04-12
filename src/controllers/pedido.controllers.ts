@@ -31,7 +31,7 @@ class PedidoController {
         include: [
           "usuario",
           "endereco",
-          { association: "itens", include: ["produto"] },
+          { association: "itens" },
         ],
         distinct: true,
         col: "id_pedido",
@@ -56,7 +56,7 @@ class PedidoController {
         include: [
           "usuario",
           "endereco",
-          { association: "itens", include: ["produto"] },
+          { association: "itens" },
         ],
       });
 
@@ -79,6 +79,7 @@ class PedidoController {
 
       const itensCarrinho = await ItemCarrinho.findAll({
         where: { id_carrinho: carrinho.id_carrinho },
+        include: ["produto"],
       });
 
       carrinhoVazio(itensCarrinho);
@@ -90,9 +91,9 @@ class PedidoController {
       });
 
       await ItemPedido.bulkCreate(
-        itensCarrinho.map((item) => ({
+        itensCarrinho.map((item: any) => ({
           id_pedido: pedido.id_pedido,
-          id_produto: item.id_produto,
+          nome_produto: item.produto.nome,
           quantidade: item.quantidade,
           preco_unitario: item.preco_unitario,
         })),

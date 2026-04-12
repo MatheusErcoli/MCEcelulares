@@ -17,7 +17,7 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
         adicionarFiltroNumero(where, "id_categoria", req.query.id_categoria as string);
         adicionarFiltroNumero(where, "id_marca", req.query.id_marca as string);
         adicionarFiltroBoolean(where, "destaque", req.query.destaque as string);
-        adicionarFiltroBoolean(where, "ativo", (req.query.ativo as string) ?? "true");
+        adicionarFiltroBoolean(where, "ativo", req.query.ativo as string);
 
         const { count, rows } = await Produto.findAndCountAll({
             where,

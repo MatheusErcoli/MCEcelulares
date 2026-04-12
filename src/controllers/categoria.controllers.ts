@@ -9,7 +9,7 @@ class CategoriaController {
     try {
       const where: Record<string, number | boolean> = {};
 
-      adicionarFiltroBoolean(where, "ativo", (req.query.ativo as string) ?? "true");
+      adicionarFiltroBoolean(where, "ativo", req.query.ativo as string);
 
       const categorias = await Categoria.findAll({ where });
 

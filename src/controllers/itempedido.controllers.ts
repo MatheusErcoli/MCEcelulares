@@ -7,7 +7,7 @@ class ItemPedidoController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const itensPedido = await ItemPedido.findAll({
-        include: ["pedido","produto"],
+        include: ["pedido"],
       });
 
       return res.status(200).json(itensPedido);
@@ -21,7 +21,7 @@ class ItemPedidoController {
       const { id } = req.params;
 
       const itemPedido = await findByIdOuErroItemPedido(Number(id), {
-        include: ["pedido", "produto"],
+        include: ["pedido"],
       });
 
       return res.status(200).json(itemPedido);
@@ -32,16 +32,16 @@ class ItemPedidoController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-    const { id_pedido, id_produto, quantidade, preco_unitario } = req.body;
+      const { id_pedido, nome_produto, quantidade, preco_unitario } = req.body;
 
-    const itemPedido = await ItemPedido.create({
-      id_pedido,
-      id_produto,
-      quantidade,
-      preco_unitario,
-    });
+      const itemPedido = await ItemPedido.create({
+        id_pedido,
+        nome_produto,
+        quantidade,
+        preco_unitario,
+      });
 
-    return res.status(201).json(itemPedido);
+      return res.status(201).json(itemPedido);
     } catch (error) {
       next(error)
     }
@@ -49,15 +49,13 @@ class ItemPedidoController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-    const { id } = req.params;
+      const { id } = req.params;
 
-    const itemPedido = await findByIdOuErroItemPedido(Number(id));
+      const itemPedido = await findByIdOuErroItemPedido(Number(id));
 
-    const dados = req.body;
+      await itemPedido.update(req.body);
 
-    await itemPedido.update(dados);
-
-    return res.status(200).json(itemPedido);
+      return res.status(200).json(itemPedido);
     } catch (error) {
       next(error)
     }
@@ -65,13 +63,13 @@ class ItemPedidoController {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
-    const { id } = req.params;
+      const { id } = req.params;
 
-    const itemPedido = await findByIdOuErroItemPedido(Number(id));
+      const itemPedido = await findByIdOuErroItemPedido(Number(id));
 
-    await itemPedido.destroy();
+      await itemPedido.destroy();
 
-    return res.status(204).send();
+      return res.status(204).send();
     } catch (error) {
       next(error)
     }
