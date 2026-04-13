@@ -23,14 +23,10 @@ class CarrinhoController {
 
   static async findById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-
-      if (req.userId !== Number(id) && !req.isAdmin) {
-        return next(new HttpError(403, "Você não tem permissão para acessar este carrinho"));
-      }
+      const id_usuario = req.userId;
 
       const carrinho = await Carrinho.findOne({
-        where: { id_usuario: Number(id), ativo: true },
+        where: { id_usuario, ativo: true },
         include: [{ association: "itens", include: ["produto"] }],
       });
 
