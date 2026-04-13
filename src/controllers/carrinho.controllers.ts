@@ -57,19 +57,21 @@ class CarrinhoController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params;
+static async update(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const carrinho = await findByIdOuErroCarrinho(Number(id));
 
-      const carrinho = await findByIdOuErroCarrinho(Number(id));
-
-      await carrinho.update(req.body);
-
-      return res.status(200).json(carrinho);
-    } catch (error) {
-      next(error);
+    if (carrinho.id_usuario !== req.userId && !req.isAdmin) {
+      return next(new HttpError(403, "Você não tem permissão para alterar este carrinho"));
     }
+
+    await carrinho.update(req.body);
+    return res.status(200).json(carrinho);
+  } catch (error) {
+    next(error);
   }
+}
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
