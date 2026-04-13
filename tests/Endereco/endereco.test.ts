@@ -1,203 +1,206 @@
-import CategoriaController from "../../src/controllers/categoria.controllers";
-import Categoria from "../../src/models/Categoria";
+import EnderecoController from "../../src/controllers/endereco.controllers";
+import Endereco from "../../src/models/Endereco";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-jest.mock("../../src/models/Categoria");
+jest.mock("../../src/models/Endereco");
 
-describe("CategoriaController - findAll", () => {
+describe("EnderecoController - findAll", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve retornar todas as categorias corretamente", async () => {
-    const req = mockRequest();
+  it("esse teste deve retornar os enderecos do usuario autenticado", async () => {
+    const req = mockRequest({
+      userId: 1,
+      query: {},
+    });
     const res = mockResponse();
     const next = jest.fn();
 
-    const mockCategorias = [
-      { id_categoria: 1, nome: "Eletrônicos" },
-      { id_categoria: 2, nome: "Roupas" },
+    const mockEnderecos = [
+      { id_endereco: 1, id_usuario: 1, cidade: "Maringa" },
+      { id_endereco: 2, id_usuario: 1, cidade: "Londrina" },
     ];
 
-    (Categoria.findAll as jest.Mock).mockResolvedValue(mockCategorias);
+    (Endereco.findAll as jest.Mock).mockResolvedValue(mockEnderecos);
 
-    await CategoriaController.findAll(req, res, next);
+    await EnderecoController.findAll(req as any, res as any, next);
 
-    expect(Categoria.findAll).toHaveBeenCalled();
+    expect(Endereco.findAll).toHaveBeenCalledWith({ where: { id_usuario: 1 } });
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockCategorias);
+    expect(res.json).toHaveBeenCalledWith(mockEnderecos);
   });
 });
 
-describe("CategoriaController - findById", () => {
+describe("EnderecoController - create", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("deve retornar uma categoria pelo ID", async () => {
+  it("esse teste deve criar um endereco com sucesso", async () => {
     const req = mockRequest({
-      params: { id: "1" },
-    });
-
-    const res = mockResponse();
-    const next = jest.fn();
-
-    const mockCategoria = {
-      id_categoria: 1,
-      nome: "Eletrônicos",
-    };
-
-    (Categoria.findByPk as jest.Mock).mockResolvedValue(mockCategoria);
-
-    await CategoriaController.findById(req, res, next);
-
-    expect(Categoria.findByPk).toHaveBeenCalledWith(1);
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockCategoria);
-  });
-
-  it("deve chamar o next com erro se categoria não existir", async () => {
-    const req = mockRequest({
-      params: { id: "1" },
-    });
-
-    const res = mockResponse();
-    const next = jest.fn();
-
-    (Categoria.findByPk as jest.Mock).mockResolvedValue(null);
-
-    await CategoriaController.findById(req, res, next);
-
-    expect(next).toHaveBeenCalledWith(expect.any(Error));
-  });
-});
-
-describe("CategoriaController - create", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("esse teste é para criar uma categoria com sucesso", async () => {
-    const req = mockRequest({
+      userId: 1,
       body: {
-        nome: "Eletrônicos",
-        descricao: "Produtos eletrônicos",
-        ativo: true,
+        endereco: "Rua das Flores",
+        numero: "123",
+        complemento: "Apto 1",
+        bairro: "Centro",
+        cidade: "Maringa",
+        estado: "PR",
+        cep: "87000-000",
       },
     });
-
     const res = mockResponse();
     const next = jest.fn();
 
-    const mockCategoriaCriada = {
-      id_categoria: 1,
+    const mockEndereco = {
+      id_endereco: 1,
+      id_usuario: 1,
       ...req.body,
     };
 
-    (Categoria.create as jest.Mock).mockResolvedValue(mockCategoriaCriada);
+    (Endereco.create as jest.Mock).mockResolvedValue(mockEndereco);
 
-    await CategoriaController.create(req, res, next);
+    await EnderecoController.create(req as any, res as any, next);
 
-    expect(Categoria.create).toHaveBeenCalledWith(req.body);
-
+    expect(Endereco.create).toHaveBeenCalledWith({
+      id_usuario: 1,
+      ...req.body,
+    });
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(mockCategoriaCriada);
+    expect(res.json).toHaveBeenCalledWith(mockEndereco);
+  });
+
+  it("esse teste deve falhar ao criar um endereco", async () => {
+    const req = mockRequest({
+      userId: 1,
+      body: {
+        endereco: "Rua das Flores",
+        numero: "123",
+        cidade: "Maringa",
+        estado: "PR",
+        cep: "87000-000",
+      },
+    });
+    const res = mockResponse();
+    const next = jest.fn();
+    const erro = new Error("erro ao criar endereco");
+
+    (Endereco.create as jest.Mock).mockRejectedValue(erro);
+
+    await EnderecoController.create(req as any, res as any, next);
+
+    expect(next).toHaveBeenCalledWith(erro);
   });
 });
 
-describe("CategoriaController - update", () => {
+describe("EnderecoController - update", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve atualizar a categoria com sucesso", async () => {
+  it("esse teste deve atualizar um endereco com sucesso", async () => {
     const req = mockRequest({
+      userId: 1,
       params: { id: "1" },
       body: {
-        nome: "Atualizado",
+        numero: "456",
       },
     });
-
     const res = mockResponse();
     const next = jest.fn();
 
-    const mockCategoria = {
-      id_categoria: 1,
-      nome: "Antigo",
+    const mockEndereco = {
+      id_endereco: 1,
+      id_usuario: 1,
+      numero: "123",
       update: jest.fn().mockResolvedValue(true),
     };
 
-    (Categoria.findByPk as jest.Mock).mockResolvedValue(mockCategoria);
+    (Endereco.findByPk as jest.Mock).mockResolvedValue(mockEndereco);
 
-    await CategoriaController.update(req, res, next);
+    await EnderecoController.update(req as any, res as any, next);
 
-    expect(Categoria.findByPk).toHaveBeenCalledWith(1);
-    expect(mockCategoria.update).toHaveBeenCalledWith(req.body);
-
+    expect(Endereco.findByPk).toHaveBeenCalledWith(1);
+    expect(mockEndereco.update).toHaveBeenCalledWith(req.body);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockCategoria);
+    expect(res.json).toHaveBeenCalledWith(mockEndereco);
   });
 
-  it("esse teste deve chamar o next com erro caso a categoria não existir", async () => {
+  it("esse teste deve falhar ao atualizar um endereco de outro usuario", async () => {
     const req = mockRequest({
+      userId: 1,
       params: { id: "1" },
       body: {
-        nome: "Atualizado",
+        numero: "456",
       },
     });
-
     const res = mockResponse();
     const next = jest.fn();
 
-    (Categoria.findByPk as jest.Mock).mockResolvedValue(null);
+    const mockEndereco = {
+      id_endereco: 1,
+      id_usuario: 2,
+      update: jest.fn(),
+    };
 
-    await CategoriaController.update(req, res, next);
+    (Endereco.findByPk as jest.Mock).mockResolvedValue(mockEndereco);
+
+    await EnderecoController.update(req as any, res as any, next);
 
     expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(mockEndereco.update).not.toHaveBeenCalled();
   });
 });
 
-describe("CategoriaController - delete", () => {
+describe("EnderecoController - delete", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("esse teste é para deletar com sucesso", async () => {
+  it("esse teste deve deletar um endereco com sucesso", async () => {
     const req = mockRequest({
+      userId: 1,
       params: { id: "1" },
     });
-
     const res = mockResponse();
     const next = jest.fn();
 
-    const mockCategoria = {
-      id_categoria: 1,
+    const mockEndereco = {
+      id_endereco: 1,
+      id_usuario: 1,
       destroy: jest.fn().mockResolvedValue(true),
     };
 
-    (Categoria.findByPk as jest.Mock).mockResolvedValue(mockCategoria);
+    (Endereco.findByPk as jest.Mock).mockResolvedValue(mockEndereco);
 
-    await CategoriaController.delete(req, res, next);
+    await EnderecoController.delete(req as any, res as any, next);
 
-    expect(Categoria.findByPk).toHaveBeenCalledWith(1);
-    expect(mockCategoria.destroy).toHaveBeenCalled();
-
+    expect(Endereco.findByPk).toHaveBeenCalledWith(1);
+    expect(mockEndereco.destroy).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(204);
     expect(res.send).toHaveBeenCalled();
   });
 
-  it("esse teste deve chamar o next com erro caso não consiga dar o delete", async () => {
+  it("esse teste deve falhar ao deletar um endereco de outro usuario", async () => {
     const req = mockRequest({
+      userId: 1,
       params: { id: "1" },
     });
-
     const res = mockResponse();
     const next = jest.fn();
 
-    (Categoria.findByPk as jest.Mock).mockResolvedValue(null);
+    const mockEndereco = {
+      id_endereco: 1,
+      id_usuario: 2,
+      destroy: jest.fn(),
+    };
 
-    await CategoriaController.delete(req, res, next);
+    (Endereco.findByPk as jest.Mock).mockResolvedValue(mockEndereco);
+
+    await EnderecoController.delete(req as any, res as any, next);
 
     expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(mockEndereco.destroy).not.toHaveBeenCalled();
   });
 });

@@ -6,7 +6,7 @@ import { findByIdOuErroItemCarrinho } from "../utils/FindByIdOuErro/findByIdOuEr
 import { findByIdOuErroProduto } from "../utils/FindByIdOuErro/findByIdOuErroProduto";
 import { atualizarQuantidadeItem } from "../utils/atualizarQuantidadeItem";
 import { validarProdutoDisponivel } from "../utils/validarProdutoDisponivel";
-import { upsertItemCarrinho } from "../utils/upsertItemCarrinho";
+import { salvarOuAtualizarItemCarrinho } from "../utils/salvarOuAtualizarItemCarrinho";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
@@ -70,7 +70,7 @@ class ItemCarrinhoController {
         return next(new HttpError(403, "Carrinho não pertence a este usuário"));
       }
 
-      const { item, criado } = await upsertItemCarrinho(id_carrinho, id_produto, produto.preco);
+      const { item, criado } = await salvarOuAtualizarItemCarrinho(id_carrinho, id_produto, produto.preco);
 
       return res.status(criado ? 201 : 200).json({
         id_produto: item.id_produto,

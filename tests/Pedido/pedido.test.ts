@@ -5,7 +5,7 @@ import {
 } from "../../src/validators/pedido.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-describe("Validação de Pedido - create", () => {
+describe("Validacao de Pedido - create", () => {
   const middleware = validate(createPedidoSchema);
   const next = jest.fn();
 
@@ -13,12 +13,11 @@ describe("Validação de Pedido - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação com dados válidos", async () => {
+  it("esse teste deve passar a validacao com dados validos", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: 1,
         id_endereco: 2,
-        valor_total: 100,
+        data: "2026-04-13",
       },
     });
 
@@ -30,11 +29,10 @@ describe("Validação de Pedido - create", () => {
     expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois id_endereco é inválido", async () => {
+  it("esse teste deve falhar pois id_endereco e invalido", async () => {
     const req = mockRequest({
       body: {
         id_endereco: -1,
-        valor_total: 100,
       },
     });
 
@@ -45,12 +43,11 @@ describe("Validação de Pedido - create", () => {
     expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois valor_total é negativo", async () => {
+  it("esse teste deve falhar pois data e invalida", async () => {
     const req = mockRequest({
       body: {
-        id_usuario: 1,
         id_endereco: 2,
-        valor_total: -5,
+        data: "data-invalida",
       },
     });
 
@@ -62,7 +59,7 @@ describe("Validação de Pedido - create", () => {
   });
 });
 
-describe("Validação de Pedido - update", () => {
+describe("Validacao de Pedido - update", () => {
   const middleware = validate(updatePedidoSchema);
   const next = jest.fn();
 
@@ -85,7 +82,7 @@ describe("Validação de Pedido - update", () => {
     expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve aceitar múltiplos campos válidos", async () => {
+  it("esse teste deve aceitar multiplos campos validos", async () => {
     const req = mockRequest({
       body: {
         valor_total: 200,
@@ -101,7 +98,7 @@ describe("Validação de Pedido - update", () => {
     expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois valor_total é negativo", async () => {
+  it("esse teste deve falhar pois valor_total e negativo", async () => {
     const req = mockRequest({
       body: {
         valor_total: -5,

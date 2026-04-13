@@ -1,8 +1,17 @@
 import ItemCarrinho from "../../src/models/ItemCarrinho";
+import Produto from "../../src/models/Produto";
+import Carrinho from "../../src/models/Carrinho";
 import ItemCarrinhoController from "../../src/controllers/itemcarrinho.controllers";
 import { mockRequest, mockResponse } from "../test.helpers";
+import { salvarOuAtualizarItemCarrinho } from "../../src/utils/salvarOuAtualizarItemCarrinho";
 
 jest.mock("../../src/models/ItemCarrinho");
+jest.mock("../../src/models/Produto");
+jest.mock("../../src/models/Carrinho");
+
+jest.mock("../../src/utils/salvarOuAtualizarItemCarrinho", () => ({
+  salvarOuAtualizarItemCarrinho: jest.fn(),
+}));
 
 describe("ItemCarrinhoController - findAll", () => {
   afterEach(() => {
@@ -51,7 +60,7 @@ describe("ItemCarrinhoController - findById", () => {
     expect(res.json).toHaveBeenCalledWith(mockItem);
   });
 
-  it("esse teste deve retornar erro 404 se não encontrar o item", async () => {
+  it("esse teste deve retornar erro 404 se nao encontrar o item", async () => {
     const req = mockRequest({
       params: { id: "1" },
     });
@@ -89,7 +98,7 @@ describe("ItemCarrinhoController - findByCartId", () => {
     expect(ItemCarrinho.findAll).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id_carrinho: 1 },
-      })
+      }),
     );
 
     expect(res.status).toHaveBeenCalledWith(200);
@@ -104,25 +113,44 @@ describe("ItemCarrinhoController - create", () => {
 
   it("esse teste deve criar item do carrinho com sucesso", async () => {
     const req = mockRequest({
+      userId: 1,
       body: {
         id_carrinho: 1,
         id_produto: 2,
-        preco_unitario: 50,
       },
     });
 
     const res = mockResponse();
     const next = jest.fn();
 
-    const mockItem = { id_item_carrinho: 1, ...req.body, quantidade: 1 };
+    const mockProduto = {
+      id_produto: 2,
+      nome: "Produto Teste",
+      preco: 50,
+      ativo: true,
+      estoque: 10,
+    };
 
-    // Adicionado mock para o findOne que verifica se o item já existe
-    (ItemCarrinho.findOne as jest.Mock).mockResolvedValue(null);
-    (ItemCarrinho.create as jest.Mock).mockResolvedValue(mockItem);
+    const mockCarrinho = {
+      id_carrinho: 1,
+      id_usuario: 1,
+      ativo: true,
+    };
 
-    await ItemCarrinhoController.create(req, res, next);
+    const mockItem = {
+      id_item_carrinho: 1,
+      id_produto: 2,
+      preco_unitario: 50,
+      quantidade: 1,
+    };
 
-    expect(ItemCarrinho.create).toHaveBeenCalled();
+    (Produto.findByPk as jest.Mock).mockResolvedValue(mockProduto);
+    (Carrinho.findOne as jest.Mock).mockResolvedValue(mockCarrinho);
+    (salvarOuAtualizarItemCarrinho as jest.Mock).mockResolvedValue({ item: mockItem, criado: true });
+
+    await ItemCarrinhoController.create(req as any, res as any, next);
+
+    expect(salvarOuAtualizarItemCarrinho).toHaveBeenCalledWith(1, 2, 50);
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith({
       id_produto: mockItem.id_produto,
@@ -156,13 +184,15 @@ describe("ItemCarrinhoController - update", () => {
 
     await ItemCarrinhoController.update(req, res, next);
 
-    expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1);
+    expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1, {
+      include: ["carrinho"],
+    });
     expect(mockItem.save).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
-  it("esse teste deve retornar erro se item não existir", async () => {
+  it("esse teste deve retornar erro se item nao existir", async () => {
     const req = mockRequest({
       params: { id: "1" },
       body: {},
@@ -200,7 +230,10 @@ describe("ItemCarrinhoController - delete", () => {
 
     await ItemCarrinhoController.delete(req, res, next);
 
-    expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1);
+    expect(ItemCarrinho.findByPk).toHaveBeenCalledWith(1, {
+      include: ["carrinho"],
+    });
+
     expect(mockItem.destroy).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(204);

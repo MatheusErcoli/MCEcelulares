@@ -10,7 +10,7 @@ describe("CategoriaController - findAll", () => {
   });
 
   it("esse teste deve retornar todas as categorias corretamente", async () => {
-    const req = mockRequest();
+    const req = mockRequest({ query: {} });
     const res = mockResponse();
     const next = jest.fn(); 
 

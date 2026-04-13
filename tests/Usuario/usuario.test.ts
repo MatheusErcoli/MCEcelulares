@@ -57,6 +57,7 @@ describe("UsuarioController - findById", () => {
   it("esse teste deve retornar um usuário procurado pelo ID", async () => {
     const req = mockRequest({
       params: { id: "1" },
+      userId: 1,
     });
     const res = mockResponse();
     const next = jest.fn();
@@ -82,6 +83,7 @@ describe("UsuarioController - findById", () => {
   it("esse teste deve chamar next com erro 404 caso não ache o usuário", async () => {
     const req = mockRequest({
       params: { id: "1" },
+      userId: 1,
     });
     const res = mockResponse();
     const next = jest.fn();
@@ -148,6 +150,7 @@ describe("UsuarioController - update", () => {
   it("esse teste deve atualizar o usuário com sucesso", async () => {
     const req = mockRequest({
       params: { id: "1" },
+      userId: 1,
       body: {
         nome: "Usuário Atualizado",
       },
@@ -179,6 +182,7 @@ describe("UsuarioController - update", () => {
   it("esse teste deve chamar next com erro 400 caso tente alterar o email", async () => {
     const req = mockRequest({
       params: { id: "1" },
+      userId: 1,
       body: {
         email: "novoemail@teste.com",
       },
@@ -208,6 +212,7 @@ describe("UsuarioController - delete", () => {
   it("esse teste é para deletar com sucesso", async () => {
     const req = mockRequest({
       params: { id: "1" },
+      userId: 1,
     });
 
     const res = mockResponse();

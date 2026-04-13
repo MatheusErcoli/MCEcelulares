@@ -5,7 +5,7 @@ import {
 } from "../../src/validators/itemCarrinho.validator";
 import { mockRequest, mockResponse } from "../test.helpers";
 
-describe("Validação de ItemCarrinho - create", () => {
+describe("Validacao de ItemCarrinho - create", () => {
   const middleware = validate(createItemCarrinhoSchema);
   const next = jest.fn();
 
@@ -13,12 +13,12 @@ describe("Validação de ItemCarrinho - create", () => {
     jest.clearAllMocks();
   });
 
-  it("esse teste deve passar a validação com dados válidos", async () => {
+  it("esse teste deve passar a validacao com dados validos", async () => {
     const req = mockRequest({
       body: {
         id_carrinho: 1,
         id_produto: 2,
-        preco_unitario: 50,
+        quantidade: 1,
       },
     });
     const res = mockResponse();
@@ -27,12 +27,12 @@ describe("Validação de ItemCarrinho - create", () => {
     expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois id_carrinho é inválido", async () => {
+  it("esse teste deve falhar pois id_carrinho e invalido", async () => {
     const req = mockRequest({
       body: {
         id_carrinho: "invalido",
         id_produto: 2,
-        preco_unitario: 50,
+        quantidade: 1,
       },
     });
     const res = mockResponse();
@@ -40,12 +40,12 @@ describe("Validação de ItemCarrinho - create", () => {
     expect(next).toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois preco_unitario é inválido", async () => {
+  it("esse teste deve falhar pois quantidade e invalida", async () => {
     const req = mockRequest({
       body: {
         id_carrinho: 1,
         id_produto: 2,
-        preco_unitario: "invalido",
+        quantidade: "invalida",
       },
     });
     const res = mockResponse();
@@ -54,7 +54,7 @@ describe("Validação de ItemCarrinho - create", () => {
   });
 });
 
-describe("Validação de ItemCarrinho - update", () => {
+describe("Validacao de ItemCarrinho - update", () => {
   const middleware = validate(updateItemCarrinhoSchema);
   const next = jest.fn();
 
@@ -74,7 +74,7 @@ describe("Validação de ItemCarrinho - update", () => {
     expect(next).not.toHaveBeenCalledWith(expect.anything());
   });
 
-  it("esse teste deve falhar pois quantidade é inválida", async () => {
+  it("esse teste deve falhar pois quantidade e invalida", async () => {
     const req = mockRequest({
       body: {
         quantidade: "invalida",

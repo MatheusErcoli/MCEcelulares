@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export type MockRequest = Partial<Request>;
+export type MockRequest = Partial<Request> & Record<string, any>;
 
 export const mockRequest = (overrides: MockRequest = {}): Request =>
   overrides as Request;

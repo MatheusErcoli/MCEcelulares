@@ -129,7 +129,7 @@ describe("Validação de Usuario - update", () => {
       body: {
         nome: "Novo Nome",
         senha: "NovaSenha@321",
-        cpf: "12345678900",
+        cpf: "123.456.789-00",
       },
     });
 

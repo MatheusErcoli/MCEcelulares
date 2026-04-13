@@ -1,6 +1,6 @@
 import ItemCarrinho from "../models/ItemCarrinho";
 
-export async function upsertItemCarrinho(id_carrinho: number, id_produto: number, preco_unitario: number) {
+export async function salvarOuAtualizarItemCarrinho(id_carrinho: number, id_produto: number, preco_unitario: number) {
     const exists = await ItemCarrinho.findOne({ where: { id_carrinho, id_produto } });
 
     if (exists) {
