@@ -13,21 +13,24 @@ import { carrinhoVazio } from "../utils/carrinhoVazio";
 import Produto from "../models/Produto";
 import { decrementarEstoque } from "../utils/decrementarEstoque";
 import { validarItensCarrinho } from "../utils/validarItensCarrinho";
+import { adicionarFiltroNumero } from "../utils/adicionarFiltroNumero";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
 }
 
 class PedidoController {
-  static async findAll(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { page, limit, offset } = obterPaginacao(req.query);
+static async findAll(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { page, limit, offset } = obterPaginacao(req.query);
 
-      const where: Record<string, any> = { ativo: true };
+    const where: Record<string, any> = { ativo: true };
 
-      if (req.query.status) {
-        where.status = req.query.status;
-      }
+    adicionarFiltroNumero(where, "id_usuario", req.query.id_usuario as string);
+
+    if (req.query.status) {
+      where.status = req.query.status;
+    }
 
       const { count, rows } = await Pedido.findAndCountAll({
         where,
@@ -71,7 +74,7 @@ class PedidoController {
     }
   }
 
-static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const id_usuario = req.userId;
       const { id_endereco, valor_total } = req.body;

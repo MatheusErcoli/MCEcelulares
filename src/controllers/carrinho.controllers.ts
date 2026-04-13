@@ -29,7 +29,7 @@ class CarrinhoController {
         include: [{ association: "itens", include: ["produto"] }],
       });
 
-      if (!carrinho) throw new HttpError(404, "Carrinho não encontrado");
+      if (!carrinho) return res.status(204).json();
 
       return res.status(200).json(carrinho);
     } catch (error) {
