@@ -19,6 +19,7 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
 
         const marcas = await Marca.findAll({
             where: whereMarca,
+            order: [['nome', 'ASC']],
             include: temFiltroCategoria ? [
                 {
                     model: Produto, as: 'produtos',
@@ -49,9 +50,9 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const { nome } = req.body;
+      const { nome, ativo = true } = req.body;
 
-      const marca = await Marca.create({ nome, ativo: true });
+      const marca = await Marca.create({ nome, ativo });
 
       return res.status(201).json(marca);
     } catch (error) {

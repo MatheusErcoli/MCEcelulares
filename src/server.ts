@@ -1,12 +1,12 @@
 import app from "./app";
 import sequelize from "./config/database";
-import { StablishRelations } from "./models/relacionamentos";
+import { EstablishRelations } from "./models/relacionamentos";
 
 const port = 3000;
 
 async function start() {
   try {
-    StablishRelations();
+    EstablishRelations();
     
     await sequelize.sync();
 

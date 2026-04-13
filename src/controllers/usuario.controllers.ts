@@ -10,6 +10,11 @@ import { obterPaginacao } from "../utils/paginacao";
 import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
 import { emailNaoPodeAlterar } from "../utils/emailNaoPodeAlterar";
 
+interface AuthRequest extends Request {
+  userId?: number;
+  isAdmin?: boolean;
+}
+
 class UsuarioController {
   static async findAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -30,13 +35,17 @@ class UsuarioController {
     }
   }
 
-  static async findById(req: Request, res: Response, next: NextFunction) {
+  static async findById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
 
+      if (req.userId !== Number(id) && !req.isAdmin) {
+        return next(new HttpError(403, "Você não tem permissão para acessar este perfil"));
+      }
+
       const usuario = await findByIdOuErroUsuario(Number(id), {
         attributes: { exclude: ["senha"] },
-        include: ['enderecos'],
+        include: ["enderecos"],
       });
 
       return res.status(200).json(usuario);
@@ -75,9 +84,13 @@ class UsuarioController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+
+      if (req.userId !== Number(id) && !req.isAdmin) {
+        return next(new HttpError(403, "Você não tem permissão para alterar este usuário"));
+      }
 
       const usuario = await findByIdOuErroUsuario(Number(id));
 
@@ -96,9 +109,13 @@ class UsuarioController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+
+      if (req.userId !== Number(id) && !req.isAdmin) {
+        return next(new HttpError(403, "Você não tem permissão para excluir este usuário"));
+      }
 
       const usuario = await findByIdOuErroUsuario(Number(id));
 

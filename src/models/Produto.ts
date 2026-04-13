@@ -65,6 +65,8 @@ Produto.init({
 Produto.addHook('beforeSave', (produto: Produto) => {
     if (produto.estoque <= 0) {
         produto.ativo = false;
+    } else if (produto.changed('estoque') && produto.estoque > 0 && !produto.ativo) {
+        produto.ativo = true;
     }
 });
 

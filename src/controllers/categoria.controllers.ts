@@ -11,7 +11,10 @@ class CategoriaController {
 
       adicionarFiltroBoolean(where, "ativo", req.query.ativo as string);
 
-      const categorias = await Categoria.findAll({ where });
+      const categorias = await Categoria.findAll({
+        where,
+        order: [['nome', 'ASC']],
+      });
 
       return res.status(200).json(categorias);
     } catch (error) {
@@ -33,12 +36,12 @@ class CategoriaController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const { nome, descricao } = req.body;
+      const { nome, descricao, ativo = true } = req.body;
 
       const categoria = await Categoria.create({
         nome,
         descricao,
-        ativo: true,
+        ativo,
       });
 
       return res.status(201).json(categoria);

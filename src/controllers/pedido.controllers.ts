@@ -10,27 +10,31 @@ import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
 import { findByIdOuErroPedido } from "../utils/FindByIdOuErro/findByIdOuErroPedido";
 import { carrinhoNaoEncontrado } from "../utils/carrinhoNaoEncontrado";
 import { carrinhoVazio } from "../utils/carrinhoVazio";
-import Produto from "../models/Produto";
 import { decrementarEstoque } from "../utils/decrementarEstoque";
 import { validarItensCarrinho } from "../utils/validarItensCarrinho";
 import { adicionarFiltroNumero } from "../utils/adicionarFiltroNumero";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
+  isAdmin?: boolean;
 }
 
 class PedidoController {
-static async findAll(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { page, limit, offset } = obterPaginacao(req.query);
+  static async findAll(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { page, limit } = obterPaginacao(req.query);
 
-    const where: Record<string, any> = { ativo: true };
+      const where: Record<string, any> = { ativo: true };
 
-    adicionarFiltroNumero(where, "id_usuario", req.query.id_usuario as string);
+      if (req.isAdmin) {
+        adicionarFiltroNumero(where, "id_usuario", req.query.id_usuario as string);
+      } else {
+        where.id_usuario = req.userId;
+      }
 
-    if (req.query.status) {
-      where.status = req.query.status;
-    }
+      if (req.query.status) {
+        where.status = req.query.status;
+      }
 
       const { count, rows } = await Pedido.findAndCountAll({
         where,
@@ -66,8 +70,6 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
         ],
       });
 
-      if (!pedido) throw new HttpError(404, "Pedido não encontrado");
-
       return res.status(200).json(pedido);
     } catch (error) {
       next(error);
@@ -77,10 +79,10 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
   static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const id_usuario = req.userId;
-      const { id_endereco, valor_total } = req.body;
+      const { id_endereco } = req.body;
 
       const carrinho = carrinhoNaoEncontrado(
-        await Carrinho.findOne({ where: { id_usuario } }),
+        await Carrinho.findOne({ where: { id_usuario, ativo: true } }),
       );
 
       const itensCarrinho = await ItemCarrinho.findAll({
@@ -90,6 +92,12 @@ static async findAll(req: Request, res: Response, next: NextFunction) {
 
       carrinhoVazio(itensCarrinho);
       validarItensCarrinho(itensCarrinho);
+
+      const valor_total = itensCarrinho.reduce(
+        (sum: number, item: any) =>
+          sum + Number(item.preco_unitario) * Number(item.quantidade),
+        0,
+      );
 
       const pedido = await Pedido.create({ id_usuario, id_endereco, valor_total });
 

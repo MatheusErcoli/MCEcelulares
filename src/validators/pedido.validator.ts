@@ -5,9 +5,6 @@ export const createPedidoSchema = z.object({
     .int("Endereço inválido")
     .positive("Endereço inválido"),
 
-  valor_total: z.coerce.number({ error: "Valor total é obrigatório" })
-    .nonnegative("Valor total não pode ser negativo"),
-
   data: z.coerce.date({ error: "Data inválida" }).optional(),
 });
 

@@ -9,7 +9,7 @@ import Pedido from './Pedido';
 import ItemPedido from './ItemPedido';
 import Pagamento from './Pagamento';
 
-export function StablishRelations() {
+export function EstablishRelations() {
   // Categoria -> Produto (one-to-many)
   Categoria.hasMany(Produto, {
     foreignKey: 'id_categoria',
@@ -40,8 +40,6 @@ export function StablishRelations() {
     as: 'itensCarrinho'
   });
 
-
-
   // Usuario -> Endereco (one-to-many)
   Usuario.hasMany(Endereco, {
     foreignKey: 'id_usuario',
@@ -59,11 +57,11 @@ export function StablishRelations() {
     foreignKey: 'id_usuario',
     as: 'pedidos'
   });
-  
+
   // Endereco -> Pedido (one-to-many)
   Endereco.hasMany(Pedido, {
     foreignKey: 'id_endereco',
-    as: 'pedidos_endereco' // Nome diferente para não conflitar caso já exista outro
+    as: 'pedidos_endereco'
   });
 
   // Endereco -> Usuario (many-to-one)
@@ -107,11 +105,17 @@ export function StablishRelations() {
     foreignKey: 'id_pedido',
     as: 'itens'
   });
-  
+
   // Pedido -> Endereco (many-to-one)
   Pedido.belongsTo(Endereco, {
     foreignKey: 'id_endereco',
     as: 'endereco'
+  });
+
+  // CORRIGIDO: relacionamento faltando — Pedido -> Pagamento (one-to-many)
+  Pedido.hasMany(Pagamento, {
+    foreignKey: 'id_pedido',
+    as: 'pagamentos'
   });
 
   // ItemPedido -> Pedido (many-to-one)

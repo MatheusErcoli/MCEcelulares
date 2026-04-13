@@ -9,7 +9,7 @@ class Endereco extends Model{
     declare complemento: string | null;
     declare bairro: string | null;
     declare cidade: string;
-    declare estado: string | null;
+    declare estado: string; // CORRIGIDO: era "string | null" mas allowNull: false no init
     declare cep: string;
 }
 

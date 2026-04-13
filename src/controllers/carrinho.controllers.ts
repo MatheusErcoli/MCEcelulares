@@ -5,6 +5,7 @@ import { findByIdOuErroCarrinho } from "../utils/FindByIdOuErro/findByIdOuErroCa
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
+  isAdmin?: boolean;
 }
 
 class CarrinhoController {
@@ -20,9 +21,13 @@ class CarrinhoController {
     }
   }
 
-  static async findById(req: Request, res: Response, next: NextFunction) {
+  static async findById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+
+      if (req.userId !== Number(id) && !req.isAdmin) {
+        return next(new HttpError(403, "Você não tem permissão para acessar este carrinho"));
+      }
 
       const carrinho = await Carrinho.findOne({
         where: { id_usuario: Number(id), ativo: true },

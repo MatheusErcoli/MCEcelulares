@@ -9,9 +9,6 @@ export const createItemCarrinhoSchema = z.object({
     .int("Produto inválido")
     .positive("Produto inválido"),
 
-  preco_unitario: z.coerce.number({ error: "Preço é obrigatório" })
-    .positive("Preço deve ser maior que zero"),
-
   quantidade: z.coerce.number({ error: "Quantidade inválida" })
     .int("Quantidade deve ser inteira")
     .min(1, "Quantidade deve ser pelo menos 1")

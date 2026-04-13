@@ -6,10 +6,11 @@ import {
   updateCarrinhoSchema,
 } from "../validators/carrinho.validator";
 import authMiddleware from "../middlewares/auth.middleware";
+import adminMiddleware from "../middlewares/admin.middleware";
 
 const router = Router();
 
-router.get("/", authMiddleware, CarrinhoController.findAll);
+router.get("/", authMiddleware, adminMiddleware, CarrinhoController.findAll);
 
 router.post(
   "/",

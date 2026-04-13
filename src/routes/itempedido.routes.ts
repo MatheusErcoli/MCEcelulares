@@ -5,18 +5,19 @@ import {
   updateItemPedidoSchema,
 } from "../validators/itemPedido.validator";
 import authMiddleware from "../middlewares/auth.middleware";
+import adminMiddleware from "../middlewares/admin.middleware";
 import ItemPedidoController from "../controllers/itempedido.controllers";
 
 const router = Router();
 
-router.get("/", ItemPedidoController.findAll);
+router.get("/", authMiddleware, adminMiddleware, ItemPedidoController.findAll);
 
-router.post("/", validate(createItemPedidoSchema), ItemPedidoController.create);
+router.post("/", authMiddleware, adminMiddleware, validate(createItemPedidoSchema), ItemPedidoController.create);
 
 router.get("/:id", authMiddleware, ItemPedidoController.findById);
 
-router.put("/:id", validate(updateItemPedidoSchema), ItemPedidoController.update);
+router.put("/:id", authMiddleware, adminMiddleware, validate(updateItemPedidoSchema), ItemPedidoController.update);
 
-router.delete("/:id", ItemPedidoController.delete);
+router.delete("/:id", authMiddleware, adminMiddleware, ItemPedidoController.delete);
 
 export default router;

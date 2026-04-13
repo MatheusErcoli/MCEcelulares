@@ -6,6 +6,7 @@ import {
   updatePedidoSchema,
 } from "../validators/pedido.validator";
 import authMiddleware from "../middlewares/auth.middleware";
+import adminMiddleware from "../middlewares/admin.middleware";
 
 const router = Router();
 
@@ -15,8 +16,8 @@ router.post("/", authMiddleware, validate(createPedidoSchema), PedidoController.
 
 router.get("/:id", authMiddleware, PedidoController.findById);
 
-router.put("/:id", validate(updatePedidoSchema), PedidoController.update);
+router.put("/:id", authMiddleware, adminMiddleware, validate(updatePedidoSchema), PedidoController.update);
 
-router.delete("/:id", PedidoController.delete);
+router.delete("/:id", authMiddleware, adminMiddleware, PedidoController.delete);
 
 export default router;
