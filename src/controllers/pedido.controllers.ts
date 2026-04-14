@@ -21,9 +21,7 @@ class PedidoController {
       const { page, limit } = obterPaginacao(req.query);
       const where: Record<string, any> = { ativo: true };
 
-      req.isAdmin
-        ? adicionarFiltroNumero(where, "id_usuario", req.query.id_usuario as string)
-        : (where.id_usuario = req.userId);
+      if (!req.isAdmin) where.id_usuario = req.userId;
 
       if (req.query.status) where.status = req.query.status;
 
@@ -43,9 +41,11 @@ class PedidoController {
     }
   }
 
-  static async findById(req: Request, res: Response, next: NextFunction) {
+  static async findById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const pedido = await findByIdOuErroPedido(Number(req.params.id), { include: ["usuario", "endereco", { association: "itens" }] });
+      const pedido = await findByIdOuErroPedido(Number(req.params.id), {
+        include: ["usuario", "endereco", { association: "itens" }],
+      });
       return res.status(200).json(pedido);
     } catch (error) {
       next(error);
@@ -56,7 +56,11 @@ class PedidoController {
     try {
       const { carrinho, itensCarrinho } = await obterCarrinhoComItens(req.userId!);
       const valor_total = calcularValorTotal(itensCarrinho);
-      const pedido = await Pedido.create({ id_usuario: req.userId, id_endereco: req.body.id_endereco, valor_total });
+      const pedido = await Pedido.create({
+        id_usuario: req.userId,
+        id_endereco: req.body.id_endereco,
+        valor_total,
+      });
 
       await criarItensPedido(pedido.id_pedido, itensCarrinho);
       await decrementarEstoque(itensCarrinho);
@@ -68,7 +72,7 @@ class PedidoController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const pedido = await findByIdOuErroPedido(Number(req.params.id));
       await pedido.update(req.body);
@@ -78,7 +82,7 @@ class PedidoController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const pedido = await findByIdOuErroPedido(Number(req.params.id));
       await pedido.destroy();
