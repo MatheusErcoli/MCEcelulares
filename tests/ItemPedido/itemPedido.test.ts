@@ -12,7 +12,7 @@ describe("ItemPedidoController - findAll", () => {
   it("esse teste deve retornar todos os itens do pedido", async () => {
     const req = mockRequest();
     const res = mockResponse();
-    const next = jest.fn(); // Adicionado mock do next
+    const next = jest.fn();
 
     (ItemPedido.findAll as jest.Mock).mockResolvedValue([
       { id_item: 1 },
