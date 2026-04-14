@@ -19,9 +19,15 @@ class PedidoController {
   static async findAll(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const { page, limit } = obterPaginacao(req.query);
+      const { id_usuario } = req.query;
+
       const where: Record<string, any> = { ativo: true };
 
-      if (!req.isAdmin) where.id_usuario = req.userId;
+      if (req.isAdmin) {
+        if (id_usuario) where.id_usuario = Number(id_usuario);
+      } else {
+        where.id_usuario = req.userId;
+      }
 
       if (req.query.status) where.status = req.query.status;
 
