@@ -10,6 +10,8 @@ import itemCarrinhoRoutes from "./itemcarrinho.routes";
 import pedidoRoutes from "./pedido.routes";
 import itemPedidoRoutes from "./itempedido.routes";
 import pagamentoRoutes from "./pagamento.routes";
+import enderecoPedidoRoutes from "./enderecopedido.routes";
+import usuarioPedidoRoutes from "./usuariopedido.routes";
 import authRoutes from "./auth.routes";
 
 const router = Router();
@@ -24,6 +26,8 @@ router.use("/itemcarrinho", itemCarrinhoRoutes);
 router.use("/pedido", pedidoRoutes);
 router.use("/itempedido", itemPedidoRoutes);
 router.use("/pagamento", pagamentoRoutes);
+router.use("/enderecopedido", enderecoPedidoRoutes);
+router.use("/usuariopedido", usuarioPedidoRoutes);
 router.use("/auth", authRoutes);
 
 export default router;

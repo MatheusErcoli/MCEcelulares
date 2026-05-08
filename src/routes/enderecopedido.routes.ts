@@ -1,5 +1,5 @@
 import { Router } from "express";
-import EnderecoPedidoController from "../controllers/endereco_pedido.controllers";
+import EnderecoPedidoController from "../controllers/enderecopedido.controllers";
 import { validate } from "../middlewares/validate.middleware";
 import {
     createEnderecoPedidoSchema,

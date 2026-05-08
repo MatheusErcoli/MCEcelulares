@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import EnderecoPedido from '../models/Endereco_pedido';
-import { HttpError } from '../types/http_error';
 import { findByIdOuErroEnderecoPedido } from '../utils/FindByIdOuErro/findByIdOuErroEnderecoPedido';
+import Pedido from '../models/Pedido';
+import { HttpError } from '../types/http_error';
 
 interface AuthenticatedRequest extends Request {
     userId?: number;
@@ -13,14 +14,19 @@ class EnderecoPedidoController {
         try {
             const { id_pedido } = req.query;
 
-            let where: Record<string, any>;
-            if (req.isAdmin) {
-                where = id_pedido ? { id_pedido: Number(id_pedido) } : {};
-            } else {
-                where = { id_pedido: req.userId };
-            }
+            const where = id_pedido ? { id_pedido: Number(id_pedido) } : {};
+            const include = req.isAdmin
+                ? ["pedido"]
+                : [{
+                    association: "pedido",
+                    where: { id_usuario: req.userId },
+                    required: true,
+                }];
 
-            const enderecosPedido = await EnderecoPedido.findAll({ where });
+            const enderecosPedido = await EnderecoPedido.findAll({
+                where,
+                include,
+            });
 
             return res.status(200).json(enderecosPedido);
         } catch (error) {
@@ -35,6 +41,14 @@ class EnderecoPedidoController {
             const enderecoPedidos = await findByIdOuErroEnderecoPedido(Number(id), {
                 include: ["pedido"],
             });
+
+            if (!req.isAdmin) {
+                const pedido = await Pedido.findByPk(enderecoPedidos.id_pedido);
+
+                if (!pedido || pedido.id_usuario !== req.userId) {
+                    return next(new HttpError(403, "Voce nao tem permissao para acessar este endereco de pedido"));
+                }
+            }
 
             return res.status(200).json(enderecoPedidos);
         } catch (error) {
