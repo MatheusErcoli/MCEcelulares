@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@layer base {
+  button, 
+  [role="button"],
+  a, 
+  input[type="submit"],
+  select {
+    cursor: pointer;
+  }
+}
+
+.meu-gradiente-roxo {
+    background-image: linear-gradient(to right, #5714d7, #7929c8);
+}
+
+.slick-dots li button:before {
+    color: #94a3b8 !important;
+    opacity: 0.5;
+    font-size: 10px;
+}
+
+.slick-dots li.slick-active button:before {
+    color: #5714d7 !important;
+    opacity: 1;
+}
+
+.slick-prev:before, .slick-next:before {
+    color: #5714d7 !important;
+    font-size: 25px;
+    opacity: 1;
+}
+
+.slick-disabled:before {
+    opacity: 0.2 !important;
+}
+
+.bg-image-padrao {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
