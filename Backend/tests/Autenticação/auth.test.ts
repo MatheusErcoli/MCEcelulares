@@ -2,6 +2,11 @@ import AuthController from "../../src/controllers/auth.controllers";
 import { mockRequest, mockResponse } from "../test.helpers";
 import { HttpError } from "../../src/types/http_error";
 
+jest.mock("../../src/services/auth.service", () => ({
+  __esModule: true,
+  default: { login: jest.fn().mockResolvedValue(null) },
+}));
+
 describe("AuthController - login", () => {
   afterEach(() => {
     jest.clearAllMocks();
