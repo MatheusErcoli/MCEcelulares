@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
 
   frontend:
@@ -36,14 +38,27 @@ services:
     depends_on:
       - mysql
 
+  nginx:
+    image: nginx:latest
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+    depends_on:
+      - frontend
+      - backend
+
   mysql:
     image: mysql:8
 
     restart: always
 
     environment:
-      MYSQL_ROOT_PASSWORD: f8lnxf8l
-      MYSQL_DATABASE: mce_celulares
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
 
     ports:
       - "3306:3306"
