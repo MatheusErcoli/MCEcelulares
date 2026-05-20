@@ -16,6 +16,8 @@ services:
 
     environment:
       PORT: 4000
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
 
     depends_on:
       - backend
@@ -34,6 +36,9 @@ services:
 
     env_file:
       - ./Backend/.env
+
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
 
     depends_on:
       - mysql

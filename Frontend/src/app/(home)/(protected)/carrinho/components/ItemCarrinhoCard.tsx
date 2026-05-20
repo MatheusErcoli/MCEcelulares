@@ -38,18 +38,18 @@ export const ItemCarrinhoCard = ({ item, onUpdate }: CartItemCardProps) => {
 
                 <div className="flex items-center gap-4">
                     <Button
-                        icon="faPlus"
-                        className="text-[#5714d7] hover:opacity-75 transition-opacity disabled:opacity-50"
-                        onClick={() => update(item.id_item_carrinho, 1).then(res => res.success && onUpdate())}
-                        disabled={alterando}
+                        icon="faMinus" className={item.quantidade > 1 ? "text-[#5714d7] hover:opacity-75 disabled:opacity-1" : "text-gray-400"}
+                        onClick={() => update(item.id_item_carrinho, -1).then(res => res.success && onUpdate())}
+                        disabled={alterando || item.quantidade <= 1}
                     />
                     <span className="font-bold text-black">
                         {item.quantidade}
                     </span>
                     <Button
-                        icon="faMinus" className={item.quantidade > 1 ? "text-[#5714d7] hover:opacity-75 disabled:opacity-1" : "text-gray-400"}
-                        onClick={() => update(item.id_item_carrinho, -1).then(res => res.success && onUpdate())}
-                        disabled={alterando || item.quantidade <= 1}
+                        icon="faPlus"
+                        className="text-[#5714d7] hover:opacity-75 transition-opacity disabled:opacity-50"
+                        onClick={() => update(item.id_item_carrinho, 1).then(res => res.success && onUpdate())}
+                        disabled={alterando}
                     />
                 </div>
 
