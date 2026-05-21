@@ -24,23 +24,23 @@ export const Header = () => {
 
       <nav className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          Início <Icon name="faHouse" className="w-4" size="lg" />
+          <Icon name="faHouse" className="w-4" size="lg" /> Início
         </Link>
         <Link href="/produtos" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          Produtos <Icon name="faMobileScreen" className="w-4" size="lg" />
+          <Icon name="faMobileScreen" className="w-4" size="lg" /> Produtos
         </Link>
         {isAuthenticated && (
           <>
             <Link href="/carrinho" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              Carrinho <Icon name="faCartShopping" className="w-4" size="lg" />
+              <Icon name="faCartShopping" className="w-4" size="lg" /> Carrinho
             </Link>
             <Link href="/pedidos" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              Pedidos <Icon name="faBox" className="w-4" size="lg" />
+              <Icon name="faBox" className="w-4" size="lg" /> Pedidos
             </Link>
           </>
         )}
         <Link href="/contato" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          Contato <Icon name="faPhone" className="w-4" size="lg" />
+          <Icon name="faPhone" className="w-4" size="lg" /> Contato
         </Link>
       </nav>
 

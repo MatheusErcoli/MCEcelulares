@@ -1,6 +1,6 @@
 import { fetchWithAuth } from "../lib/fetchWithAuth";
 
-const API_URL = 'http://localhost:3000';
+const API_URL = '/api';
 
 export async function getProdutoAPI(body: { id_produto: number }) {
   try {

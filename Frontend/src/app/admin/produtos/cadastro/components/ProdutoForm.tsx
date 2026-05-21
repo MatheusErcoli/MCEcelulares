@@ -117,13 +117,11 @@ export const ProdutoForm = () => {
                     {imagemUrl && (
                         <img src={imagemUrl} alt="Preview" className="w-32 h-32 object-cover rounded-xl mb-2" />
                     )}
-
                     <input
                         id="imagem-upload"
                         name="_imagem_file"
                         type="file"
                         accept="image/*"
-                        required
                         onChange={handleFileUpload}
                         className="hidden"
                     />

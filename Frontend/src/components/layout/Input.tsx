@@ -14,8 +14,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const variantStyles: Record<InputVariant, string> = {
-    gray: "w-full rounded-full bg-gray-200 px-6 py-4 text-gray-700 outline-none transition-all focus:ring-2 focus:ring-[#6211f1]/50",
-    white: "w-full rounded-full bg-white px-6 py-4 text-gray-700 outline-none transition-all focus:ring-2 focus:ring-[#6211f1]/50 shadow-sm border border-gray-200",
+    gray: "w-full rounded-full bg-gray-200 px-6 py-4 text-gray-700 outline-none transition-all focus:ring-2 focus:ring-[#6211f1]/50 text-sm",
+    white: "w-full rounded-full bg-white px-6 py-4 text-gray-700 outline-none transition-all focus:ring-2 focus:ring-[#6211f1]/50 text-sm",
 };
 
 export const Input = ({

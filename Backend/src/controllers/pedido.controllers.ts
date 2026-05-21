@@ -9,6 +9,8 @@ import { decrementarEstoque } from "../utils/decrementarEstoque";
 import { obterCarrinhoComItens } from "../utils/obterCarrinhoComItens";
 import { calcularValorTotal } from "../utils/calcularValorTotal";
 import { criarItensPedido } from "../utils/criarItensPedido";
+import { criarUsuarioPedido } from "../utils/criarUsuarioPedido";
+import { criarEnderecoPedido } from "../utils/criarEnderecoPedido";
 
 interface AuthenticatedRequest extends Request {
   userId?: number;
@@ -58,25 +60,28 @@ class PedidoController {
     }
   }
 
-  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    try {
-      const { carrinho, itensCarrinho } = await obterCarrinhoComItens(req.userId!);
-      const valor_total = calcularValorTotal(itensCarrinho);
-      const pedido = await Pedido.create({
-        id_usuario: req.userId,
-        id_endereco: req.body.id_endereco,
-        valor_total,
-      });
+static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    const { carrinho, itensCarrinho } = await obterCarrinhoComItens(req.userId!);
+    const valor_total = calcularValorTotal(itensCarrinho);
 
-      await criarItensPedido(pedido.id_pedido, itensCarrinho);
-      await decrementarEstoque(itensCarrinho);
-      await Carrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
+    const pedido = await Pedido.create({
+      id_usuario: req.userId,
+      id_endereco: req.body.id_endereco,
+      valor_total,
+    });
 
-      return res.status(201).json(pedido);
-    } catch (error) {
-      next(error);
-    }
+    await criarUsuarioPedido(pedido.id_pedido, req.userId!);
+    await criarEnderecoPedido(pedido.id_pedido, req.body.id_endereco);
+    await criarItensPedido(pedido.id_pedido, itensCarrinho);
+    await decrementarEstoque(itensCarrinho);
+    await Carrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
+
+    return res.status(201).json(pedido);
+  } catch (error) {
+    next(error);
   }
+}
 
   static async update(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {

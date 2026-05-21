@@ -1,6 +1,6 @@
 import { fetchWithAuth } from "../lib/fetchWithAuth";
 
-const API_URL = 'http://localhost:3000';
+const API_URL = '/api';
 
 export async function createEnderecoAPI(token: string, formData: FormData) {
   try {

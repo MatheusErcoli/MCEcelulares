@@ -40,7 +40,7 @@ export const ContactFormCard = () => {
                     rows={4}
                     minLength={20}
                     maxLength={200}
-                    className="w-full rounded-[30px] bg-white px-6 py-4 text-gray-700 outline-none transition-all focus:ring-2 focus:ring-[#7929c8]/50 border-none resize-none"
+                    className="w-full rounded-[30px] bg-white px-6 py-4 text-gray-700 outline-none transition-all focus:ring-2 focus:ring-[#6211f1]/50 text-sm"
                 />
             </div>
 
