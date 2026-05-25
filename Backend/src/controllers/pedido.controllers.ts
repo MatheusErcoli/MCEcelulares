@@ -1,10 +1,10 @@
+// pedido.controllers.ts
 import { NextFunction, Request, Response } from "express";
 import Pedido from "../models/Pedido";
 import Carrinho from "../models/Carrinho";
 import { obterPaginacao } from "../utils/paginacao";
 import { fazerPaginacaoResponse } from "../utils/paginacaoResponse";
 import { findByIdOuErroPedido } from "../utils/FindByIdOuErro/findByIdOuErroPedido";
-import { adicionarFiltroNumero } from "../utils/adicionarFiltroNumero";
 import { decrementarEstoque } from "../utils/decrementarEstoque";
 import { obterCarrinhoComItens } from "../utils/obterCarrinhoComItens";
 import { calcularValorTotal } from "../utils/calcularValorTotal";
@@ -17,27 +17,42 @@ interface AuthenticatedRequest extends Request {
   isAdmin?: boolean;
 }
 
+const PEDIDO_INCLUDES = [
+  { association: "usuarioPedido" },
+  { association: "enderecoPedido" },
+  { association: "itens" },
+];
+
 class PedidoController {
   static async findAll(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const { page, limit } = obterPaginacao(req.query);
-      const { id_usuario } = req.query;
+      const { id_usuario, status } = req.query;
 
-      const where: Record<string, any> = { ativo: true };
+      const includeUsuarioPedido: Record<string, any> = { association: "usuarioPedido" };
 
       if (req.isAdmin) {
-        if (id_usuario) where.id_usuario = Number(id_usuario);
+        if (id_usuario) {
+          includeUsuarioPedido.where = { id_usuario: Number(id_usuario) };
+          includeUsuarioPedido.required = true;
+        }
       } else {
-        where.id_usuario = req.userId;
+        includeUsuarioPedido.where = { id_usuario: req.userId };
+        includeUsuarioPedido.required = true;
       }
 
-      if (req.query.status) where.status = req.query.status;
+      const where: Record<string, any> = { ativo: true };
+      if (status) where.status = status;
 
       const { count, rows } = await Pedido.findAndCountAll({
         where,
-        include: ["usuario", "endereco", { association: "itens" }],
+        subQuery: false,
+        include: [
+          includeUsuarioPedido,
+          { association: "enderecoPedido" },
+          { association: "itens" },
+        ],
         distinct: true,
-        col: "id_pedido",
         limit,
         offset: (page - 1) * limit,
         order: [["id_pedido", "DESC"]],
@@ -45,6 +60,7 @@ class PedidoController {
 
       return res.status(200).json(fazerPaginacaoResponse(page, limit, count, rows));
     } catch (error) {
+      console.error("[findAll] ERRO:", error);
       next(error);
     }
   }
@@ -52,7 +68,7 @@ class PedidoController {
   static async findById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const pedido = await findByIdOuErroPedido(Number(req.params.id), {
-        include: ["usuario", "endereco", { association: "itens" }],
+        include: PEDIDO_INCLUDES,
       });
       return res.status(200).json(pedido);
     } catch (error) {
@@ -60,28 +76,24 @@ class PedidoController {
     }
   }
 
-static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  try {
-    const { carrinho, itensCarrinho } = await obterCarrinhoComItens(req.userId!);
-    const valor_total = calcularValorTotal(itensCarrinho);
+  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { carrinho, itensCarrinho } = await obterCarrinhoComItens(req.userId!);
+      const valor_total = calcularValorTotal(itensCarrinho);
 
-    const pedido = await Pedido.create({
-      id_usuario: req.userId,
-      id_endereco: req.body.id_endereco,
-      valor_total,
-    });
+      const pedido = await Pedido.create({ valor_total });
 
-    await criarUsuarioPedido(pedido.id_pedido, req.userId!);
-    await criarEnderecoPedido(pedido.id_pedido, req.body.id_endereco);
-    await criarItensPedido(pedido.id_pedido, itensCarrinho);
-    await decrementarEstoque(itensCarrinho);
-    await Carrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
+      await criarUsuarioPedido(pedido.id_pedido, req.userId!);
+      await criarEnderecoPedido(pedido.id_pedido, req.body.id_endereco);
+      await criarItensPedido(pedido.id_pedido, itensCarrinho);
+      await decrementarEstoque(itensCarrinho);
+      await Carrinho.destroy({ where: { id_carrinho: carrinho.id_carrinho } });
 
-    return res.status(201).json(pedido);
-  } catch (error) {
-    next(error);
+      return res.status(201).json(pedido);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
   static async update(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {

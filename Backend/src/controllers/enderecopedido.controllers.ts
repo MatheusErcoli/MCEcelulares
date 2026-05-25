@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import EnderecoPedido from '../models/Endereco_pedido';
 import { findByIdOuErroEnderecoPedido } from '../utils/FindByIdOuErro/findByIdOuErroEnderecoPedido';
 import Pedido from '../models/Pedido';
-import { HttpError } from '../types/http_error';
 
 interface AuthenticatedRequest extends Request {
     userId?: number;
@@ -44,10 +43,6 @@ class EnderecoPedidoController {
 
             if (!req.isAdmin) {
                 const pedido = await Pedido.findByPk(enderecoPedidos.id_pedido);
-
-                if (!pedido || pedido.id_usuario !== req.userId) {
-                    return next(new HttpError(403, "Voce nao tem permissao para acessar este endereco de pedido"));
-                }
             }
 
             return res.status(200).json(enderecoPedidos);
