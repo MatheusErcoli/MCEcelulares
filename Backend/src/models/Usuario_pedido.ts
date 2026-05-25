@@ -1,9 +1,10 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
-class UsuarioPedido extends Model{
+class UsuarioPedido extends Model {
     declare id_usuario_pedido: number;
     declare id_pedido: number;
+    declare id_usuario: number;
     declare nome: string;
     declare email: string;
     declare cpf: string;
@@ -20,22 +21,14 @@ UsuarioPedido.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    nome: {
-        type: DataTypes.STRING,
+    id_usuario: {      
+        type: DataTypes.INTEGER,
         allowNull: false
     },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    cpf: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    telefone: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
+    nome: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, allowNull: false },
+    cpf: { type: DataTypes.STRING, allowNull: false },
+    telefone: { type: DataTypes.STRING, allowNull: false }
 }, {
     sequelize,
     tableName: 'usuario_pedido',
