@@ -1,21 +1,8 @@
 'use server'
 
 import { Resend } from "resend";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-import { headers } from "next/headers";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-const ratelimit = new Ratelimit({
-  redis: redis,
-  limiter: Ratelimit.slidingWindow(2, "10 m"),
-});
 
 function escapeHtml(value: unknown): string {
   return String(value ?? '')
@@ -27,18 +14,6 @@ function escapeHtml(value: unknown): string {
 }
 
 export const sendEmailAction = async (formData: FormData) => {
-    const headerList = await headers();
-    const ip = headerList.get("x-forwarded-for") ?? "127.0.0.1";
-
-    try {
-        const { success } = await ratelimit.limit(ip);
-        if (!success) {
-            return { success: false, error: "Limite de envio atingido. Tente em 10 minutos." };
-        }
-    } catch (e) {
-        console.error("Erro no Upstash (Rate Limit):", e);
-    }
-
     const nome     = escapeHtml(formData.get("nome"));
     const telefone = escapeHtml(formData.get("telefone"));
     const email    = escapeHtml(formData.get("email"));

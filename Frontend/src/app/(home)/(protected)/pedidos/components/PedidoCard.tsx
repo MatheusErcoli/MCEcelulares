@@ -5,12 +5,35 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Icon } from '@/src/components/layout/Icon';
 import { gerarPixPayload } from '@/src/lib/pixPayload';
 
+const STATUS_OPTIONS = ['AGUARDANDO_PAGAMENTO', 'PAGO', 'ENVIADO', 'ENTREGUE', 'CANCELADO'] as const;
+type StatusType = typeof STATUS_OPTIONS[number];
+
+const STATUS_LABELS: Record<StatusType, string> = {
+  AGUARDANDO_PAGAMENTO: 'Aguardando Pagamento',
+  PAGO:      'Pago',
+  ENVIADO:   'Enviado',
+  ENTREGUE:  'Entregue',
+  CANCELADO: 'Cancelado',
+};
+
+const STATUS_STYLES: Record<StatusType, string> = {
+  AGUARDANDO_PAGAMENTO: 'bg-yellow-100 text-yellow-700',
+  PAGO:      'bg-blue-100 text-blue-700',
+  ENVIADO:   'bg-indigo-100 text-indigo-700',
+  ENTREGUE:  'bg-green-100 text-green-700',
+  CANCELADO: 'bg-red-100 text-red-700',
+};
+
 interface PedidoCardProps {
   pedido: PedidoType;
 }
 
 export const PedidoCard = ({ pedido }: PedidoCardProps) => {
   const [mostrarPix, setMostrarPix] = useState(false);
+
+  const status = (pedido.status as StatusType) ?? 'AGUARDANDO_PAGAMENTO';
+  const statusLabel = STATUS_LABELS[status] ?? pedido.status ?? 'Em andamento';
+  const statusStyle = STATUS_STYLES[status] ?? 'bg-gray-100 text-gray-700';
 
   const pixPayload = gerarPixPayload({
     chave: '51150c5e-2f44-43d9-bdb6-3340f48a074b',
@@ -24,8 +47,8 @@ export const PedidoCard = ({ pedido }: PedidoCardProps) => {
     <div className="bg-white rounded-[24px] p-5 flex flex-col gap-3 border border-gray-100 shadow-sm">
       <div className="flex items-center justify-between">
         <p className="font-bold text-gray-900 text-sm">Pedido #{pedido.id_pedido}</p>
-        <span className="text-xs font-semibold text-purple-700 bg-purple-100 px-3 py-1 rounded-full">
-          {pedido.status ?? 'Em andamento'}
+        <span className={`text-xs font-semibold px-3 py-1 rounded-full ${statusStyle}`}>
+          {statusLabel}
         </span>
       </div>
 

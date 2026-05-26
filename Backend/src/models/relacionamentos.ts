@@ -12,123 +12,33 @@ import EnderecoPedido from "./Endereco_pedido";
 import UsuarioPedido from "./Usuario_pedido";
 
 export function estabelecerRelacoes() {
-  Categoria.hasMany(Produto, {
-    foreignKey: "id_categoria",
-    as: "produtos",
-  });
+    Categoria.hasMany(Produto, { foreignKey: "id_categoria", as: "produtos" });
+    Marca.hasMany(Produto, { foreignKey: "id_marca", as: "produtos" });
 
-  Marca.hasMany(Produto, {
-    foreignKey: "id_marca",
-    as: "produtos",
-  });
+    Produto.belongsTo(Categoria, { foreignKey: "id_categoria", as: "categoria" });
+    Produto.belongsTo(Marca, { foreignKey: "id_marca", as: "marca" });
+    Produto.hasMany(ItemCarrinho, { foreignKey: "id_produto", as: "itensCarrinho" });
 
-  Produto.belongsTo(Categoria, {
-    foreignKey: "id_categoria",
-    as: "categoria",
-  });
+    Usuario.hasMany(Endereco, { foreignKey: "id_usuario", as: "enderecos" });
+    Usuario.hasMany(Carrinho, { foreignKey: "id_usuario", as: "carrinhos" });
 
-  Produto.belongsTo(Marca, {
-    foreignKey: "id_marca",
-    as: "marca",
-  });
+    Endereco.belongsTo(Usuario, { foreignKey: "id_usuario", as: "usuario" });
 
-  Produto.hasMany(ItemCarrinho, {
-    foreignKey: "id_produto",
-    as: "itensCarrinho",
-  });
+    Carrinho.belongsTo(Usuario, { foreignKey: "id_usuario", as: "usuario" });
+    Carrinho.hasMany(ItemCarrinho, { foreignKey: "id_carrinho", as: "itens" });
 
-  Usuario.hasMany(Endereco, {
-    foreignKey: "id_usuario",
-    as: "enderecos",
-  });
+    ItemCarrinho.belongsTo(Carrinho, { foreignKey: "id_carrinho", as: "carrinho" });
+    ItemCarrinho.belongsTo(Produto, { foreignKey: "id_produto", as: "produto" });
 
-  Usuario.hasMany(Carrinho, {
-    foreignKey: "id_usuario",
-    as: "carrinhos",
-  });
+    Pedido.hasMany(ItemPedido, { foreignKey: "id_pedido", as: "itens" });
+    Pedido.hasMany(Pagamento, { foreignKey: "id_pedido", as: "pagamentos" });
 
-  Usuario.hasMany(Pedido, {
-    foreignKey: "id_usuario",
-    as: "pedidos",
-  });
+    Pedido.hasOne(EnderecoPedido, { foreignKey: "id_pedido", as: "enderecoPedido" });
+    EnderecoPedido.belongsTo(Pedido, { foreignKey: "id_pedido", as: "pedido" });
 
-  Endereco.hasMany(Pedido, {
-    foreignKey: "id_endereco",
-    as: "pedidos_endereco",
-  });
+    Pedido.hasOne(UsuarioPedido, { foreignKey: "id_pedido", as: "usuarioPedido" }); // ← NOVO
+    UsuarioPedido.belongsTo(Pedido, { foreignKey: "id_pedido", as: "pedido" });
 
-  Endereco.belongsTo(Usuario, {
-    foreignKey: "id_usuario",
-    as: "usuario",
-  });
-
-  Carrinho.belongsTo(Usuario, {
-    foreignKey: "id_usuario",
-    as: "usuario",
-  });
-
-  Carrinho.hasMany(ItemCarrinho, {
-    foreignKey: "id_carrinho",
-    as: "itens",
-  });
-
-  ItemCarrinho.belongsTo(Carrinho, {
-    foreignKey: "id_carrinho",
-    as: "carrinho",
-  });
-
-  ItemCarrinho.belongsTo(Produto, {
-    foreignKey: "id_produto",
-    as: "produto",
-  });
-
-  Pedido.belongsTo(Usuario, {
-    foreignKey: "id_usuario",
-    as: "usuario",
-  });
-
-  Pedido.hasMany(ItemPedido, {
-    foreignKey: "id_pedido",
-    as: "itens",
-  });
-
-  Pedido.belongsTo(Endereco, {
-    foreignKey: "id_endereco",
-    as: "endereco",
-  });
-
-  Pedido.hasMany(Pagamento, {
-    foreignKey: "id_pedido",
-    as: "pagamentos",
-  });
-  
-  Pedido.hasOne(EnderecoPedido, {
-    foreignKey: "id_pedido",
-    as: "enderecoPedido",
-  });
-
-  Pedido.hasOne(UsuarioPedido, {
-    foreignKey: "id_pedido",
-    as: "usuarioPedido",
-  });
-
-  EnderecoPedido.belongsTo(Pedido, {
-    foreignKey: "id_pedido",
-    as: "pedido",
-  });
-
-  UsuarioPedido.belongsTo(Pedido, {
-    foreignKey: "id_pedido",
-    as: "pedido",
-  });
-
-  ItemPedido.belongsTo(Pedido, {
-    foreignKey: "id_pedido",
-    as: "pedido",
-  });
-
-  Pagamento.belongsTo(Pedido, {
-    foreignKey: "id_pedido",
-    as: "pedido",
-  });
+    ItemPedido.belongsTo(Pedido, { foreignKey: "id_pedido", as: "pedido" });
+    Pagamento.belongsTo(Pedido, { foreignKey: "id_pedido", as: "pedido" });
 }

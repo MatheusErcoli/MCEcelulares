@@ -1,7 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
-class EnderecoPedido extends Model{
+class EnderecoPedido extends Model {
     declare id_endereco_pedido: number;
     declare id_pedido: number;
     declare endereco: string;
