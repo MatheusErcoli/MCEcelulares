@@ -66,9 +66,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
 
-    ports:
-      - "3307:3306"
-
     volumes:
       - mysql_data:/var/lib/mysql
 
