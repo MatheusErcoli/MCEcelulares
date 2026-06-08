@@ -76,6 +76,7 @@ export const Header = () => {
             <Link
               href="/login"
               className="border-2 border-white bg-white text-[#7929c8] px-5 py-2 rounded-full font-semibold text-sm hover:bg-[#7929c8] hover:text-white transition-colors"
+              data-testid="login-button"
             >
               Entrar
             </Link>

@@ -27,6 +27,7 @@ export default function LoginForm() {
             required={true}
             pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
             title="Digite um e-mail válido (ex: usuario@dominio.com)"
+            data-testid="input-email"
           />
 
           <Input
@@ -34,6 +35,7 @@ export default function LoginForm() {
             type="password"
             placeholder="Senha"
             required={true}
+            data-testid="input-password"
           />
         </div>
 
@@ -41,6 +43,7 @@ export default function LoginForm() {
           text={loading ? "Entrando..." : "Entrar"}
           type="submit"
           disabled={loading}
+          data-testid="access-button"
         />
       </form>
 
