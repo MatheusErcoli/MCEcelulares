@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { CategoriaDropdownAdm } from './CategoriaDropdownAdm';
 import { MarcaDropdownAdm } from './MarcaDropdownAdm';
 import { Input } from '@/src/components/layout/Input';
+import Image from 'next/image';
 
 export const ProdutoForm = () => {
     const router = useRouter();
@@ -115,7 +116,7 @@ export const ProdutoForm = () => {
                 <div>
                     {loadingFile && <p>Enviando imagem...</p>}
                     {imagemUrl && (
-                        <img src={imagemUrl} alt="Preview" className="w-32 h-32 object-cover rounded-xl mb-2" />
+                        <Image src={imagemUrl} alt="Preview" className="w-32 h-32 object-cover rounded-xl mb-2" />
                     )}
                     <input
                         id="imagem-upload"

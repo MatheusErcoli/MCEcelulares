@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/src/contexts/AuthContext';
 import { useGetProduto } from '@/src/hooks/produto/useGetProduto';
 import { useCreateItemCarrinho } from '@/src/hooks/carrinho/useCreateItemCarrinho';
 import { Button } from '@/src/components/layout/Button';

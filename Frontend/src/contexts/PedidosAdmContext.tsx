@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useContext, useEffect, ReactNode } from 'react';
-import { useGetPedidosAdm } from '@/src/hooks/pedido/useGetPedidosAdm';
 import { useGetAllPedidos } from '../hooks/pedido/useGetAllPedidos';
 
 interface PedidosAdmContextType {

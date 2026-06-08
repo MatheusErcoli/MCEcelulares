@@ -52,11 +52,11 @@ export const PedidoCard = ({ pedido }: PedidoCardProps) => {
         </span>
       </div>
 
-      {pedido.endereco && (
+      {pedido.enderecoPedido && (
         <div className="flex items-start gap-2 text-xs text-gray-500">
           <Icon name="faLocationDot" className="text-purple-700 mt-0.5" />
           <p>
-            {pedido.endereco.endereco}, {pedido.endereco.numero} — {pedido.endereco.cidade}/{pedido.endereco.estado}
+            {pedido.enderecoPedido.endereco}, {pedido.enderecoPedido.numero} — {pedido.enderecoPedido.cidade}/{pedido.enderecoPedido.estado}
           </p>
         </div>
       )}
@@ -64,7 +64,7 @@ export const PedidoCard = ({ pedido }: PedidoCardProps) => {
       {pedido.itens?.length > 0 && (
         <div className="flex flex-col gap-1">
           {pedido.itens.map((item: ItemPedidoType) => (
-            <div key={item.id_item} className="flex justify-between text-xs text-gray-600">
+            <div key={item.id_item_pedido} className="flex justify-between text-xs text-gray-600">
               <span>{item.quantidade}x {item.nome_produto}</span>
               <span>R$ {Number(item.preco_unitario).toFixed(2).replace('.', ',')}</span>
             </div>

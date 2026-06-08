@@ -1,6 +1,5 @@
 import { updateItemCarrinhoAPI } from '@/src/actions/carrinho';
 import { useAuth } from '@/src/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
 
 export const useUpdateItemCarrinho = () => {
