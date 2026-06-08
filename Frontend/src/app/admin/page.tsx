@@ -1,4 +1,3 @@
-import { Icon } from '@/src/components/layout/Icon';
 import ProdutoCount from './components/ProdutoCount';
 import PedidoCount from './components/PedidoCount';
 import UsuarioCount from './components/UsuarioCount';
