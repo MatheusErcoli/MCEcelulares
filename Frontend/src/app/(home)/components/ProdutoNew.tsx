@@ -10,7 +10,7 @@ export const ProdutoNew = ({ title }: ProdutoNewProps) => {
 
     return (
         <>
-            <h2 className="font-bold font text-4xl m-[20px] pl-40">{title}</h2>
+            <h2 className="font-bold font text-4xl m-[20px] text-center">{title}</h2>
             <ProdutoCarousel />
         </>
     );

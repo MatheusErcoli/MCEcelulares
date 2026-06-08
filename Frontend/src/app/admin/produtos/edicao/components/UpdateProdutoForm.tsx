@@ -174,7 +174,7 @@ export const UpdateProdutoForm = () => {
               <div>
                 {loadingFile && <p>Enviando imagem...</p>}
                 {imagemUrl && (
-                  <img src={imagemUrl} alt="Preview" className="w-32 h-32 object-cover rounded-xl mb-2" />
+                  <Image src={imagemUrl} alt="Preview" className="w-32 h-32 object-cover rounded-xl mb-2" />
                 )}
                 <input
                   id="imagem-upload"

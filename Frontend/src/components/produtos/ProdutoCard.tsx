@@ -18,7 +18,7 @@ export const ProdutoCard = ({ produto }: ProdutoCardProps) => {
   const handleAdd = async () => {
     if (!isAuthenticated) return router.push("/login");
 
-    const res = await execute(produto.id_produto, Number(produto.preco));
+    const res = await execute(produto.id_produto);
     if (res.success) router.push("/carrinho");
   };
 

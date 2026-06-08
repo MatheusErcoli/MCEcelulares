@@ -35,8 +35,7 @@ type PedidoType = {
   valor_total: number;
   status: StatusPedido;
   ativo: boolean;
-  createdAt: string;
-  updatedAt: string;
+  data: Date;
   usuarioPedido: UsuarioPedidoType;
   enderecoPedido: EnderecoPedidoType;
   itens: ItemPedidoType[];
