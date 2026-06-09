@@ -10,9 +10,9 @@ export default class LoginPage {
     constructor(page: Page) {
         this.page = page
         this.loginButton = page.getByTestId('login-button')
-        this.inputEmail = page.getByTestId('input-email')
-        this.inputPassword = page.getByTestId('input-password')
-        this.accessButton = page.getByTestId("access-button")
+        this.inputEmail = page.getByTestId('input-email-login')
+        this.inputPassword = page.getByTestId('input-password-login')
+        this.accessButton = page.getByTestId("access-button-login")
     }
 
     async visit() {
@@ -21,9 +21,9 @@ export default class LoginPage {
         await expect(this.page).toHaveURL("/login")
     }
 
-    async login(email: string, senha: string) {
+    async login(email: string, password: string) {
         await this.inputEmail.fill(email)
-        await this.inputPassword.fill(senha)
+        await this.inputPassword.fill(password)
         await this.accessButton.click()
     }
 

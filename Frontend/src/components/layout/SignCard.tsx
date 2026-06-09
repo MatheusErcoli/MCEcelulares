@@ -32,7 +32,7 @@ export const SignCard = ({ title, children, backHref = "/" }: SignCardProps) => 
         </Link>
 
         <div className="flex flex-col items-center bg-linear-to-r from-[#5714d7] to-[#7929c8] pb-5 pt-12">
-          <Image src="/img/logo-mcecelulares.png" alt="Logo" className="h-20 w-auto object-contain" />
+          <Image src="/img/logo-mcecelulares.png" alt="Logo" className="h-20 w-auto object-contain" width={1000} height={0}/>
           <h2 className="mt-4 text-xl font-semibold text-white">{title}</h2>
         </div>
 
