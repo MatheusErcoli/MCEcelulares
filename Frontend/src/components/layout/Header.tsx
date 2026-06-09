@@ -83,6 +83,7 @@ export const Header = () => {
             <Link
               href="/cadastro"
               className="border-2 border-white text-white px-5 py-2 rounded-full font-semibold text-sm hover:bg-white hover:text-[#7929c8] transition-all"
+              data-testid="signup-button"
             >
               Cadastrar
             </Link>

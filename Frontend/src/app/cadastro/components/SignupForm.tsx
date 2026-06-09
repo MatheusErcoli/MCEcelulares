@@ -32,33 +32,33 @@ export const SignupForm = () => {
     );
   };
 
-const handleSignup = async (formData: FormData) => {
-  setTentouEnviar(true);
+  const handleSignup = async (formData: FormData) => {
+    setTentouEnviar(true);
 
-  if (senhasNaoCoincidem) {
-    Swal.fire({
-      icon: "error",
-      title: "Senhas não coincidem",
-      text: "A senha e a confirmação de senha devem ser iguais.",
-    });
-    return;
-  }
+    if (senhasNaoCoincidem) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao cadastrar",
+        text: "A senha e a confirmação de senha devem ser iguais.",
+      });
+      return;
+    }
 
-  if (senhaErro) return;
+    if (senhaErro) return;
 
-  const result = await signup(formData);
-  if (result.success) router.push("/login");
-};
+    const result = await signup(formData);
+    if (result.success) router.push("/login");
+  };
 
   return (
     <form action={handleSignup} className="space-y-5">
 
-      <Input name="nome" type="text" placeholder="Nome Completo" required minLength={3} maxLength={100} />
-      <Input name="email" type="email" placeholder="E-mail" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" title="Digite um e-mail válido (ex: usuario@dominio.com)" />
+      <Input name="nome" type="text" placeholder="Nome Completo" required minLength={3} maxLength={100} data-testid="input-name-signup" />
+      <Input name="email" type="email" placeholder="E-mail" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" title="Digite um e-mail válido (ex: usuario@dominio.com)" data-testid="input-email-signup" />
 
       <div className="flex gap-4">
-        <Input name="cpf" type="text" placeholder="CPF" required pattern="(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})" title="CPF deve ter 11 números ou o formato 000.000.000-00" mask="000.000.000-00" />
-        <Input name="telefone" type="tel" placeholder="Telefone" required minLength={10} maxLength={15} mask="(00) 00000-0000" />
+        <Input name="cpf" type="text" placeholder="CPF" required pattern="(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})" title="CPF deve ter 11 números ou o formato 000.000.000-00" mask="000.000.000-00" data-testid="input-cpf-signup" />
+        <Input name="telefone" type="tel" placeholder="Telefone" required minLength={10} maxLength={15} mask="(00) 00000-0000" data-testid="input-phone-signup" />
       </div>
 
       <div className="flex flex-col gap-1">
@@ -68,6 +68,7 @@ const handleSignup = async (formData: FormData) => {
           placeholder="Criar Senha"
           required
           onChange={(e) => validarSenha(e.target.value)}
+          data-testid="input-password-signup"
         />
         {senhaErro && (
           <p className="text-red-600 text-sm font-medium px-2">
@@ -76,20 +77,22 @@ const handleSignup = async (formData: FormData) => {
         )}
       </div>
 
-<div className="flex flex-col gap-1">
-  <Input
-    name="confirmarSenha"
-    type="password"
-    placeholder="Repetir Senha"
-    required
-    onChange={(e) => setConfirmarSenha(e.target.value)}
-  />
-</div>
+      <div className="flex flex-col gap-1">
+        <Input
+          name="confirmarSenha"
+          type="password"
+          placeholder="Repetir Senha"
+          required
+          onChange={(e) => setConfirmarSenha(e.target.value)}
+          data-testid="input-repeat-password-signup"
+        />
+      </div>
 
       <Button
         text={loading ? "Cadastrando..." : "Cadastrar Agora"}
         type="submit"
         disabled={loading}
+        data-testid="access-button-signup"
       />
 
       <div className="text-center">
